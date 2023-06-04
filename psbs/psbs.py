@@ -69,8 +69,8 @@ def build():
                 except IOError as err:
                     print(f"Warning: Unable to read file {src_filename}\n  {err}")
         except KeyError as err:
-            print(f"Error: Unable to find {err} directive in config file")
-            raise SystemExit(1) from err
+            print(f"Warning: Unable to find {err} directive in config file")
+            layout[key] = "\n"
 
     def make_section(name,has_title = True):
         if has_title:
@@ -146,6 +146,7 @@ def show_help():
     #TODO: add explanation of how to connect your github auth token
 
 def main():
+    #TODO: refactor with argparse or similar
     if len(argv)>1:
         first_arg = argv[1].lower()
         if first_arg == "build":
