@@ -4,7 +4,8 @@ import tomllib
 import webbrowser
 import subprocess
 from sys import argv
-from os import environ, getenv
+from os import environ, getenv, path, mkdir
+from inspect import cleandoc
 from gistyc import GISTyc
 
 def get_token():
@@ -30,11 +31,18 @@ class PSBSProject:
             raise SystemExit(1) from err
 
     class GistError(Exception):
-        """Thrown when GitHub refuses to create or update the gist"""
+        '''Thrown when GitHub refuses to create or update the gist'''
 
     def build(self):
         # Build the readme.txt
-        print ("Writing file bin/readme.txt")
+        if not path.exists("bin"):
+            print("bin directory does not exist, creating one")
+            try:
+                mkdir("bin")
+            except (OSError, PermissionError) as err:
+                print(f"Error: Unable to create bin directory\n  {err}")
+                raise SystemExit(1) from err
+            print ("Writing file bin/readme.txt")
         try:
             with open("bin/readme.txt", "w", encoding='UTF-8') as readme_file:
                 readme_file.write("Play this game by pasting the script in ")
@@ -128,9 +136,60 @@ class PSBSProject:
             print("Error: Unable to find user preferred browser to launch")
             raise SystemExit(1) from err
 
-def new():
-    print("make a new project")
-    #TODO: add this functionality
+def new(project_name):
+    print("Building directory structure")
+    try:
+        mkdir(project_name)
+    except (OSError, PermissionError) as err:
+        print(f"Error: Unable to create project directory\n  {err}")
+        raise SystemExit(1) from err
+    try:
+        mkdir(f"{project_name}/src")
+    except (OSError, PermissionError) as err:
+        print(f"Error: Unable to create source directory\n  {err}")
+        raise SystemExit(1) from err
+    try:
+        mkdir(f"{project_name}/bin")
+    except (OSError, PermissionError) as err:
+        print(f"Error: Unable to create bin directory\n  {err}")
+        raise SystemExit(1) from err
+
+    config_text = '''gist_id = ""
+
+    engine = "https://www.puzzlescript.net/"
+
+    prelude = ["prelude.pss"]
+    objects = ["objects.pss"]
+    legend = ["legend.pss"]
+    sounds = ["sounds.pss"]
+    collisionlayers = ["collisionlayers.pss"]
+    rules = ["rules.pss"]
+    winconditions = ["winconditions.pss"]
+    levels = ["levels.pss"]
+    '''
+    print("Creating config file")
+    try:
+        with open(f"{project_name}/config.toml", "w", encoding='UTF-8') as config_file:
+            config_file.write(cleandoc(config_text))
+    except IOError as err:
+        print(f"Error: Unable to write config file\n  {err}")
+        raise SystemExit(1) from err
+    standard_src_files = [
+        'prelude.pss',
+        'objects.pss',
+        'legend.pss',
+        'sounds.pss',
+        'collisionlayers.pss',
+        'rules.pss',
+        'winconditions.pss',
+        'levels.pss'
+    ]
+    for src_filename in standard_src_files:
+        try:
+            with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as src_file:
+                pass
+        except IOError as err:
+            print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
 
 def show_commands():
     print("PSBS - PuzzleScript Build System\n")
@@ -161,7 +220,7 @@ def main():
             project.upload()
             project.run()
         elif first_arg == "new":
-            new()
+            new(argv[2])
         elif first_arg == "help":
             show_help()
     else:
