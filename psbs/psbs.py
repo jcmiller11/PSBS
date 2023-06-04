@@ -194,7 +194,6 @@ def new(project_name):
             print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
 
 def show_commands():
-    print("PSBS - PuzzleScript Build System\n")
     print("\033[1mCOMMANDS\033[0m")
     print("build:\tBuild project")
     print("upload:\tBuild project then upload to gist")
@@ -221,5 +220,9 @@ def main():
                 print("Please provide a name for the new project")
             else:
                 new(argv[2])
+        else:
+            print("I didn't understand that\n")
+            show_commands()
     else:
+        print("PSBS - PuzzleScript Build System\n")
         show_commands()
