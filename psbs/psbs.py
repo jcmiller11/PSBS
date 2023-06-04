@@ -198,6 +198,7 @@ def show_commands():
     print("build:\tBuild project")
     print("upload:\tBuild project then upload to gist")
     print("run:\tBuild project, upload to gist, then launch in browser")
+    print("new:\tCreate a new project")
 
 def main():
     #TODO: refactor with argparse or similar
