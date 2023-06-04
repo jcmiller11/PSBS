@@ -137,6 +137,8 @@ class PSBSProject:
             raise SystemExit(1) from err
 
 def new(project_name):
+    #TODO: add functionality for "new project from gist"
+    #Ideally we'd pull the puzzlscript source from the gist and split it into src files
     print("Building directory structure")
     try:
         mkdir(project_name)
@@ -194,14 +196,9 @@ def new(project_name):
 def show_commands():
     print("PSBS - PuzzleScript Build System\n")
     print("\033[1mCOMMANDS\033[0m")
-    print("help:\tDisplay help dialog")
     print("build:\tBuild project")
     print("upload:\tBuild project then upload to gist")
     print("run:\tBuild project, upload to gist, then launch in browser")
-
-def show_help():
-    show_commands()
-    #TODO: add explanation of how to connect your github auth token
 
 def main():
     #TODO: refactor with argparse or similar
@@ -220,8 +217,9 @@ def main():
             project.upload()
             project.run()
         elif first_arg == "new":
-            new(argv[2])
-        elif first_arg == "help":
-            show_help()
+            if len(argv<3):
+                print("Please provide a name for the new project")
+            else:
+                new(argv[2])
     else:
         show_commands()
