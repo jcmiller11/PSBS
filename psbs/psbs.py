@@ -8,12 +8,14 @@ from gistyc import GISTyc
 from os import environ, getenv
 from requests.exceptions import ConnectionError
 
-try:
-	with open("config.toml", "rb") as config_file:
-		config = tomllib.load(config_file)
-except IOError as e:
-	print(f"Error: Unable to read config file\n\t{e}")
-	raise SystemExit(1)
+def load_config():
+	global config
+	try:
+		with open("config.toml", "rb") as config_file:
+			config = tomllib.load(config_file)
+	except IOError as e:
+		print(f"Error: Unable to read config file\n  {e}")
+		raise SystemExit(1)
 
 class GistError(Exception):
 	"""Thrown when GitHub refuses to create or update the gist"""
@@ -39,7 +41,7 @@ def build():
 		with open("bin/readme.txt", "w") as readme_file:
 			readme_file.write(f"Play this game by pasting the script in {config['engine']}editor.html")
 	except IOError as e:
-		print(f"Error: Unable to write file readme.txt\n\t{e}")
+		print(f"Error: Unable to write file readme.txt\n  {e}")
 		raise SystemExit(1)
 	except KeyError as e:
 		print(f"Error: Unable to find {e} directive in config file")
@@ -66,7 +68,7 @@ def build():
 					with open(f"src/{src_filename}", "r") as src_file:
 						layout[key] += f"{src_file.read()}\n\n"
 				except IOError as e:
-					print(f"Warning: Unable to read file {src_filename}\n\t{e}")
+					print(f"Warning: Unable to read file {src_filename}\n  {e}")
 		except KeyError as e:
 			print(f"Error: Unable to find {e} directive in config file")
 			raise SystemExit(1)
@@ -90,7 +92,7 @@ def build():
 		with open("bin/script.txt", "w") as readme_file:
 			readme_file.write(source)
 	except IOError as e:
-		print(f"Error: Unable to write file script.txt\n\t{e}")
+		print(f"Error: Unable to write file script.txt\n  {e}")
 		raise SystemExit(1)
 
 def upload():
@@ -114,7 +116,7 @@ def upload():
 		print("Error: Unable to connect to GitHub, aborting upload")
 		raise SystemExit(1)
 	except GistError as e:
-		print(f"Error: Unable to update gist\n\tResponse: {e}")
+		print(f"Error: Unable to update gist\n  Response: {e}")
 		raise SystemExit(1)
 
 def run():
@@ -135,7 +137,7 @@ def new():
 def show_commands():
 	print("PSBS - PuzzleScript Build System\n")
 	print("\033[1mCOMMANDS\033[0m")
-	print("help:\t Display help dialog")
+	print("help:\tDisplay help dialog")
 	print("build:\tBuild project")
 	print("upload:\tBuild project then upload to gist")
 	print("run:\tBuild project, upload to gist, then launch in browser")
@@ -144,20 +146,24 @@ def help():
 	show_commands()
 	#TODO: add explanation of how to connect your github auth token
 
-if len(argv)>1:
-	first_arg = argv[1].lower()
-	if first_arg == "build":
-		build()
-	elif first_arg == "upload":
-		build()
-		upload()
-	elif first_arg == "run":
-		build()
-		upload()
-		run()
-	elif first_arg == "new":
-		new()
-	elif first_arg == "help":
-		help()
-else:
-	show_commands()
+def main():
+	if len(argv)>1:
+		first_arg = argv[1].lower()
+		if first_arg == "build":
+			load_config()
+			build()
+		elif first_arg == "upload":
+			load_config()
+			build()
+			upload()
+		elif first_arg == "run":
+			load_config()
+			build()
+			upload()
+			run()
+		elif first_arg == "new":
+			new()
+		elif first_arg == "help":
+			help()
+	else:
+		show_commands()
