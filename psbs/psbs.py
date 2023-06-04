@@ -70,7 +70,6 @@ def build():
                     print(f"Warning: Unable to read file {src_filename}\n  {err}")
         except KeyError as err:
             print(f"Warning: Unable to find {err} directive in config file")
-            layout[key] = "\n"
 
     def make_section(name,has_title = True):
         if has_title:
