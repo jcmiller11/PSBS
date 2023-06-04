@@ -24,6 +24,6 @@ Enter `psbs` into your terminal to get a list of commands
 
 ## Example
 
-`psbs new myProject
-cd myProject
-psbs build`
+`    psbs new myProject
+    cd myProject
+    psbs build`
