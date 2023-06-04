@@ -3,9 +3,12 @@
 import tomllib
 import webbrowser
 import subprocess
+import traceback
 from sys import argv
 from os import environ, getenv, path, mkdir
 from inspect import cleandoc
+
+import jinja2
 from gistyc import GISTyc
 
 def get_token():
@@ -22,7 +25,6 @@ def get_token():
 
 class PSBSProject:
     def __init__(self, config_filename = "config.toml"):
-        print(config_filename)
         try:
             with open(config_filename, "rb") as config_file:
                 self.config = tomllib.load(config_file)
@@ -42,7 +44,7 @@ class PSBSProject:
             except (OSError, PermissionError) as err:
                 print(f"Error: Unable to create bin directory\n  {err}")
                 raise SystemExit(1) from err
-            print ("Writing file bin/readme.txt")
+        print ("Writing file bin/readme.txt")
         try:
             with open("bin/readme.txt", "w", encoding='UTF-8') as readme_file:
                 readme_file.write("Play this game by pasting the script in ")
@@ -55,43 +57,23 @@ class PSBSProject:
             raise SystemExit(1) from err
 
         # Build the script.txt
-        print ("Building script.txt")
-        layout = {
-            "prelude":"",
-            "objects":"",
-            "legend":"",
-            "sounds":"",
-            "collisionlayers":"",
-            "rules":"",
-            "winconditions":"",
-            "levels":""
-        }
-
-        for key in layout:
-            try:
-                for src_filename in self.config[key]:
-                    print(f" Importing file src/{src_filename}")
-                    try:
-                        with open(f"src/{src_filename}", "r", encoding='UTF-8') as src_file:
-                            layout[key] += f"{src_file.read()}\n\n"
-                    except IOError as err:
-                        print(f"Warning: Unable to read file {src_filename}\n  {err}")
-            except KeyError as err:
-                print(f"Warning: Unable to find {err} directive in config file")
-
-        def make_section(name,has_title = True):
-            if has_title:
-                return f"========\n{name.upper()}\n========\n\n{layout[name]}"
-            return layout[name]
-
-        source = make_section("prelude", False)
-        source += make_section("objects")
-        source += make_section("legend")
-        source += make_section("sounds")
-        source += make_section("collisionlayers")
-        source += make_section("rules")
-        source += make_section("winconditions")
-        source += make_section("levels")
+        jinja_env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader("src"),
+            autoescape=False
+        )
+        try:
+            template = jinja_env.get_template(self.config['template'])
+            source = template.render()
+        except KeyError as err:
+            print(f"Error: Unable to find {err} directive in config file")
+            raise SystemExit(1) from err
+        except jinja2.exceptions.TemplateNotFound as err:
+            print(f"Error: Unable to find template '{err}'")
+            raise SystemExit(1) from err
+        except jinja2.exceptions.TemplateError as err:
+            print(f"Error: Unable to render template\n  {err}")
+            print(traceback.format_exc().split('\n')[-4])
+            raise SystemExit(1) from err
 
         print ("Writing file bin/script.txt")
         try:
@@ -160,19 +142,8 @@ def new(project_name):
         print(f"Error: Unable to create bin directory\n  {err}")
         raise SystemExit(1) from err
 
-    config_text = '''gist_id = ""
+    config_text = 'gist_id = ""\nengine = "https://www.puzzlescript.net/"\ntemplate = "main.pss"'
 
-    engine = "https://www.puzzlescript.net/"
-
-    prelude = ["prelude.pss"]
-    objects = ["objects.pss"]
-    legend = ["legend.pss"]
-    sounds = ["sounds.pss"]
-    collisionlayers = ["collisionlayers.pss"]
-    rules = ["rules.pss"]
-    winconditions = ["winconditions.pss"]
-    levels = ["levels.pss"]
-    '''
     print("Creating config file")
     try:
         with open(f"{project_name}/config.toml", "w", encoding='UTF-8') as config_file:
@@ -180,6 +151,23 @@ def new(project_name):
     except IOError as err:
         print(f"Error: Unable to write config file\n  {err}")
         raise SystemExit(1) from err
+
+    print("Creating default template file")
+    psbs_path = path.realpath(path.dirname(__file__))
+    try:
+        with open(f"{psbs_path}/main.pss", "r", encoding='UTF-8') as template_file:
+            default_template = template_file.read()
+    except IOError as err:
+        print(f"Error: Unable to read default template in installation directory\n  {err}")
+        raise SystemExit(1) from err
+
+    try:
+        with open(f"{project_name}/src/main.pss", "w", encoding='UTF-8') as template_file:
+            template_file.write(default_template)
+    except IOError as err:
+        print(f"Warning: Unable to write file {project_name}/src/main.pss\n  {err}")
+
+    print("Creating source files")
     standard_src_files = [
         'prelude.pss',
         'objects.pss',
@@ -192,7 +180,7 @@ def new(project_name):
     ]
     for src_filename in standard_src_files:
         try:
-            with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as src_file:
+            with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as _:
                 pass
         except IOError as err:
             print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")

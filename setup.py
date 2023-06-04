@@ -2,15 +2,19 @@ from setuptools import setup
 
 setup(
     name='psbs',
-    version='0.0.1',    
+    version='0.0.2',    
     description='PuzzleScript Build System',
     url='https://github.com/jcmiller11/PSBS',
     author='J.C. Miller',
     author_email='johncoreymiller@gmail.com',
     license='MIT',
     packages=['psbs'],
-    install_requires=['gistyc'               
-                      ],
+    package_data={'': ['main.pss']},
+    include_package_data=True,
+    install_requires=[
+        'gistyc',
+        'jinja2'               
+    ],
 
     classifiers=[
         'Development Status :: 1 - Planning',
