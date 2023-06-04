@@ -102,12 +102,16 @@ class PSBSProject:
             raise SystemExit(1) from err
 
     def upload(self):
-        print("Updating gist")
         try:
             gist_id = self.config['gist_id']
         except KeyError as err:
-            print(f"Error: Unable to find {err} directive in config file")
+            print("Error: Unable to upload without a gist_id in config file")
             raise SystemExit(1) from err
+        if not self.config['gist_id']:
+            print("Error: Unable to upload without a gist_id in config file")
+            raise SystemExit(1)
+
+        print("Updating gist")
 
         token = get_token()
         try:
@@ -217,7 +221,7 @@ def main():
             project.upload()
             project.run()
         elif first_arg == "new":
-            if len(argv<3):
+            if len(argv)<3:
                 print("Please provide a name for the new project")
             else:
                 new(argv[2])
