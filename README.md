@@ -21,3 +21,9 @@ By default PSBS will attempt to run `gh auth token` to recieve an authorization 
 ## Usage
 
 Enter `psbs` into your terminal to get a list of commands
+
+## Example
+
+`psbs new myProject
+cd myProject
+psbs build`
