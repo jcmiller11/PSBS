@@ -26,11 +26,11 @@ def new(project_name):
     #TODO: add functionality for "new project from gist"
     #Ideally we'd pull the puzzlescript source from the gist and split it into src files
     #define project defaults
+    psbs_path = path.realpath(path.dirname(__file__))
     default_config = ({
         'gist_id': "",
         'engine': "https://www.puzzlescript.net/",
         'template': "main.pss"})
-    psbs_path = path.realpath(path.dirname(__file__))
     standard_src_files = [
         'prelude.pss',
         'objects.pss',
