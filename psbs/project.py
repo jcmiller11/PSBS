@@ -4,7 +4,6 @@ import webbrowser
 import subprocess
 import traceback
 from os import environ, getenv, path, mkdir
-from inspect import cleandoc
 
 import yaml
 import jinja2
@@ -21,72 +20,6 @@ def get_token():
     except subprocess.CalledProcessError as err:
         print("ERROR: gh-cli refuses to provide token, aborting upload")
         raise SystemExit(1) from err
-
-def new(project_name):
-    #TODO: add functionality for "new project from gist"
-    #Ideally we'd pull the puzzlescript source from the gist and split it into src files
-    #define project defaults
-    psbs_path = path.realpath(path.dirname(__file__))
-    default_config = ({
-        'gist_id': "",
-        'engine': "https://www.puzzlescript.net/",
-        'template': "main.pss"})
-    standard_src_files = [
-        'prelude.pss',
-        'objects.pss',
-        'legend.pss',
-        'sounds.pss',
-        'collisionlayers.pss',
-        'rules.pss',
-        'winconditions.pss',
-        'levels.pss'
-    ]
-
-    print("Building directory structure")
-    try:
-        mkdir(project_name)
-    except (OSError, PermissionError) as err:
-        print(f"Error: Unable to create project directory\n  {err}")
-        raise SystemExit(1) from err
-    try:
-        mkdir(f"{project_name}/src")
-    except (OSError, PermissionError) as err:
-        print(f"Error: Unable to create source directory\n  {err}")
-        raise SystemExit(1) from err
-    try:
-        mkdir(f"{project_name}/bin")
-    except (OSError, PermissionError) as err:
-        print(f"Error: Unable to create bin directory\n  {err}")
-        raise SystemExit(1) from err
-
-    print("Creating config file")
-    try:
-        with open(f"{project_name}/config.yaml", "w", encoding='UTF-8') as config_file:
-            yaml.dump(default_config, config_file)
-    except IOError as err:
-        print(f"Error: Unable to write config file\n  {err}")
-        raise SystemExit(1) from err
-
-    print("Creating default template file")
-    try:
-        with open(f"{psbs_path}/main.pss", "r", encoding='UTF-8') as template_file:
-            default_template = template_file.read()
-    except IOError as err:
-        print(f"Error: Unable to read default template in installation directory\n  {err}")
-        raise SystemExit(1) from err
-    try:
-        with open(f"{project_name}/src/main.pss", "w", encoding='UTF-8') as template_file:
-            template_file.write(default_template)
-    except IOError as err:
-        print(f"Warning: Unable to write file {project_name}/src/main.pss\n  {err}")
-
-    print("Creating source files")
-    for src_filename in standard_src_files:
-        try:
-            with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as _:
-                pass
-        except IOError as err:
-            print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
 
 class PSBSProject:
     def __init__(self, config_filename = "config.yaml"):
@@ -194,3 +127,71 @@ class PSBSProject:
         except webbrowser.Error as err:
             print("Error: Unable to find user preferred browser to launch")
             raise SystemExit(1) from err
+
+    @staticmethod
+    def create(project_name):
+        #TODO: add functionality for "new project from gist"
+        #Ideally we'd pull the puzzlescript source from the gist and split it into src files
+        #define project defaults
+        psbs_path = path.realpath(path.dirname(__file__))
+        default_config = ({
+            'gist_id': "",
+            'engine': "https://www.puzzlescript.net/",
+            'template': "main.pss"})
+        standard_src_files = [
+            'prelude.pss',
+            'objects.pss',
+            'legend.pss',
+            'sounds.pss',
+            'collisionlayers.pss',
+            'rules.pss',
+            'winconditions.pss',
+            'levels.pss'
+        ]
+
+        print("Building directory structure")
+        try:
+            mkdir(project_name)
+        except (OSError, PermissionError) as err:
+            print(f"Error: Unable to create project directory\n  {err}")
+            raise SystemExit(1) from err
+        try:
+            mkdir(f"{project_name}/src")
+        except (OSError, PermissionError) as err:
+            print(f"Error: Unable to create source directory\n  {err}")
+            raise SystemExit(1) from err
+        try:
+            mkdir(f"{project_name}/bin")
+        except (OSError, PermissionError) as err:
+            print(f"Error: Unable to create bin directory\n  {err}")
+            raise SystemExit(1) from err
+
+        print("Creating config file")
+        try:
+            with open(f"{project_name}/config.yaml", "w", encoding='UTF-8') as config_file:
+                yaml.dump(default_config, config_file)
+        except IOError as err:
+            print(f"Error: Unable to write config file\n  {err}")
+            raise SystemExit(1) from err
+
+        print("Creating default template file")
+        try:
+            with open(f"{psbs_path}/main.pss", "r", encoding='UTF-8') as template_file:
+                default_template = template_file.read()
+        except IOError as err:
+            print(f"Error: Unable to read default template in installation directory\n  {err}")
+            raise SystemExit(1) from err
+        try:
+            with open(f"{project_name}/src/main.pss", "w", encoding='UTF-8') as template_file:
+                template_file.write(default_template)
+        except IOError as err:
+            print(f"Warning: Unable to write file {project_name}/src/main.pss\n  {err}")
+
+        print("Creating source files")
+        for src_filename in standard_src_files:
+            try:
+                with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as _:
+                    pass
+            except IOError as err:
+                print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
+    

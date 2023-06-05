@@ -1,40 +1,45 @@
 #!/usr/bin/env python3
 
-from sys import argv
+from argparse import ArgumentParser
 
-from .project import PSBSProject, new
-
-def show_commands():
-    print("\033[1mCOMMANDS\033[0m")
-    print("build:\tBuild project")
-    print("upload:\tBuild project then upload to gist")
-    print("run:\tBuild project, upload to gist, then launch in browser")
-    print("new:\tCreate a new project")
+from .project import PSBSProject
 
 def main():
-    #TODO: refactor with argparse or similar
-    if len(argv)>1:
-        first_arg = argv[1].lower()
-        if first_arg == "build":
-            project = PSBSProject()
-            project.build()
-        elif first_arg == "upload":
-            project = PSBSProject()
-            project.build()
-            project.upload()
-        elif first_arg == "run":
-            project = PSBSProject()
-            project.build()
-            project.upload()
-            project.run()
-        elif first_arg == "new":
-            if len(argv)<3:
-                print("Please provide a name for the new project")
-            else:
-                new(argv[2])
-        else:
-            print("I didn't understand that\n")
-            show_commands()
-    else:
-        print("PSBS - PuzzleScript Build System\n")
-        show_commands()
+    parser = ArgumentParser(add_help=False)
+    subparser = parser.add_subparsers(dest="command",help="Commands")
+    commands = {
+        'build': subparser.add_parser("build",
+            help="Build project in current working directory",add_help=False),
+        'upload': subparser.add_parser("upload",
+            help="Build project then upload to gist",add_help=False),
+        'run': subparser.add_parser("run",
+            help="Build project, upload, then run in web browser",add_help=False),
+        'new': subparser.add_parser("new",
+            help="Create a new project",add_help=False),
+        'help': subparser.add_parser("help",
+            help="Display help dialog",add_help=False),
+        }
+
+    commands['new'].add_argument("name", type=str)
+
+    args = parser.parse_args()
+
+    if args.command == "build":
+        project = PSBSProject()
+        project.build()
+    elif args.command == "upload":
+        project = PSBSProject()
+        project.build()
+        project.upload()
+    elif args.command == "run":
+        project = PSBSProject()
+        project.build()
+        project.upload()
+        project.run()
+    elif args.command == "new":
+        PSBSProject.create(args.name)
+    elif args.command == "help":
+        parser.print_help()
+    elif args.command is None:
+        parser.print_help()
+        raise SystemExit(1)
