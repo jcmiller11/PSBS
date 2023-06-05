@@ -24,7 +24,24 @@ def get_token():
 
 def new(project_name):
     #TODO: add functionality for "new project from gist"
-    #Ideally we'd pull the puzzlscript source from the gist and split it into src files
+    #Ideally we'd pull the puzzlescript source from the gist and split it into src files
+    #define project defaults
+    default_config = ({
+        'gist_id': "",
+        'engine': "https://www.puzzlescript.net/",
+        'template': "main.pss"})
+    psbs_path = path.realpath(path.dirname(__file__))
+    standard_src_files = [
+        'prelude.pss',
+        'objects.pss',
+        'legend.pss',
+        'sounds.pss',
+        'collisionlayers.pss',
+        'rules.pss',
+        'winconditions.pss',
+        'levels.pss'
+    ]
+
     print("Building directory structure")
     try:
         mkdir(project_name)
@@ -42,25 +59,21 @@ def new(project_name):
         print(f"Error: Unable to create bin directory\n  {err}")
         raise SystemExit(1) from err
 
-    config_text = 'gist_id: ""\nengine: "https://www.puzzlescript.net/"\ntemplate: "main.pss"'
-
     print("Creating config file")
     try:
         with open(f"{project_name}/config.yaml", "w", encoding='UTF-8') as config_file:
-            config_file.write(cleandoc(config_text))
+            yaml.dump(default_config, config_file)
     except IOError as err:
         print(f"Error: Unable to write config file\n  {err}")
         raise SystemExit(1) from err
 
     print("Creating default template file")
-    psbs_path = path.realpath(path.dirname(__file__))
     try:
         with open(f"{psbs_path}/main.pss", "r", encoding='UTF-8') as template_file:
             default_template = template_file.read()
     except IOError as err:
         print(f"Error: Unable to read default template in installation directory\n  {err}")
         raise SystemExit(1) from err
-
     try:
         with open(f"{project_name}/src/main.pss", "w", encoding='UTF-8') as template_file:
             template_file.write(default_template)
@@ -68,16 +81,6 @@ def new(project_name):
         print(f"Warning: Unable to write file {project_name}/src/main.pss\n  {err}")
 
     print("Creating source files")
-    standard_src_files = [
-        'prelude.pss',
-        'objects.pss',
-        'legend.pss',
-        'sounds.pss',
-        'collisionlayers.pss',
-        'rules.pss',
-        'winconditions.pss',
-        'levels.pss'
-    ]
     for src_filename in standard_src_files:
         try:
             with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as _:
