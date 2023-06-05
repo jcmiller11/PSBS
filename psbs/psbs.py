@@ -48,4 +48,3 @@ def main():
         parser.print_help()
     elif args.command is None:
         parser.print_help()
-        raise SystemExit(1)

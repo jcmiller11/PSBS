@@ -9,18 +9,6 @@ import yaml
 import jinja2
 from gistyc import GISTyc
 
-def get_token():
-    if "PSBS_GH_TOKEN" in environ:
-        return getenv('PSBS_GH_TOKEN')
-    try:
-        return subprocess.check_output(['gh', 'auth', 'token']).decode('utf-8').strip()
-    except FileNotFoundError as err:
-        print("ERROR: gh-cli does not appear to be installed, aborting upload")
-        raise SystemExit(1) from err
-    except subprocess.CalledProcessError as err:
-        print("ERROR: gh-cli refuses to provide token, aborting upload")
-        raise SystemExit(1) from err
-
 class PSBSProject:
     def __init__(self, config_filename = "config.yaml"):
         try:
@@ -101,7 +89,7 @@ class PSBSProject:
 
         print("Updating gist")
 
-        token = get_token()
+        token = self.__get_token()
         try:
             gist_api = GISTyc(auth_token=token)
             response_update_data = gist_api.update_gist(file_name="bin/readme.txt",gist_id=gist_id)
@@ -126,6 +114,18 @@ class PSBSProject:
             raise SystemExit(1) from err
         except webbrowser.Error as err:
             print("Error: Unable to find user preferred browser to launch")
+            raise SystemExit(1) from err
+
+    def __get_token(self):
+        if "PSBS_GH_TOKEN" in environ:
+            return getenv('PSBS_GH_TOKEN')
+        try:
+            return subprocess.check_output(['gh', 'auth', 'token']).decode('utf-8').strip()
+        except FileNotFoundError as err:
+            print("ERROR: gh-cli does not appear to be installed, aborting upload")
+            raise SystemExit(1) from err
+        except subprocess.CalledProcessError as err:
+            print("ERROR: gh-cli refuses to provide token, aborting upload")
             raise SystemExit(1) from err
 
     @staticmethod
