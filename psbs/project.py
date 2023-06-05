@@ -156,6 +156,8 @@ class PSBSProject:
             'winconditions.pss',
             'levels.pss'
         ]
+        src_directory = f"{project_name}/src/"
+        bin_directory = f"{project_name}/bin/"
 
         print("Building directory structure")
         try:
@@ -164,12 +166,12 @@ class PSBSProject:
             print(f"Error: Unable to create project directory\n  {err}")
             raise SystemExit(1) from err
         try:
-            mkdir(f"{project_name}/src")
+            mkdir(src_directory)
         except (OSError, PermissionError) as err:
             print(f"Error: Unable to create source directory\n  {err}")
             raise SystemExit(1) from err
         try:
-            mkdir(f"{project_name}/bin")
+            mkdir(bin_directory)
         except (OSError, PermissionError) as err:
             print(f"Error: Unable to create bin directory\n  {err}")
             raise SystemExit(1) from err
@@ -190,15 +192,15 @@ class PSBSProject:
             print(f"Error: Unable to read default template in installation directory\n  {err}")
             raise SystemExit(1) from err
         try:
-            with open(f"{project_name}/src/main.pss", "w", encoding='UTF-8') as template_file:
+            with open(f"{src_directory}/main.pss", "w", encoding='UTF-8') as template_file:
                 template_file.write(default_template)
         except IOError as err:
-            print(f"Warning: Unable to write file {project_name}/src/main.pss\n  {err}")
+            print(f"Warning: Unable to write file {src_directory}main.pss\n  {err}")
 
         print("Creating source files")
         for src_filename in standard_src_files:
             try:
-                with open(f"{project_name}/src/{src_filename}", "w", encoding='UTF-8') as _:
+                with open(src_directory+src_filename, "w", encoding='UTF-8') as _:
                     pass
             except IOError as err:
-                print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
+                print(f"Warning: Unable to write file {src_directory}{src_filename}\n  {err}")

@@ -29,8 +29,7 @@ def main():
         'help': subparser.add_parser(
             "help",
             help="Display help dialog",
-            add_help=False)
-        }
+            add_help=False)}
 
     commands['new'].add_argument("name", type=str)
 
