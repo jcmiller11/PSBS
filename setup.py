@@ -13,7 +13,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'gistyc',
-        'jinja2'               
+        'jinja2',
+        'pyyaml'               
     ],
 
     classifiers=[
