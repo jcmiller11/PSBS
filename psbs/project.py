@@ -9,8 +9,9 @@ import yaml
 import jinja2
 from gistyc import GISTyc
 
+
 class PSBSProject:
-    def __init__(self, config_filename = "config.yaml"):
+    def __init__(self, config_filename="config.yaml"):
         try:
             with open(config_filename, "rb") as config_file:
                 self.config = yaml.safe_load(config_file)
@@ -37,7 +38,7 @@ class PSBSProject:
                 raise SystemExit(1) from err
 
         # Build the readme.txt
-        print ("Writing file bin/readme.txt")
+        print("Writing file bin/readme.txt")
         try:
             with open("bin/readme.txt", "w", encoding='UTF-8') as readme_file:
                 readme_file.write("Play this game by pasting the script in ")
@@ -50,7 +51,7 @@ class PSBSProject:
             raise SystemExit(1) from err
 
         # Build the script.txt
-        print ("Building script.txt")
+        print("Building script.txt")
         jinja_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader("src"),
             autoescape=False
@@ -69,7 +70,7 @@ class PSBSProject:
             print(traceback.format_exc().split('\n')[-4])
             raise SystemExit(1) from err
 
-        print ("Writing file bin/script.txt")
+        print("Writing file bin/script.txt")
         try:
             with open("bin/script.txt", "w", encoding='UTF-8') as readme_file:
                 readme_file.write(source)
@@ -92,10 +93,14 @@ class PSBSProject:
         token = self.__get_token()
         try:
             gist_api = GISTyc(auth_token=token)
-            response_update_data = gist_api.update_gist(file_name="bin/readme.txt",gist_id=gist_id)
+            response_update_data = gist_api.update_gist(
+                file_name="bin/readme.txt",
+                gist_id=gist_id)
             if "message" in response_update_data:
                 raise self.GistError(response_update_data['message'])
-            response_update_data = gist_api.update_gist(file_name="bin/script.txt",gist_id=gist_id)
+            response_update_data = gist_api.update_gist(
+                file_name="bin/script.txt",
+                gist_id=gist_id)
             if "message" in response_update_data:
                 raise self.GistError(response_update_data['message'])
         except ConnectionError as err:
@@ -108,7 +113,9 @@ class PSBSProject:
     def run(self):
         print("Opening in browser")
         try:
-            webbrowser.open(f"{self.config['engine']}play.html?p={self.config['gist_id']}", new=2)
+            webbrowser.open(
+                f"{self.config['engine']}play.html?p={self.config['gist_id']}",
+                new=2)
         except KeyError as err:
             print(f"Error: Unable to find {err} directive in config file")
             raise SystemExit(1) from err
@@ -130,9 +137,10 @@ class PSBSProject:
 
     @staticmethod
     def create(project_name):
-        #TODO: add functionality for "new project from gist"
-        #Ideally we'd pull the puzzlescript source from the gist and split it into src files
-        #define project defaults
+        # TODO: add functionality for "new project from gist"
+        # Ideally we'd pull the puzzlescript source from the gist
+        # and split it into src files
+        # define project defaults
         psbs_path = path.realpath(path.dirname(__file__))
         default_config = ({
             'gist_id': "",
@@ -194,4 +202,3 @@ class PSBSProject:
                     pass
             except IOError as err:
                 print(f"Warning: Unable to write file {project_name}/src/{src_filename}\n  {err}")
-    
