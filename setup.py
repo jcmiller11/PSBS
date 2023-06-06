@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='psbs',
-    version='0.0.3',    
+    version='0.0.4',    
     description='PuzzleScript Build System',
     url='https://github.com/jcmiller11/PSBS',
     author='J.C. Miller',
@@ -19,7 +19,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3',
         'Topic :: Games/Entertainment :: Puzzle Games',
         'Topic :: Software Development :: Build Tools'

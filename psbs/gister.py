@@ -38,9 +38,16 @@ class Gister:
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
             if data is not None:
-                response = requests.patch(query_url, headers=headers, data=json.dumps(data), timeout=5)
+                response = requests.patch(
+                    query_url,
+                    headers=headers,
+                    timeout=5,
+                    data=json.dumps(data))
             else:
-                response = requests.patch(query_url, headers=headers, timeout=5)
+                response = requests.patch(
+                    query_url,
+                    headers=headers,
+                    timeout=5)
             if response.status_code == 404:
                 raise self.GistError("404: File not found")
             if response.status_code == 403:
@@ -59,10 +66,13 @@ class Gister:
         if "PSBS_GH_TOKEN" in environ:
             return getenv('PSBS_GH_TOKEN')
         try:
-            return subprocess.check_output(['gh', 'auth', 'token']).decode('utf-8').strip()
+            token = subprocess.check_output(['gh', 'auth', 'token'])
+            token = token.decode('utf-8')
+            token = token.strip()
+            return token
         except FileNotFoundError as err:
-            print("ERROR: gh-cli does not appear to be installed, aborting upload")
+            print("ERROR: gh-cli does not appear to be installed")
             raise SystemExit(1) from err
         except subprocess.CalledProcessError as err:
-            print("ERROR: gh-cli refuses to provide token, aborting upload")
+            print("ERROR: gh-cli refuses to provide token")
             raise SystemExit(1) from err

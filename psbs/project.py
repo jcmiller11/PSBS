@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import webbrowser
 import traceback
 from os import path, mkdir
@@ -91,11 +89,15 @@ class PSBSProject:
         gist.write("bin/readme.txt")
         gist.write("bin/script.txt")
 
-    def run(self):
+    def run(self, editor=False):
         print("Opening in browser")
+        if editor:
+            url_string = "editor.html?hack="
+        else:
+            url_string = "play.html?p="
         try:
             webbrowser.open(
-                f"{self.config['engine']}play.html?p={self.config['gist_id']}",
+                self.config['engine']+url_string+self.config['gist_id'],
                 new=2)
         except KeyError as err:
             print(f"Error: Unable to find {err} directive in config file")
@@ -125,10 +127,11 @@ class PSBSProject:
                 print(f"Error: Unable to read input file\n  {err}")
                 raise SystemExit(1) from err
             except UnicodeDecodeError as err:
-                print("Error: Unable to read input file, are you sure this is a text file?")
+                print("Error: Unable to read input file,"
+                      "are you sure this is a text file?")
                 raise SystemExit(1) from err
 
-        src_files = split_ps(source)
+        src_tree = split_ps(source)
 
         default_config = {
             'gist_id': gist_id,
@@ -154,7 +157,8 @@ class PSBSProject:
 
         print("Creating config file")
         try:
-            with open(f"{project_name}/config.yaml", "w", encoding='UTF-8') as config_file:
+            with open(f"{project_name}/config.yaml", "w",
+                      encoding='UTF-8') as config_file:
                 yaml.dump(default_config, config_file)
         except IOError as err:
             print(f"Error: Unable to write config file\n  {err}")
@@ -162,19 +166,23 @@ class PSBSProject:
 
         print("Creating template file")
         try:
-            with open(f"{src_directory}/main.pss", "w", encoding='UTF-8') as template_file:
-                template_file.write(make_template(src_files))
+            with open(f"{src_directory}/main.pss", "w",
+                      encoding='UTF-8') as template_file:
+                template_file.write(make_template(src_tree))
         except IOError as err:
-            print(f"Warning: Unable to write file {src_directory}main.pss\n  {err}")
+            print(f"Warning: Unable to write file {src_directory}"
+                  f"main.pss\n  {err}")
 
         print("Creating source files")
-        for section in src_files:
-            for index, src_content in enumerate(src_files[section]):
+        for section in src_tree:
+            for index, src_content in enumerate(src_tree[section]):
                 if index == 0:
                     index = ""
                 src_filename = f"{section}{index}.pss"
                 try:
-                    with open(src_directory+src_filename, "w", encoding='UTF-8') as src_file:
+                    with open(src_directory+src_filename, "w",
+                              encoding='UTF-8') as src_file:
                         src_file.write(src_content)
                 except IOError as err:
-                    print(f"Warning: Unable to write file {src_directory}{src_filename}\n  {err}")
+                    print(f"Warning: Unable to write file {src_directory}"
+                          f"{src_filename}\n  {err}")
