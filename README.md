@@ -6,6 +6,14 @@ PSBS combines multiple files into one puzzlescript source file and uploads it to
 
 This is an early development release and changes may be made to the project structure and config file formats in the future.
 
+## Features
+
+ - Compile PuzzleScript games from many files using Jinja2 templates
+ - Load existing PuzzleScript projects right from their gists
+ - Load existing PuzzleScript projects from a source text file
+ - Save PuzzleScript projects to gists
+ - Launch your project from play.html or the PuzzleScript editor
+
 ## Installing
 
 Simply run the following command from your terminal
