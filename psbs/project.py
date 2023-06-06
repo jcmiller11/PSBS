@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import webbrowser
-import subprocess
 import traceback
-from os import environ, getenv, path, mkdir
+from os import path, mkdir
 
 import yaml
 import jinja2
-from gistyc import GISTyc
+from .gister import Gister
 
 
 class PSBSProject:
@@ -23,9 +22,6 @@ class PSBSProject:
         except yaml.YAMLError as err:
             print(f"Error: Problem parsing config file\n  {err}")
             raise SystemExit(1) from err
-
-    class GistError(Exception):
-        '''Thrown when GitHub refuses to create or update the gist'''
 
     def build(self):
         # Check for target directory
@@ -89,26 +85,9 @@ class PSBSProject:
             raise SystemExit(1)
 
         print("Updating gist")
-
-        token = self.__get_token()
-        try:
-            gist_api = GISTyc(auth_token=token)
-            response_update_data = gist_api.update_gist(
-                file_name="bin/readme.txt",
-                gist_id=gist_id)
-            if "message" in response_update_data:
-                raise self.GistError(response_update_data['message'])
-            response_update_data = gist_api.update_gist(
-                file_name="bin/script.txt",
-                gist_id=gist_id)
-            if "message" in response_update_data:
-                raise self.GistError(response_update_data['message'])
-        except ConnectionError as err:
-            print("Error: Unable to connect to GitHub, aborting upload")
-            raise SystemExit(1) from err
-        except self.GistError as err:
-            print(f"Error: Unable to update gist\n  Response: {err}")
-            raise SystemExit(1) from err
+        gist = Gister(gist_id)
+        gist.write("bin/readme.txt")
+        gist.write("bin/script.txt")
 
     def run(self):
         print("Opening in browser")
@@ -123,18 +102,6 @@ class PSBSProject:
             print("Error: Unable to find user preferred browser to launch")
             raise SystemExit(1) from err
 
-    def __get_token(self):
-        if "PSBS_GH_TOKEN" in environ:
-            return getenv('PSBS_GH_TOKEN')
-        try:
-            return subprocess.check_output(['gh', 'auth', 'token']).decode('utf-8').strip()
-        except FileNotFoundError as err:
-            print("ERROR: gh-cli does not appear to be installed, aborting upload")
-            raise SystemExit(1) from err
-        except subprocess.CalledProcessError as err:
-            print("ERROR: gh-cli refuses to provide token, aborting upload")
-            raise SystemExit(1) from err
-
     @staticmethod
     def create(project_name):
         # TODO: add functionality for "new project from gist"
@@ -142,10 +109,10 @@ class PSBSProject:
         # and split it into src files
         # define project defaults
         psbs_path = path.realpath(path.dirname(__file__))
-        default_config = ({
+        default_config = {
             'gist_id': "",
             'engine': "https://www.puzzlescript.net/",
-            'template': "main.pss"})
+            'template': "main.pss"}
         standard_src_files = [
             'prelude.pss',
             'objects.pss',

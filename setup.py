@@ -12,7 +12,6 @@ setup(
     package_data={'': ['main.pss']},
     include_package_data=True,
     install_requires=[
-        'gistyc',
         'jinja2',
         'pyyaml'               
     ],
