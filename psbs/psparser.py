@@ -43,3 +43,11 @@ def split_ps(input_str):
     sections[section].append(content.strip())
 
     return sections
+
+
+def get_engine(input_str):
+    start_str = "http"
+    end_str = "editor.html"
+    start = input_str.find(start_str)
+    end = input_str.find(end_str)
+    return input_str[start:end]

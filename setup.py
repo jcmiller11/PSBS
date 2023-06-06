@@ -9,8 +9,6 @@ setup(
     author_email='johncoreymiller@gmail.com',
     license='MIT',
     packages=['psbs'],
-    package_data={'': ['main.pss']},
-    include_package_data=True,
     install_requires=[
         'jinja2',
         'pyyaml'               

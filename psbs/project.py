@@ -7,6 +7,8 @@ from os import path, mkdir
 import yaml
 import jinja2
 from .gister import Gister
+from .psparser import split_ps, get_engine
+from .templatebuilder import make_template
 
 
 class PSBSProject:
@@ -103,28 +105,35 @@ class PSBSProject:
             raise SystemExit(1) from err
 
     @staticmethod
-    def create(project_name):
-        # TODO: add functionality for "new project from gist"
-        # Ideally we'd pull the puzzlescript source from the gist
-        # and split it into src files
-        # define project defaults
-        psbs_path = path.realpath(path.dirname(__file__))
-        default_config = {
-            'gist_id': "",
-            'engine': "https://www.puzzlescript.net/",
-            'template': "main.pss"}
-        standard_src_files = [
-            'prelude.pss',
-            'objects.pss',
-            'legend.pss',
-            'sounds.pss',
-            'collisionlayers.pss',
-            'rules.pss',
-            'winconditions.pss',
-            'levels.pss'
-        ]
+    def create(project_name, gist_id="", file=""):
         src_directory = f"{project_name}/src/"
         bin_directory = f"{project_name}/bin/"
+
+        source = ""
+        engine = "https://www.puzzlescript.net/"
+
+        if gist_id != "":
+            gist = Gister(gist_id)
+            source = gist.read("script.txt")
+            engine = get_engine(gist.read("readme.txt"))
+
+        if file != "":
+            try:
+                with open(file, "r", encoding='UTF-8') as input_file:
+                    source = input_file.read()
+            except IOError as err:
+                print(f"Error: Unable to read input file\n  {err}")
+                raise SystemExit(1) from err
+            except UnicodeDecodeError as err:
+                print("Error: Unable to read input file, are you sure this is a text file?")
+                raise SystemExit(1) from err
+
+        src_files = split_ps(source)
+
+        default_config = {
+            'gist_id': gist_id,
+            'engine': engine,
+            'template': "main.pss"}
 
         print("Building directory structure")
         try:
@@ -151,23 +160,21 @@ class PSBSProject:
             print(f"Error: Unable to write config file\n  {err}")
             raise SystemExit(1) from err
 
-        print("Creating default template file")
-        try:
-            with open(f"{psbs_path}/main.pss", "r", encoding='UTF-8') as template_file:
-                default_template = template_file.read()
-        except IOError as err:
-            print(f"Error: Unable to read default template in installation directory\n  {err}")
-            raise SystemExit(1) from err
+        print("Creating template file")
         try:
             with open(f"{src_directory}/main.pss", "w", encoding='UTF-8') as template_file:
-                template_file.write(default_template)
+                template_file.write(make_template(src_files))
         except IOError as err:
             print(f"Warning: Unable to write file {src_directory}main.pss\n  {err}")
 
         print("Creating source files")
-        for src_filename in standard_src_files:
-            try:
-                with open(src_directory+src_filename, "w", encoding='UTF-8') as _:
-                    pass
-            except IOError as err:
-                print(f"Warning: Unable to write file {src_directory}{src_filename}\n  {err}")
+        for section in src_files:
+            for index, src_content in enumerate(src_files[section]):
+                if index == 0:
+                    index = ""
+                src_filename = f"{section}{index}.pss"
+                try:
+                    with open(src_directory+src_filename, "w", encoding='UTF-8') as src_file:
+                        src_file.write(src_content)
+                except IOError as err:
+                    print(f"Warning: Unable to write file {src_directory}{src_filename}\n  {err}")

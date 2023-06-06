@@ -1,7 +1,7 @@
 from os import environ, getenv, path
 import subprocess
-import requests
 import json
+import requests
 
 
 class Gister:
@@ -16,34 +16,42 @@ class Gister:
         filename = path.basename(file)
         try:
             with open(file, "r", encoding='UTF-8') as content:
-                data = {"files":{filename:{"content":content.read()}}}
+                data = {"files": {filename: {"content": content.read()}}}
         except IOError as err:
             print(f"Error: Config file not found\n  {err}")
             raise SystemExit(1) from err
-        return self.__request(filename,data)
+        return self.__request(data)
 
     def read(self, file):
         filename = path.basename(file)
-        response = self.__request(file)
-        resp_content = resp.json()
-        return resp_content['files'][file]['content']
+        response = self.__request()
+        resp_content = response.json()
+        try:
+            file_content = resp_content['files'][filename]['content']
+        except KeyError as err:
+            print(f"Error: File {filename} not found in gist {self.gist_id}")
+            raise SystemExit(1) from err
+        return file_content
 
-    def __request(self, file, data = ""):
+    def __request(self, data=None):
         headers = {"Authorization": f"token {self.token}"}
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
-            response = requests.patch(query_url, headers=headers, data=json.dumps(data))
-            if response.status_code==404:
+            if data is not None:
+                response = requests.patch(query_url, headers=headers, data=json.dumps(data), timeout=5)
+            else:
+                response = requests.patch(query_url, headers=headers, timeout=5)
+            if response.status_code == 404:
                 raise self.GistError("404: File not found")
-            if response.status_code==403:
+            if response.status_code == 403:
                 raise self.GistError("403: Forbidden")
-            if response.status_code!=200:
-                raise self.GistError("Reason unknown")
+            if 'message' in response:
+                raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")
             raise SystemExit(1) from err
         except self.GistError as err:
-            print(f"Error: Unable to update gist\n  Response: {err}")
+            print(f"Error: Unable to access gist\n  Response: {err}")
             raise SystemExit(1) from err
         return response
 
