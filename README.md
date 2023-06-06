@@ -13,6 +13,7 @@ This is an early development release and changes may be made to the project stru
  - Load existing PuzzleScript projects from a source text file
  - Save PuzzleScript projects to gists
  - Launch your project from play.html or the PuzzleScript editor
+ - Supports most PuzzleScript forks including [Pattern:Script](https://github.com/ClementSparrow/Pattern-Script)
 
 ## Installing
 
