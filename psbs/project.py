@@ -21,9 +21,11 @@ class PSBSProject:
 
         # Build the readme.txt
         print("Writing file bin/readme.txt")
-        write_file("bin/readme.txt",
-                   "Play this game by pasting the script in "
-                   f"{self.config['engine']}editor.html")
+        write_file(
+            "bin/readme.txt",
+            "Play this game by pasting the script in "
+            f"{self.config['engine']}editor.html",
+        )
 
         # Build the script.txt
         print("Building script.txt")
@@ -33,8 +35,8 @@ class PSBSProject:
         write_file("bin/script.txt", source)
 
     def upload(self):
-        gist_id = self.config['gist_id']
-        if not self.config['gist_id']:
+        gist_id = self.config["gist_id"]
+        if not self.config["gist_id"]:
             print("Error: Unable to upload without a gist_id in config file")
             raise SystemExit(1)
 
@@ -45,11 +47,13 @@ class PSBSProject:
 
     def run(self, editor=False):
         print("Opening in browser")
+        url = self.config["engine"]
         if editor:
-            url_string = "editor.html?hack="
+            url += "editor.html?hack="
         else:
-            url_string = "play.html?p="
-        run_in_browser(self.config['engine']+url_string+self.config['gist_id'])
+            url += "play.html?p="
+        url += self.config["gist_id"]
+        run_in_browser(url)
 
     @staticmethod
     def create(project_name, gist_id=None, file=None):
@@ -75,16 +79,16 @@ class PSBSProject:
         try:
             make_dir(src_directory)
             make_dir(bin_directory)
-    
+
             print("Creating config file")
-            write_yaml(f"{project_name}/config.yaml", {
-                'gist_id': gist_id,
-                'engine': engine,
-                'template': "main.pss"})
-    
+            write_yaml(
+                f"{project_name}/config.yaml",
+                {"gist_id": gist_id, "engine": engine, "template": "main.pss"},
+            )
+
             print("Creating template file")
             write_file(f"{src_directory}/main.pss", make_template(src_tree))
-    
+
             print("Creating source files")
             for section_name, src_blocks in src_tree.items():
                 for index, src_content in enumerate(src_blocks):
@@ -92,9 +96,8 @@ class PSBSProject:
                     if len(src_blocks) == 1:
                         index = ""
                     src_filename = f"{section_name}{index}.pss"
-                    write_file(src_directory+src_filename, src_content)
+                    write_file(src_directory + src_filename, src_content)
         except SystemExit as err:
             print("Cleaning up!")
             rmtree(project_name)
             raise SystemExit(1) from err
-

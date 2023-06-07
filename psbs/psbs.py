@@ -5,48 +5,54 @@ from .project import PSBSProject
 
 def main():
     parser = ArgumentParser(
-        description='PSBS: PuzzleScript Build System',
-        add_help=False)
+        description="PSBS: PuzzleScript Build System", add_help=False
+    )
     subparser = parser.add_subparsers(title="Commands", dest="command")
 
     commands_dict = {
-        'build': "Build project in current working directory",
-        'upload': "Build project then upload to gist",
-        'run': "Build project, upload, then run in web browser",
-        'new': "Create a new project",
-        'help': "Display help dialog"}
+        "build": "Build project in current working directory",
+        "upload": "Build project then upload to gist",
+        "run": "Build project, upload, then run in web browser",
+        "new": "Create a new project",
+        "help": "Display help dialog",
+    }
     commands = {}
     for command, help_text in commands_dict.items():
         commands[command] = subparser.add_parser(
-            command,
-            help=help_text,
-            description=help_text,
-            add_help=False)
+            command, help=help_text, description=help_text, add_help=False
+        )
 
-    commands['run'].add_argument(
-        "--editor", "-e",
+    commands["run"].add_argument(
+        "--editor",
+        "-e",
         help="Run project in PuzzleScript editor",
-        action="store_true")
+        action="store_true",
+    )
 
-    commands['new'].add_argument("name", type=str)
-    new_project_flags = commands['new'].add_mutually_exclusive_group()
+    commands["new"].add_argument("name", type=str)
+    new_project_flags = commands["new"].add_mutually_exclusive_group()
     new_project_flags.add_argument(
-        "--from-gist", "-g",
+        "--from-gist",
+        "-g",
         dest="gist_id",
         help="Build project from existing source at supplied gist",
-        type=str)
+        type=str,
+    )
     new_project_flags.add_argument(
-        "--from-file", "-f",
+        "--from-file",
+        "-f",
         dest="file",
         help="Build project from existing source in supplied file",
-        type=str)
+        type=str,
+    )
 
-    commands['help'].add_argument(
+    commands["help"].add_argument(
         "topic",
-        nargs='?',
+        nargs="?",
         choices=list(commands.keys()),
         help="Select command you would like help with",
-        type=str)
+        type=str,
+    )
 
     args = parser.parse_args()
 

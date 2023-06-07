@@ -12,7 +12,7 @@ class Gister:
         self.content = None
 
     class GistError(Exception):
-        '''Thrown when GitHub refuses request for some reason'''
+        """Thrown when GitHub refuses request for some reason"""
 
     def write(self, file):
         filename = path.basename(file)
@@ -25,7 +25,7 @@ class Gister:
             response = self.__request()
             self.content = response.json()
         try:
-            file_content = self.content['files'][filename]['content']
+            file_content = self.content["files"][filename]["content"]
         except KeyError as err:
             print(f"Error: File {filename} not found in gist {self.gist_id}")
             raise SystemExit(1) from err
@@ -36,15 +36,13 @@ class Gister:
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
             response = requests.patch(
-                    query_url,
-                    headers=headers,
-                    timeout=5,
-                    data=data)
+                query_url, headers=headers, timeout=5, data=data
+            )
             if response.status_code == 404:
                 raise self.GistError("404: File not found")
             if response.status_code == 403:
                 raise self.GistError("403: Forbidden")
-            if 'message' in response:
+            if "message" in response:
                 raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")
@@ -56,10 +54,10 @@ class Gister:
 
     def __get_token(self):
         if "PSBS_GH_TOKEN" in environ:
-            return getenv('PSBS_GH_TOKEN')
+            return getenv("PSBS_GH_TOKEN")
         try:
-            token = subprocess.check_output(['gh', 'auth', 'token'])
-            token = token.decode('utf-8')
+            token = subprocess.check_output(["gh", "auth", "token"])
+            token = token.decode("utf-8")
             token = token.strip()
             return token
         except FileNotFoundError as err:
