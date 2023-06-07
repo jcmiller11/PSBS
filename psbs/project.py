@@ -1,4 +1,5 @@
 from os import path
+from shutil import rmtree
 
 from .gister import Gister
 from .config import Config
@@ -71,23 +72,29 @@ class PSBSProject:
 
         print("Building directory structure")
         make_dir(project_name)
-        make_dir(src_directory)
-        make_dir(bin_directory)
+        try:
+            make_dir(src_directory)
+            make_dir(bin_directory)
+    
+            print("Creating config file")
+            write_yaml(f"{project_name}/config.yaml", {
+                'gist_id': gist_id,
+                'engine': engine,
+                'template': "main.pss"})
+    
+            print("Creating template file")
+            write_file(f"{src_directory}/main.pss", make_template(src_tree))
+    
+            print("Creating source files")
+            for section_name, src_blocks in src_tree.items():
+                for index, src_content in enumerate(src_blocks):
+                    index += 1
+                    if len(src_blocks) == 1:
+                        index = ""
+                    src_filename = f"{section_name}{index}.pss"
+                    write_file(src_directory+src_filename, src_content)
+        except SystemExit:
+            print("Cleaning up!")
+            rmtree(project_name)
+            raise SystemExit(1)
 
-        print("Creating config file")
-        write_yaml(f"{project_name}/config.yaml", {
-            'gist_id': gist_id,
-            'engine': engine,
-            'template': "main.pss"})
-
-        print("Creating template file")
-        write_file(f"{src_directory}/main.pss", make_template(src_tree))
-
-        print("Creating source files")
-        for section_name, src_blocks in src_tree.items():
-            for index, src_content in enumerate(src_blocks):
-                index += 1
-                if len(src_blocks) == 1:
-                    index = ""
-                src_filename = f"{section_name}{index}.pss"
-                write_file(src_directory+src_filename, src_content)
