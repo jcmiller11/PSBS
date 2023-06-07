@@ -8,6 +8,7 @@ class Gister:
     def __init__(self, gist_id):
         self.token = self.__get_token()
         self.gist_id = gist_id
+        self.content = None
 
     class GistError(Exception):
         '''Thrown when GitHub refuses request for some reason'''
@@ -24,10 +25,11 @@ class Gister:
 
     def read(self, file):
         filename = path.basename(file)
-        response = self.__request()
-        resp_content = response.json()
+        if self.content is None:
+            response = self.__request()
+            self.content = response.json()
         try:
-            file_content = resp_content['files'][filename]['content']
+            file_content = self.content['files'][filename]['content']
         except KeyError as err:
             print(f"Error: File {filename} not found in gist {self.gist_id}")
             raise SystemExit(1) from err
