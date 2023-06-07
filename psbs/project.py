@@ -7,12 +7,12 @@ from .gister import Gister
 from .config import Config
 from .psparser import split_ps, get_engine
 from .templatebuilder import make_template
-from .utils import write_file, write_yaml, read_yaml, make_dir
+from .utils import write_file, write_yaml, make_dir
 
 
 class PSBSProject:
     def __init__(self, config_filename="config.yaml"):
-        self.config = Config(read_yaml(config_filename))
+        self.config = Config(config_filename)
 
     def build(self):
         # Check for target directory
