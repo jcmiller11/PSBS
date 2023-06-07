@@ -4,6 +4,7 @@ from os import path
 
 import jinja2
 from .gister import Gister
+from .config import Config
 from .psparser import split_ps, get_engine
 from .templatebuilder import make_template
 from .utils import write_file, write_yaml, read_yaml, make_dir
@@ -11,7 +12,7 @@ from .utils import write_file, write_yaml, read_yaml, make_dir
 
 class PSBSProject:
     def __init__(self, config_filename="config.yaml"):
-        self.config = read_yaml(config_filename)
+        self.config = Config(read_yaml(config_filename))
 
     def build(self):
         # Check for target directory
@@ -21,13 +22,9 @@ class PSBSProject:
 
         # Build the readme.txt
         print("Writing file bin/readme.txt")
-        try:
-            write_file("bin/readme.txt",
-                       "Play this game by pasting the script in "
-                       f"{self.config['engine']}editor.html")
-        except KeyError as err:
-            print(f"Error: Unable to find {err} directive in config file")
-            raise SystemExit(1) from err
+        write_file("bin/readme.txt",
+                   "Play this game by pasting the script in "
+                   f"{self.config['engine']}editor.html")
 
         # Build the script.txt
         print("Building script.txt")
@@ -38,9 +35,6 @@ class PSBSProject:
         try:
             template = jinja_env.get_template(self.config['template'])
             source = template.render()
-        except KeyError as err:
-            print(f"Error: Unable to find {err} directive in config file")
-            raise SystemExit(1) from err
         except jinja2.exceptions.TemplateNotFound as err:
             print(f"Error: Unable to find template '{err}'")
             raise SystemExit(1) from err
@@ -53,11 +47,7 @@ class PSBSProject:
         write_file("bin/script.txt", source)
 
     def upload(self):
-        try:
-            gist_id = self.config['gist_id']
-        except KeyError as err:
-            print("Error: Unable to upload without a gist_id in config file")
-            raise SystemExit(1) from err
+        gist_id = self.config['gist_id']
         if not self.config['gist_id']:
             print("Error: Unable to upload without a gist_id in config file")
             raise SystemExit(1)
@@ -77,9 +67,6 @@ class PSBSProject:
             webbrowser.open(
                 self.config['engine']+url_string+self.config['gist_id'],
                 new=2)
-        except KeyError as err:
-            print(f"Error: Unable to find {err} directive in config file")
-            raise SystemExit(1) from err
         except webbrowser.Error as err:
             print("Error: Unable to find user preferred browser to launch")
             raise SystemExit(1) from err
@@ -93,6 +80,7 @@ class PSBSProject:
         engine = "https://www.puzzlescript.net/"
 
         if gist_id:
+            print("Downloading data from gist")
             gist = Gister(gist_id)
             source = gist.read("script.txt")
             engine = get_engine(gist.read("readme.txt"))
