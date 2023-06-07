@@ -2,6 +2,7 @@ from os import environ, getenv, path
 import subprocess
 import json
 import requests
+from .utils import read_file
 
 
 class Gister:
@@ -15,13 +16,8 @@ class Gister:
 
     def write(self, file):
         filename = path.basename(file)
-        try:
-            with open(file, "r", encoding='UTF-8') as content:
-                data = {"files": {filename: {"content": content.read()}}}
-        except IOError as err:
-            print(f"Error: Config file not found\n  {err}")
-            raise SystemExit(1) from err
-        return self.__request(data)
+        data = {"files": {filename: {"content": read_file(file)}}}
+        return self.__request(json.dumps(data))
 
     def read(self, file):
         filename = path.basename(file)
@@ -39,17 +35,11 @@ class Gister:
         headers = {"Authorization": f"token {self.token}"}
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
-            if data is not None:
-                response = requests.patch(
+            response = requests.patch(
                     query_url,
                     headers=headers,
                     timeout=5,
-                    data=json.dumps(data))
-            else:
-                response = requests.patch(
-                    query_url,
-                    headers=headers,
-                    timeout=5)
+                    data=data)
             if response.status_code == 404:
                 raise self.GistError("404: File not found")
             if response.status_code == 403:
