@@ -93,8 +93,8 @@ class PSBSProject:
                         index = ""
                     src_filename = f"{section_name}{index}.pss"
                     write_file(src_directory+src_filename, src_content)
-        except SystemExit:
+        except SystemExit as err:
             print("Cleaning up!")
             rmtree(project_name)
-            raise SystemExit(1)
+            raise SystemExit(1) from err
 
