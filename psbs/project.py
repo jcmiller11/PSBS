@@ -1,4 +1,3 @@
-import webbrowser
 import traceback
 from os import path
 
@@ -7,7 +6,7 @@ from .gister import Gister
 from .config import Config
 from .psparser import split_ps, get_engine
 from .templatebuilder import make_template
-from .utils import write_file, write_yaml, make_dir
+from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 
 
 class PSBSProject:
@@ -63,13 +62,7 @@ class PSBSProject:
             url_string = "editor.html?hack="
         else:
             url_string = "play.html?p="
-        try:
-            webbrowser.open(
-                self.config['engine']+url_string+self.config['gist_id'],
-                new=2)
-        except webbrowser.Error as err:
-            print("Error: Unable to find user preferred browser to launch")
-            raise SystemExit(1) from err
+        run_in_browser(self.config['engine']+url_string+self.config['gist_id'])
 
     @staticmethod
     def create(project_name, gist_id=None, file=None):
@@ -86,16 +79,7 @@ class PSBSProject:
             engine = get_engine(gist.read("readme.txt"))
 
         if file:
-            try:
-                with open(file, "r", encoding='UTF-8') as input_file:
-                    source = input_file.read()
-            except IOError as err:
-                print(f"Error: Unable to read input file\n  {err}")
-                raise SystemExit(1) from err
-            except UnicodeDecodeError as err:
-                print("Error: Unable to read input file,"
-                      "are you sure this is a text file?")
-                raise SystemExit(1) from err
+            source = read_file(file)
 
         src_tree = split_ps(source)
 
