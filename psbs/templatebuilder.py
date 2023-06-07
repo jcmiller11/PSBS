@@ -13,8 +13,9 @@ def make_template(src_tree):
             output += make_header(section)
         if not src_tree[section]:
             src_tree[section] = [""]
-        for index, src_content in enumerate(src_tree[section]):
-            if index == 0:
+        for index in range(len(src_tree[section])):
+            index += 1
+            if len(src_tree[section]) == 1:
                 index = ""
             src_filename = f"{section}{index}.pss"
             output += f"{{% include \"{src_filename}\" %}}\n"

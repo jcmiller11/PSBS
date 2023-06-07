@@ -98,9 +98,10 @@ class PSBSProject:
         write_file(f"{src_directory}/main.pss", make_template(src_tree))
 
         print("Creating source files")
-        for section in src_tree:
-            for index, src_content in enumerate(src_tree[section]):
-                if index == 0:
+        for section_name, src_blocks in src_tree.items():
+            for index, src_content in enumerate(src_blocks):
+                index += 1
+                if len(src_blocks) == 1:
                     index = ""
-                src_filename = f"{section}{index}.pss"
+                src_filename = f"{section_name}{index}.pss"
                 write_file(src_directory+src_filename, src_content)

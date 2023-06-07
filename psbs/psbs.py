@@ -7,8 +7,7 @@ def main():
     parser = ArgumentParser(
         description='PSBS: PuzzleScript Build System',
         add_help=False)
-    parser._positionals.title = "Commands"
-    subparser = parser.add_subparsers(dest="command")
+    subparser = parser.add_subparsers(title="Commands", dest="command")
 
     commands_dict = {
         'build': "Build project in current working directory",
@@ -17,11 +16,11 @@ def main():
         'new': "Create a new project",
         'help': "Display help dialog"}
     commands = {}
-    for command in commands_dict:
+    for command, help_text in commands_dict.items():
         commands[command] = subparser.add_parser(
             command,
-            help=commands_dict[command],
-            description=commands_dict[command],
+            help=help_text,
+            description=help_text,
             add_help=False)
 
     commands['run'].add_argument(
