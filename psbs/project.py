@@ -41,7 +41,7 @@ class PSBSProject:
             raise SystemExit(1)
 
         print("Updating gist")
-        gist = Gister(gist_id)
+        gist = Gister(gist_id=gist_id)
         gist.write("bin/readme.txt")
         gist.write("bin/script.txt")
 
@@ -56,7 +56,7 @@ class PSBSProject:
         run_in_browser(url)
 
     @staticmethod
-    def create(project_name, gist_id=None, file=None):
+    def create(project_name, gist_id=None, file=None, new_gist=False):
         src_directory = f"{project_name}/src/"
         bin_directory = f"{project_name}/bin/"
 
@@ -65,7 +65,7 @@ class PSBSProject:
 
         if gist_id:
             print("Downloading data from gist")
-            gist = Gister(gist_id)
+            gist = Gister(gist_id=gist_id)
             source = gist.read("script.txt")
             engine = get_engine(gist.read("readme.txt"))
 
@@ -73,6 +73,10 @@ class PSBSProject:
             source = read_file(file)
 
         src_tree = split_ps(source)
+
+        if new_gist:
+            gist = Gister()
+            gist_id = gist.create(name = project_name)
 
         print("Building directory structure")
         make_dir(project_name)

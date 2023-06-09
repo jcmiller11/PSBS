@@ -6,7 +6,7 @@ from .utils import read_file
 
 
 class Gister:
-    def __init__(self, gist_id):
+    def __init__(self, gist_id = ""):
         self.token = self.__get_token()
         self.gist_id = gist_id
         self.content = None
@@ -17,7 +17,7 @@ class Gister:
     def write(self, file):
         filename = path.basename(file)
         data = {"files": {filename: {"content": read_file(file)}}}
-        return self.__request(json.dumps(data))
+        return self.__request(data=json.dumps(data))
 
     def read(self, file):
         filename = path.basename(file)
@@ -31,13 +31,32 @@ class Gister:
             raise SystemExit(1) from err
         return file_content
 
-    def __request(self, data=None):
+    def create(self, name=""):
+        placeholder = "This project has not been built yet"
+        data = {
+            "description": f"{name} (PSBS Project)",
+            "public": True,
+            "files":{"readme.txt":{"content":placeholder},"script.txt":{"content":placeholder}},
+        }
+        response = self.__request(data=json.dumps(data), post=True)
+        response_body = response.json()
+        return response_body["id"]
+
+    def __request(self, data=None, post=False):
         headers = {"Authorization": f"token {self.token}"}
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
-            response = requests.patch(
-                query_url, headers=headers, timeout=5, data=data
-            )
+            if post:
+                query_url = "https://api.github.com/gists"
+                response = requests.post(
+                    query_url, headers=headers, timeout=5, data=data
+                )
+            else:
+                response = requests.patch(
+                    query_url, headers=headers, timeout=5, data=data
+                )
+            if response.status_code == 422:
+                raise self.GistError("422: Validation failed")
             if response.status_code == 404:
                 raise self.GistError("404: File not found")
             if response.status_code == 403:
