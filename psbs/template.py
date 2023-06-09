@@ -2,6 +2,7 @@ from os import path
 import traceback
 
 import jinja2
+from .images import image_to_object
 
 
 def render_template(filename):
@@ -12,7 +13,7 @@ def render_template(filename):
     )
 
     jinja_env.globals.update(
-        # insert helper functions here
+        image = image_to_object
     )
 
     try:
@@ -23,7 +24,10 @@ def render_template(filename):
         raise SystemExit(1) from err
     except jinja2.exceptions.TemplateError as err:
         print(f"Error: Unable to render template\n  {err}")
-        print(traceback.format_exc().split("\n")[-5])
-        print(traceback.format_exc().split("\n")[-4])
-        # this needs to be improved
+        traceback_list = traceback.format_exc().split("\n")
+        for index, line in enumerate(traceback_list):
+            if line.startswith('  File "src'):
+                print(line)
+                print(traceback_list[index+1])
+                print(traceback_list[index+2])
         raise SystemExit(1) from err

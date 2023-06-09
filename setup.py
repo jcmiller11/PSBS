@@ -11,7 +11,8 @@ setup(
     packages=['psbs'],
     install_requires=[
         'jinja2',
-        'pyyaml'               
+        'pyyaml',
+        'Pillow'               
     ],
 
     classifiers=[
