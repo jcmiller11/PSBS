@@ -37,7 +37,7 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
     return {"sprite": sprite, "colors": colors}
 
 
-def image_to_object(file, name="", alpha=False, max_colors=10):
+def image_to_object(file, name="", alpha=False, max_colors=10, x=0, y=0, width=None, height=None):
     if max_colors > 36:
         print(
             "Error: Image helper function doesn't support more than 36 colors"
@@ -48,6 +48,16 @@ def image_to_object(file, name="", alpha=False, max_colors=10):
     except IOError as err:
         print(f"Error: Unable to read image file\n  {err}")
         raise SystemExit(1) from err
+    # Crop image if needed
+    if width:
+        right = x + width
+    else:
+        right = image.size[0]
+    if height:
+        bottom = y + height
+    else:
+        bottom = image.size[1]
+    image = image.crop((x, y, right, bottom))
     image = image.convert("RGBA")
     result = pixel_list_to_sprite(
         image.getdata(), width=image.size[0], alpha=alpha
