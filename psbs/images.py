@@ -26,10 +26,10 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
 
     for pixel in pixel_values:
         color = colors_list.index(rgba_to_hex(pixel, alpha)) - 1
-        if color == -1:
-            color = "."
         if color > 9:
             color = chr(ord('a') + color - 10)
+        if color == -1:
+            color = "."
         sprite += str(color)
 
     sprite = wrap(sprite, width)
