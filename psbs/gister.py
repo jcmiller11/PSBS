@@ -6,7 +6,7 @@ from .utils import read_file
 
 
 class Gister:
-    def __init__(self, gist_id = ""):
+    def __init__(self, gist_id=""):
         self.token = self.__get_token()
         self.gist_id = gist_id
         self.content = None
@@ -36,7 +36,10 @@ class Gister:
         data = {
             "description": f"{name} (PSBS Project)",
             "public": True,
-            "files":{"readme.txt":{"content":placeholder},"script.txt":{"content":placeholder}},
+            "files": {
+                "readme.txt": {"content": placeholder},
+                "script.txt": {"content": placeholder},
+            },
         }
         response = self.__request(data=json.dumps(data), post=True)
         response_body = response.json()

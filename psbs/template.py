@@ -10,6 +10,11 @@ def render_template(filename):
     jinja_env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(directory), autoescape=False
     )
+
+    jinja_env.globals.update(
+        # insert helper functions here
+    )
+
     try:
         template = jinja_env.get_template(file)
         return template.render()
@@ -20,4 +25,5 @@ def render_template(filename):
         print(f"Error: Unable to render template\n  {err}")
         print(traceback.format_exc().split("\n")[-5])
         print(traceback.format_exc().split("\n")[-4])
+        # this needs to be improved
         raise SystemExit(1) from err

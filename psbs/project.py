@@ -76,7 +76,7 @@ class PSBSProject:
 
         if new_gist:
             gist = Gister()
-            gist_id = gist.create(name = project_name)
+            gist_id = gist.create(name=project_name)
 
         print("Building directory structure")
         make_dir(project_name)

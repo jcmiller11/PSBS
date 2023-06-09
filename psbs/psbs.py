@@ -36,7 +36,7 @@ def main():
         dest="new_gist",
         help="Create a new gist for the project",
         action="store_true",
-        )
+    )
     new_project_flags = commands["new"].add_mutually_exclusive_group()
     new_project_flags.add_argument(
         "--from-gist",
@@ -77,9 +77,13 @@ def main():
         project.run(editor=args.editor)
     elif args.command == "new":
         if args.gist_id is not None:
-            PSBSProject.create(args.name, gist_id=args.gist_id, new_gist=args.new_gist)
+            PSBSProject.create(
+                args.name, gist_id=args.gist_id, new_gist=args.new_gist
+            )
         elif args.file is not None:
-            PSBSProject.create(args.name, file=args.file, new_gist=args.new_gist)
+            PSBSProject.create(
+                args.name, file=args.file, new_gist=args.new_gist
+            )
         else:
             PSBSProject.create(args.name, new_gist=args.new_gist)
     elif args.command == "help":
