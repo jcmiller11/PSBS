@@ -39,7 +39,7 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
 
 def image_to_object(file, name="", alpha=False, max_colors=10):
     if max_colors > 36:
-        print("Error: print helper function doesn't support more than 36 colors")
+        print("Error: Image helper function doesn't support more than 36 colors")
         raise SystemExit(1)
     try:
         image = Image.open(file, "r")
