@@ -42,11 +42,15 @@ def image_to_object(
     file, alpha=False, max_colors=10, x=0, y=0, width=None, height=None
 ):
     if max_colors > 36:
-        raise jinja2.exceptions.TemplateError("Image helper function doesn't support more than 36 colors")
+        raise jinja2.exceptions.TemplateError(
+            "Image helper function doesn't support more than 36 colors"
+        )
     try:
         image = Image.open(file, "r")
     except IOError as err:
-        raise jinja2.exceptions.TemplateError(f"Unable to read image file\n  {err}")
+        raise jinja2.exceptions.TemplateError(
+            f"Unable to read image file\n  {err}"
+        )
     # Crop image if needed
     if width:
         right = x + width
