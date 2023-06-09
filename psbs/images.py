@@ -28,6 +28,8 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
         color = colors_list.index(rgba_to_hex(pixel, alpha)) - 1
         if color == -1:
             color = "."
+        if color > 9:
+            color = chr(ord('a') + color - 10)
         sprite += str(color)
 
     sprite = wrap(sprite, width)
@@ -35,8 +37,12 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
     return {"sprite": sprite, "colors": colors}
 
 
-def image_to_object(file, name="", alpha=False):
-    image = Image.open(file, "r")
+def image_to_object(file, name="", alpha=False, max_colors=10):
+    try:
+        image = Image.open(file, "r")
+    except IOError as err:
+        print(f"Error: Unable to read image file\n  {err}")
+        raise SystemExit(1) from err
     image = image.convert("RGBA")
     result = pixel_list_to_sprite(
         image.getdata(), width=image.size[0], alpha=alpha
@@ -45,9 +51,9 @@ def image_to_object(file, name="", alpha=False):
     colors = result["colors"]
     if len(colors) > 10:
         if "." in sprite:
-            image = image.quantize(colors=11)
+            image = image.quantize(colors=max_colors+1)
         else:
-            image = image.quantize(colors=10)
+            image = image.quantize(colors=max_colors)
         image = image.convert("RGBA")
         result = pixel_list_to_sprite(
             image.getdata(), width=image.size[0], alpha=alpha
