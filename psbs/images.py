@@ -37,7 +37,16 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
     return {"sprite": sprite, "colors": colors}
 
 
-def image_to_object(file, name="", alpha=False, max_colors=10, x=0, y=0, width=None, height=None):
+def image_to_object(
+    file,
+    name="",
+    alpha=False,
+    max_colors=10,
+    x=0,
+    y=0,
+    width=None,
+    height=None
+):
     if max_colors > 36:
         print(
             "Error: Image helper function doesn't support more than 36 colors"
@@ -75,5 +84,6 @@ def image_to_object(file, name="", alpha=False, max_colors=10, x=0, y=0, width=N
         )
         sprite = result["sprite"]
         colors = result["colors"]
-    colors.pop("transparent", None)
+    if len(colors) > 1:
+        colors.pop("transparent", None)
     return f'{name}\n{" ".join(colors)}\n{sprite}'.strip()
