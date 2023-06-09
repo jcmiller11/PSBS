@@ -1,5 +1,6 @@
 from textwrap import wrap
 
+import jinja2
 from PIL import Image
 
 
@@ -41,15 +42,11 @@ def image_to_object(
     file, alpha=False, max_colors=10, x=0, y=0, width=None, height=None
 ):
     if max_colors > 36:
-        print(
-            "Error: Image helper function doesn't support more than 36 colors"
-        )
-        raise SystemExit(1)
+        raise jinja2.exceptions.TemplateError("Image helper function doesn't support more than 36 colors")
     try:
         image = Image.open(file, "r")
     except IOError as err:
-        print(f"Error: Unable to read image file\n  {err}")
-        raise SystemExit(1) from err
+        raise jinja2.exceptions.TemplateError(f"Unable to read image file\n  {err}")
     # Crop image if needed
     if width:
         right = x + width

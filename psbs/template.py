@@ -27,7 +27,7 @@ def render_template(filename):
     except jinja2.exceptions.TemplateNotFound as err:
         print(f"Error: Unable to find template '{err}'")
         raise SystemExit(1) from err
-    except jinja2.exceptions.TemplateError as err:
+    except (jinja2.exceptions.TemplateError, TypeError) as err:
         print(f"Error: Unable to render template\n  {err}")
         traceback_list = traceback.format_exc().split("\n")
         for index, line in enumerate(traceback_list):
