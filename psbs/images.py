@@ -27,7 +27,7 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
     for pixel in pixel_values:
         color = colors_list.index(rgba_to_hex(pixel, alpha)) - 1
         if color > 9:
-            color = chr(ord('a') + color - 10)
+            color = chr(ord("a") + color - 10)
         if color == -1:
             color = "."
         sprite += str(color)
@@ -39,7 +39,9 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
 
 def image_to_object(file, name="", alpha=False, max_colors=10):
     if max_colors > 36:
-        print("Error: Image helper function doesn't support more than 36 colors")
+        print(
+            "Error: Image helper function doesn't support more than 36 colors"
+        )
         raise SystemExit(1)
     try:
         image = Image.open(file, "r")
@@ -54,7 +56,7 @@ def image_to_object(file, name="", alpha=False, max_colors=10):
     colors = result["colors"]
     if len(colors) > 10:
         if "." in sprite:
-            image = image.quantize(colors=max_colors+1)
+            image = image.quantize(colors=max_colors + 1)
         else:
             image = image.quantize(colors=max_colors)
         image = image.convert("RGBA")
