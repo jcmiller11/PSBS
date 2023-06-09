@@ -38,14 +38,7 @@ def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
 
 
 def image_to_object(
-    file,
-    name="",
-    alpha=False,
-    max_colors=10,
-    x=0,
-    y=0,
-    width=None,
-    height=None
+    file, alpha=False, max_colors=10, x=0, y=0, width=None, height=None
 ):
     if max_colors > 36:
         print(
@@ -86,4 +79,4 @@ def image_to_object(
         colors = result["colors"]
     if len(colors) > 1:
         colors.pop("transparent", None)
-    return f'{name}\n{" ".join(colors)}\n{sprite}'.strip()
+    return f'{" ".join(colors)}\n{sprite}'

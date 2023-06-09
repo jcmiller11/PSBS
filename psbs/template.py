@@ -9,12 +9,17 @@ def render_template(filename):
     directory = path.dirname(filename)
     file = path.basename(filename)
     jinja_env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(directory), autoescape=False
+        loader=jinja2.FileSystemLoader(directory),
+        autoescape=False,
+        block_start_string="(%",
+        block_end_string="%)",
+        variable_start_string="((",
+        variable_end_string="))",
+        comment_start_string="(#",
+        comment_end_string="#)",
     )
 
-    jinja_env.globals.update(
-        image=image_to_object
-    )
+    jinja_env.globals.update(image=image_to_object)
 
     try:
         template = jinja_env.get_template(file)
