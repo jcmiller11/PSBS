@@ -57,9 +57,6 @@ class PSBSProject:
 
     @staticmethod
     def create(project_name, gist_id=None, file=None, new_gist=False):
-        src_directory = f"{project_name}/src/"
-        bin_directory = f"{project_name}/bin/"
-
         source = ""
         engine = "https://www.puzzlescript.net/"
 
@@ -81,8 +78,8 @@ class PSBSProject:
         print("Building directory structure")
         make_dir(project_name)
         try:
-            make_dir(src_directory)
-            make_dir(bin_directory)
+            make_dir(f"{project_name}/src/")
+            make_dir(f"{project_name}/bin/")
 
             print("Creating config file")
             write_yaml(
@@ -91,7 +88,7 @@ class PSBSProject:
             )
 
             print("Creating template file")
-            write_file(f"{src_directory}/main.pss", make_template(src_tree))
+            write_file(f"{project_name}/src/main.pss", make_template(src_tree))
 
             print("Creating source files")
             for section_name, src_blocks in src_tree.items():
@@ -100,7 +97,9 @@ class PSBSProject:
                     if len(src_blocks) == 1:
                         index = ""
                     src_filename = f"{section_name}{index}.pss"
-                    write_file(src_directory + src_filename, src_content)
+                    write_file(
+                        f"{project_name}/src/{src_filename}", src_content
+                    )
         except SystemExit as err:
             print("Cleaning up!")
             rmtree(project_name)

@@ -13,7 +13,7 @@ def render_template(filename):
     )
 
     jinja_env.globals.update(
-        image = image_to_object
+        image=image_to_object
     )
 
     try:
@@ -28,6 +28,6 @@ def render_template(filename):
         for index, line in enumerate(traceback_list):
             if line.startswith('  File "src'):
                 print(line)
-                print(traceback_list[index+1])
-                print(traceback_list[index+2])
+                print(traceback_list[index + 1])
+                print(traceback_list[index + 2])
         raise SystemExit(1) from err

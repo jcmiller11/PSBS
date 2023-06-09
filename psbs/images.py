@@ -1,5 +1,4 @@
 from textwrap import wrap
-from sys import argv
 
 from PIL import Image
 
@@ -15,7 +14,7 @@ def rgba_to_hex(rgba_tuple, alpha=False):
     return f"#{output}"
 
 
-def pixel_list_to_sprite(pixel_values, width = 5, alpha=False):
+def pixel_list_to_sprite(pixel_values, width=5, alpha=False):
     colors = {}
     colors["transparent"] = None
     for pixel in pixel_values:
@@ -39,7 +38,9 @@ def pixel_list_to_sprite(pixel_values, width = 5, alpha=False):
 def image_to_object(file, name="", alpha=False):
     image = Image.open(file, "r")
     image = image.convert("RGBA")
-    result = pixel_list_to_sprite(image.getdata(), width=image.size[0], alpha=alpha)
+    result = pixel_list_to_sprite(
+        image.getdata(), width=image.size[0], alpha=alpha
+    )
     sprite = result["sprite"]
     colors = result["colors"]
     if len(colors) > 10:
@@ -48,7 +49,9 @@ def image_to_object(file, name="", alpha=False):
         else:
             image = image.quantize(colors=10)
         image = image.convert("RGBA")
-        result = pixel_list_to_sprite(image.getdata(), width=image.size[0], alpha=alpha)
+        result = pixel_list_to_sprite(
+            image.getdata(), width=image.size[0], alpha=alpha
+        )
         sprite = result["sprite"]
         colors = result["colors"]
     colors.pop("transparent", None)
