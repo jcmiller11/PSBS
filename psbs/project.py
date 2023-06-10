@@ -19,10 +19,13 @@ class PSBSProject:
             print("bin directory does not exist, creating one")
             make_dir("bin")
 
+        readme_path = path.join("bin", "readme.txt")
+        script_path = path.join("bin", "script.txt")
+
         # Build the readme.txt
-        print("Writing file bin/readme.txt")
+        print(f"Writing file {readme_path}")
         write_file(
-            "bin/readme.txt",
+            readme_path,
             "Play this game by pasting the script in "
             f"{self.config['engine']}editor.html",
         )
@@ -31,8 +34,8 @@ class PSBSProject:
         print("Building script.txt")
         source = render_template(f"src/{self.config['template']}")
 
-        print("Writing file bin/script.txt")
-        write_file("bin/script.txt", source)
+        print(f"Writing file {script_path}")
+        write_file(script_path, source)
 
     def upload(self):
         gist_id = self.config["gist_id"]
@@ -42,8 +45,8 @@ class PSBSProject:
 
         print("Updating gist")
         gist = Gister(gist_id=gist_id)
-        gist.write("bin/readme.txt")
-        gist.write("bin/script.txt")
+        gist.write(path.join("bin", "readme.txt"))
+        gist.write(path.join("bin", "script.txt"))
 
     def run(self, editor=False):
         print("Opening in browser")
@@ -69,7 +72,7 @@ class PSBSProject:
             source = read_file(file)
         else:
             source = read_file(
-                f"{path.realpath(path.dirname(__file__))}/example.txt"
+                path.join(path.realpath(path.dirname(__file__)), "example.txt")
             )
 
         src_tree = split_ps(source)
@@ -82,17 +85,20 @@ class PSBSProject:
         print("Building directory structure")
         make_dir(project_name)
         try:
-            make_dir(f"{project_name}/src/")
-            make_dir(f"{project_name}/bin/")
+            make_dir(path.join(project_name, "src"))
+            make_dir(path.join(project_name, "bin"))
 
             print("Creating config file")
             write_yaml(
-                f"{project_name}/config.yaml",
+                path.join(project_name, "config.yaml"),
                 {"gist_id": gist_id, "engine": engine, "template": "main.pss"},
             )
 
             print("Creating template file")
-            write_file(f"{project_name}/src/main.pss", make_template(src_tree))
+            write_file(
+                path.join(project_name, "src", "main.pss"),
+                make_template(src_tree),
+            )
 
             print("Creating source files")
             for section_name, src_blocks in src_tree.items():
@@ -102,7 +108,8 @@ class PSBSProject:
                         index = ""
                     src_filename = f"{section_name}{index}.pss"
                     write_file(
-                        f"{project_name}/src/{src_filename}", src_content
+                        path.join(project_name, "src", src_filename),
+                        src_content,
                     )
         except SystemExit as err:
             print("Cleaning up!")
