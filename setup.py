@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='psbs',
-    version='0.0.6',
+    version='0.0.7',
     python_requires='>=3.8',
     description='PuzzleScript Build System',
     url='https://github.com/jcmiller11/PSBS',

@@ -86,9 +86,7 @@ PSBS uses Jinja2, a fast, expressive, extensible templating engine, to build you
 
 To avoid conflicting with valid PuzzleScript code, the Jinja2 Tags have been changed as follows:
 
-(% blocks %)
-(( variables ))
-(# comments #)
+(% blocks %) (( variables )) (# comments #)
 
 ## Images
 
@@ -108,7 +106,7 @@ Additionally, this helper function contains the following optional parameters (a
 
 By using the last four parameters listed one can load objects from a single image as a spritesheet.
 
-    (% set directions = ["down","left","up","right"] %) (# This can be placed in your main template file #)
+    (% set directions = ["down","left","up","right"] %) (# Can be placed in your main template #)
     (% for dir in directions %)
     Player_((dir))
     ((image("images/player.png",x=loop.index0*5,width=5,height=5)))
