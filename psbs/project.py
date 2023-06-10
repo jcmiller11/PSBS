@@ -65,13 +65,17 @@ class PSBSProject:
             gist = Gister(gist_id=gist_id)
             source = gist.read("script.txt")
             engine = get_engine(gist.read("readme.txt"))
-
-        if file:
+        elif file:
             source = read_file(file)
+        else:
+            source = read_file(
+                f"{path.realpath(path.dirname(__file__))}/example.txt"
+            )
 
         src_tree = split_ps(source)
 
         if new_gist:
+            print("Creating new gist")
             gist = Gister()
             gist_id = gist.create(name=project_name)
 
