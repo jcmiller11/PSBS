@@ -9,6 +9,7 @@ This is an early development release and changes may be made to the project stru
 ## Features
 
  - Compile PuzzleScript games from many files using Jinja2 templates
+ - Import images and spritesheets directly into your PuzzleScript game
  - Load existing PuzzleScript projects right from their gists
  - Load existing PuzzleScript projects from a source text file
  - Save PuzzleScript projects to gists
