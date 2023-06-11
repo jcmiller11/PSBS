@@ -31,7 +31,7 @@ PSBS will build your projects into PuzzleScript source without interacting with 
 
 By default PSBS will attempt to run `gh auth token` to recieve an authorization token from the GitHub command line tool.  If you would like to use a different token or prefer not to install the GitHub command line tool you can run the following command.
 
-`psbs token`*`insert_your_token_here`*
+`psbs token `*`insert_your_token_here`*
 
 ## Usage
 
