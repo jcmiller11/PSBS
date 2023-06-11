@@ -21,7 +21,7 @@ This is an early development release and changes may be made to the project stru
 
 If you already have Python 3.8 or greater and pip installed simply run the following command from your terminal
 
-`pip install 'psbs @ git+https://github.com/jcmiller11/PSBS'`
+`pip install psbs`
 
 If you don't have Python and pip installed: [Download Python](https://www.python.org/downloads/)
 
