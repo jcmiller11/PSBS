@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 
 from .project import PSBSProject
+from .token import get_token, set_token
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
         "upload": "Build project then upload to gist",
         "run": "Build project, upload, then run in web browser",
         "new": "Create a new project",
+        "token": "Check or set GitHub auth token",
         "help": "Display help dialog",
     }
     commands = {}
@@ -53,6 +55,13 @@ def main():
         type=str,
     )
 
+    commands["token"].add_argument(
+        "token",
+        nargs="?",
+        help="Your github auth token",
+        type=str,
+    )
+
     commands["help"].add_argument(
         "topic",
         nargs="?",
@@ -86,6 +95,11 @@ def main():
             )
         else:
             PSBSProject.create(args.name, new_gist=args.new_gist)
+    elif args.command == "token":
+        if args.token is None:
+            print(get_token(verbose=True))
+        else:
+            set_token(args.token)
     elif args.command == "help":
         if args.topic is None:
             parser.print_help()

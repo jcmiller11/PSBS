@@ -1,13 +1,13 @@
-from os import environ, getenv, path
-import subprocess
+from os import path
 import json
 import requests
 from .utils import read_file
+from .token import get_token
 
 
 class Gister:
     def __init__(self, gist_id=""):
-        self.token = self.__get_token()
+        self.token = get_token()
         self.gist_id = gist_id
         self.content = None
 
@@ -73,18 +73,3 @@ class Gister:
             print(f"Error: Unable to access gist\n  Response: {err}")
             raise SystemExit(1) from err
         return response
-
-    def __get_token(self):
-        if "PSBS_GH_TOKEN" in environ:
-            return getenv("PSBS_GH_TOKEN")
-        try:
-            token = subprocess.check_output(["gh", "auth", "token"])
-            token = token.decode("utf-8")
-            token = token.strip()
-            return token
-        except FileNotFoundError as err:
-            print("ERROR: gh-cli does not appear to be installed")
-            raise SystemExit(1) from err
-        except subprocess.CalledProcessError as err:
-            print("ERROR: gh-cli refuses to provide token")
-            raise SystemExit(1) from err

@@ -32,7 +32,7 @@ class PSBSProject:
 
         # Build the script.txt
         print("Building script.txt")
-        source = render_template(path.join("src", self.config['template']))
+        source = render_template(path.join("src", self.config["template"]))
 
         print(f"Writing file {script_path}")
         write_file(script_path, source)

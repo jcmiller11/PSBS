@@ -19,17 +19,19 @@ This is an early development release and changes may be made to the project stru
 
 ## Installing
 
-If you already have Python 3.8 or greater simply run the following command from your terminal
+If you already have Python 3.8 or greater and pip installed simply run the following command from your terminal
 
 `pip install 'psbs @ git+https://github.com/jcmiller11/PSBS'`
+
+If you don't have Python and pip installed: [Download Python](https://www.python.org/downloads/)
 
 ## Connecting to GitHub
 
 PSBS will build your projects into PuzzleScript source without interacting with GitHub at all, however uploading and running your projects requires an authorization token.
 
-By default PSBS will attempt to run `gh auth token` to recieve an authorization token from the GitHub command line tool.  If you would like to use a different token or prefer not to install the GitHub command line tool you can add an environmental variable to .profile, .bashrc, .zshenv or whatever file your shell uses for handling such things
+By default PSBS will attempt to run `gh auth token` to recieve an authorization token from the GitHub command line tool.  If you would like to use a different token or prefer not to install the GitHub command line tool you can run the following command.
 
-`export PSBS_GH_TOKEN=insert your token here`
+`psbs token insert your token here`
 
 ## Usage
 
