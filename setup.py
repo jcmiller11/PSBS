@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from pathlib import Path
 
 
@@ -17,7 +17,7 @@ setup(
     url='https://github.com/jcmiller11/PSBS',
     download_url = 'https://github.com/jcmiller11/PSBS/archive/refs/tags/0.0.9.tar.gz',
     license='MIT',
-    packages=['psbs'],
+    packages=find_packages(),
     package_data={'': ['example.txt']},
     include_package_data=True,
     install_requires=[

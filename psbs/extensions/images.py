@@ -2,13 +2,13 @@ from textwrap import wrap
 
 import jinja2
 from PIL import Image
-from .extension import Extension
+from psbs.extension import Extension
 
 
 class Imager(Extension):
     def __init__(self):
         super().__init__()
-        self.register("image",self.image_to_object)
+        self.register("image", self.image_to_object)
         self.loaded_images = {}
 
     def __rgba_to_hex(self, rgba_tuple, alpha=False):
@@ -20,18 +20,17 @@ class Imager(Extension):
         for value in rgba_tuple:
             output += format(value, "x").zfill(2)
         return f"#{output}"
-    
-    
+
     def __pixel_list_to_sprite(self, pixel_values, width=5, alpha=False):
         colors = {}
         colors["transparent"] = None
         for pixel in pixel_values:
             colors[self.__rgba_to_hex(pixel, alpha)] = None
-    
+
         colors_list = list(colors.keys())
-    
+
         sprite = ""
-    
+
         for pixel in pixel_values:
             color = colors_list.index(self.__rgba_to_hex(pixel, alpha)) - 1
             if color > 9:
@@ -39,14 +38,20 @@ class Imager(Extension):
             if color == -1:
                 color = "."
             sprite += str(color)
-    
+
         sprite = wrap(sprite, width)
         sprite = "\n".join(sprite)
         return {"sprite": sprite, "colors": colors}
-    
-    
-    def image_to_object(self, 
-        file, alpha=False, max_colors=10, x=0, y=0, width=None, height=None
+
+    def image_to_object(
+        self,
+        file,
+        alpha=False,
+        max_colors=10,
+        x=0,
+        y=0,
+        width=None,
+        height=None,
     ):
         if max_colors > 36:
             raise jinja2.exceptions.TemplateError(
@@ -92,4 +97,3 @@ class Imager(Extension):
         if len(colors) > 1:
             colors.pop("transparent", None)
         return f'{" ".join(colors)}\n{sprite}'
-    

@@ -1,8 +1,27 @@
 from os import path
+from sys import modules
 import traceback
 
 import jinja2
-from .images import Imager
+from psbs.extensions import *
+from .extension import Extension
+
+
+def get_extensions():
+    class_list = []
+    for module_name, module in modules.items():
+        if module_name.startswith("psbs.extensions."):
+            for the_class in (
+                module_item
+                for _, module_item in module.__dict__.items()
+                if (
+                    isinstance(module_item, type)
+                    and module_item.__module__ == module.__name__
+                    and issubclass(module_item, Extension)
+                )
+            ):
+                class_list.append(the_class)
+    return class_list
 
 
 def render_template(filename):
@@ -18,12 +37,11 @@ def render_template(filename):
         comment_start_string="(#",
         comment_end_string="#)",
     )
-    
-    extensions = [Imager]
+    extensions = get_extensions()
     for extension in extensions:
         ext_object = extension()
         for func_name, function in ext_object.methods.items():
-            jinja_env.globals[func_name]=function
+            jinja_env.globals[func_name] = function
 
     try:
         template = jinja_env.get_template(file)
