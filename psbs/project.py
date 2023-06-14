@@ -7,6 +7,7 @@ from .psparser import split_ps, get_engine
 from .templatebuilder import make_template
 from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 from .template import render_template
+from .extensionloader import get_extensions
 
 
 class PSBSProject:
@@ -32,7 +33,9 @@ class PSBSProject:
 
         # Build the script.txt
         print("Building script.txt")
-        source = render_template(path.join("src", self.config["template"]))
+        source = render_template(
+            path.join("src", self.config["template"]), self.config
+        )
 
         print(f"Writing file {script_path}")
         write_file(script_path, source)
@@ -82,6 +85,16 @@ class PSBSProject:
             gist = Gister()
             gist_id = gist.create(name=project_name)
 
+        config_dict = {
+            "gist_id": gist_id,
+            "engine": engine,
+            "template": "main.pss",
+        }
+
+        for extension in get_extensions():
+            if extension.get_config():
+                config_dict[extension.__name__] = extension.get_config()
+
         print("Building directory structure")
         make_dir(project_name)
         try:
@@ -89,10 +102,7 @@ class PSBSProject:
             make_dir(path.join(project_name, "bin"))
 
             print("Creating config file")
-            write_yaml(
-                path.join(project_name, "config.yaml"),
-                {"gist_id": gist_id, "engine": engine, "template": "main.pss"},
-            )
+            write_yaml(path.join(project_name, "config.yaml"), config_dict)
 
             print("Creating template file")
             write_file(

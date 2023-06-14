@@ -46,7 +46,7 @@ def read_yaml(filename):
 def write_yaml(filename, data):
     try:
         with open(filename, "w", encoding="UTF-8") as file:
-            yaml.dump(data, file)
+            yaml.safe_dump(data, file, sort_keys=False)
     except IOError as err:
         print(f"Error: Unable to write file {filename}\n  {err}")
         raise SystemExit(1) from err

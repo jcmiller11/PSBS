@@ -1,30 +1,11 @@
 from os import path
-from sys import modules
 import traceback
 
 import jinja2
-from psbs.extensions import *
-from .extension import Extension
+from .extensionloader import get_extensions
 
 
-def get_extensions():
-    class_list = []
-    for module_name, module in modules.items():
-        if module_name.startswith("psbs.extensions."):
-            for the_class in (
-                module_item
-                for _, module_item in module.__dict__.items()
-                if (
-                    isinstance(module_item, type)
-                    and module_item.__module__ == module.__name__
-                    and issubclass(module_item, Extension)
-                )
-            ):
-                class_list.append(the_class)
-    return class_list
-
-
-def render_template(filename):
+def render_template(filename, config):
     directory = path.dirname(filename)
     file = path.basename(filename)
     jinja_env = jinja2.Environment(
@@ -39,7 +20,7 @@ def render_template(filename):
     )
     extensions = get_extensions()
     for extension in extensions:
-        ext_object = extension()
+        ext_object = extension(config[extension.__name__])
         for func_name, function in ext_object.methods.items():
             jinja_env.globals[func_name] = function
 

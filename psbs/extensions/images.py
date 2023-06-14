@@ -6,33 +6,37 @@ from psbs.extension import Extension
 
 
 class Imager(Extension):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config):
+        super().__init__(config)
         self.register("image", self.image_to_object)
         self.loaded_images = {}
 
-    def __rgba_to_hex(self, rgba_tuple, alpha=False):
+    @staticmethod
+    def get_config():
+        return {"alpha": False, "max_colors": 10}
+
+    def __rgba_to_hex(self, rgba_tuple):
         output = ""
         if rgba_tuple[3] == 0:
             return "transparent"
-        if not alpha:
+        if not self.config["alpha"]:
             rgba_tuple = rgba_tuple[:-1]
         for value in rgba_tuple:
             output += format(value, "x").zfill(2)
         return f"#{output}"
 
-    def __pixel_list_to_sprite(self, pixel_values, width=5, alpha=False):
+    def __pixel_list_to_sprite(self, pixel_values, width):
         colors = {}
         colors["transparent"] = None
         for pixel in pixel_values:
-            colors[self.__rgba_to_hex(pixel, alpha)] = None
+            colors[self.__rgba_to_hex(pixel)] = None
 
         colors_list = list(colors.keys())
 
         sprite = ""
 
         for pixel in pixel_values:
-            color = colors_list.index(self.__rgba_to_hex(pixel, alpha)) - 1
+            color = colors_list.index(self.__rgba_to_hex(pixel)) - 1
             if color > 9:
                 color = chr(ord("a") + color - 10)
             if color == -1:
@@ -46,14 +50,12 @@ class Imager(Extension):
     def image_to_object(
         self,
         file,
-        alpha=False,
-        max_colors=10,
         x=0,
         y=0,
         width=None,
         height=None,
     ):
-        if max_colors > 36:
+        if self.config["max_colors"] > 36:
             raise jinja2.exceptions.TemplateError(
                 "Image helper function doesn't support more than 36 colors"
             )
@@ -79,18 +81,18 @@ class Imager(Extension):
         image = image.crop((x, y, right, bottom))
         image = image.convert("RGBA")
         result = self.__pixel_list_to_sprite(
-            image.getdata(), width=image.size[0], alpha=alpha
+            image.getdata(), width=image.size[0]
         )
         sprite = result["sprite"]
         colors = result["colors"]
         if len(colors) > 10:
             if "." in sprite:
-                image = image.quantize(colors=max_colors + 1)
+                image = image.quantize(colors=self.config["max_colors"] + 1)
             else:
-                image = image.quantize(colors=max_colors)
+                image = image.quantize(colors=self.config["max_colors"])
             image = image.convert("RGBA")
             result = self.__pixel_list_to_sprite(
-                image.getdata(), width=image.size[0], alpha=alpha
+                image.getdata(), width=image.size[0]
             )
             sprite = result["sprite"]
             colors = result["colors"]
