@@ -20,6 +20,8 @@ def render_template(filename, config):
     )
     extensions = get_extensions()
     for extension in extensions:
+        if extension.__name__ not in config:
+            config[extension.__name__] = {}
         ext_object = extension(config[extension.__name__])
         for func_name, function in ext_object.methods.items():
             jinja_env.globals[func_name] = function

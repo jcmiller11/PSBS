@@ -84,9 +84,16 @@ For more information on these commands and to see available flags enter `psbs he
 
 At the root of your project you will find a file called config.yaml containing configuration variables for your project
 
-- engine: the url of the fork you are using, by default https://www.puzzlescript.net/
 - gist_id: the id of the gist the upload and run commands should use to store this project in
-- template: the name of your root template file, by default main.pss
+- engine: the url of the fork you are using, by default https://www.puzzlescript.net/
+- template: the name of your root template file, by default main.pssengine: https://auroriax.github.io/PuzzleScript/
+
+Below these are optional config variables for template extensions
+
+- Images:
+  - alpha: whether to include the RGBA alpha values for transparency supported by some forks
+  - max_colors: maximum colors in output object, PuzzleScript can only handle 10 by default but some forks support up to 36 colors
+
 
 ## Templates
 
@@ -105,8 +112,6 @@ A helper function has been added to the template environment `Image(filename)` t
 
 Additionally, this helper function contains the following optional parameters (alpha=False, max_colors=10, x=0, y=0, width=None, height=None)
 
-- alpha: (true/false) if true will include the RGBA alpha values for transparency supported by some forks
-- max_colors: (int) maximum colors in output object, PuzzleScript can only handle 10 by default but some forks such as Pattern:Script support up to 36 colors
 - x: (int) horizontal position in image to start importing from
 - y: (int) vertical position in image to start importing from
 - width: (int) width of the object to import, if None set to the width of the image file
