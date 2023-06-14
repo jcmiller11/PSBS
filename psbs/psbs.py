@@ -85,25 +85,21 @@ def main():
         project.upload()
         project.run(editor=args.editor)
     elif args.command == "new":
-        if args.gist_id is not None:
-            PSBSProject.create(
-                args.name, gist_id=args.gist_id, new_gist=args.new_gist
-            )
-        elif args.file is not None:
-            PSBSProject.create(
-                args.name, file=args.file, new_gist=args.new_gist
-            )
-        else:
-            PSBSProject.create(args.name, new_gist=args.new_gist)
+        PSBSProject.create(
+            args.name,
+            gist_id=args.gist_id,
+            file=args.file,
+            new_gist=args.new_gist,
+        )
     elif args.command == "token":
-        if args.token is None:
-            print(get_token(verbose=True))
-        else:
+        if args.token:
             set_token(args.token)
-    elif args.command == "help":
-        if args.topic is None:
-            parser.print_help()
         else:
+            print(get_token(verbose=True))
+    elif args.command == "help":
+        if args.topic:
             commands[args.topic].print_help()
+        else:
+            parser.print_help()
     elif args.command is None:
         parser.print_help()
