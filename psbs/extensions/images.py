@@ -5,7 +5,7 @@ from PIL import Image
 from psbs.extension import Extension
 
 
-class Imager(Extension):
+class Images(Extension):
     def __init__(self, config):
         super().__init__(config)
         self.register("image", self.image_to_object)

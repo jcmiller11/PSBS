@@ -4,7 +4,7 @@ class Extension:
         self.config = config
         if self.get_config():
             for key, value in self.get_config().items():
-                if not key in self.config:
+                if key not in self.config:
                     self.config[key] = None
                 if not self.config[key]:
                     self.config[key] = value
