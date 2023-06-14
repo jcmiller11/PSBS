@@ -2,7 +2,7 @@ from os import path
 import traceback
 
 import jinja2
-from .images import image_to_object
+from .images import Imager
 
 
 def render_template(filename):
@@ -18,8 +18,12 @@ def render_template(filename):
         comment_start_string="(#",
         comment_end_string="#)",
     )
-
-    jinja_env.globals.update(image=image_to_object)
+    
+    extensions = [Imager]
+    for extension in extensions:
+        ext_object = extension()
+        for func_name, function in ext_object.methods.items():
+            jinja_env.globals[func_name]=function
 
     try:
         template = jinja_env.get_template(file)
