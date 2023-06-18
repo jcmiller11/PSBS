@@ -1,6 +1,5 @@
 from textwrap import wrap
 
-import jinja2
 from PIL import Image
 from psbs.extension import Extension
 
@@ -56,7 +55,7 @@ class Images(Extension):
         height=None,
     ):
         if self.config["max_colors"] > 36:
-            raise jinja2.exceptions.TemplateError(
+            raise self.ExtensionError(
                 "Image helper function doesn't support more than 36 colors"
             )
         if file in self.loaded_images:
@@ -65,7 +64,7 @@ class Images(Extension):
             try:
                 image = Image.open(file, "r")
             except IOError as err:
-                raise jinja2.exceptions.TemplateError(
+                raise self.ExtensionError(
                     f"Unable to read image file\n  {err}"
                 )
             self.loaded_images[file] = image

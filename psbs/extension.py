@@ -1,6 +1,7 @@
 from os.path import join, dirname, basename, isfile
 import glob
 from importlib import import_module
+from jinja2.exceptions import TemplateError
 
 
 class Extension:
@@ -28,3 +29,6 @@ class Extension:
             if isfile(extension) and not extension.endswith("__init__.py"):
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
         return cls.__subclasses__()
+
+    class ExtensionError(TemplateError):
+        '''Thrown when the extension has a problem with the template'''
