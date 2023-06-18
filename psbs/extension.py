@@ -25,10 +25,12 @@ class Extension:
 
     @classmethod
     def get_extensions(cls):
-        for extension in glob.glob(join(dirname(__file__), "extensions", "*.py")):
+        for extension in glob.glob(
+            join(dirname(__file__), "extensions", "*.py")
+        ):
             if isfile(extension) and not extension.endswith("__init__.py"):
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
         return cls.__subclasses__()
 
     class ExtensionError(TemplateError):
-        '''Thrown when the extension has a problem with the template'''
+        """Thrown when the extension has a problem with the template"""

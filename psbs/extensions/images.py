@@ -64,9 +64,7 @@ class Images(Extension):
             try:
                 image = Image.open(file, "r")
             except IOError as err:
-                raise self.ExtensionError(
-                    f"Unable to read image file\n  {err}"
-                )
+                raise self.ExtensionError(f"Unable to read image file\n  {err}")
             self.loaded_images[file] = image
         # Crop image if needed
         if width:
