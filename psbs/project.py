@@ -7,7 +7,7 @@ from .psparser import split_ps, get_engine
 from .templatebuilder import make_template
 from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 from .template import render_template
-from .extensionloader import get_extensions
+from .extension import Extension
 
 
 class PSBSProject:
@@ -91,7 +91,7 @@ class PSBSProject:
             "template": "main.pss",
         }
 
-        for extension in get_extensions():
+        for extension in Extension.get_extensions():
             if extension.get_config():
                 config_dict[extension.__name__] = extension.get_config()
 

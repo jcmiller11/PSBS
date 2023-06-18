@@ -2,7 +2,7 @@ from os import path
 import traceback
 
 import jinja2
-from .extensionloader import get_extensions
+from .extension import Extension
 
 
 def render_template(filename, config):
@@ -18,7 +18,7 @@ def render_template(filename, config):
         comment_start_string="(#",
         comment_end_string="#)",
     )
-    extensions = get_extensions()
+    extensions = Extension.get_extensions()
     for extension in extensions:
         if extension.__name__ not in config:
             config[extension.__name__] = {}
