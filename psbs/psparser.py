@@ -17,6 +17,7 @@ def split_ps(input_str):
     input_redacted = redact(input_str)
     sections = {
         "prelude": [],
+        "tags": [],
         "objects": [],
         "legend": [],
         "sounds": [],
@@ -43,6 +44,8 @@ def split_ps(input_str):
     content = input_str[start:]
     content = re.sub(r"^(=*) *", "", content, flags=re.MULTILINE)
     sections[section].append(content.strip())
+    if not sections["tags"]:
+        del sections["tags"]
 
     return sections
 
