@@ -18,6 +18,7 @@ def split_ps(input_str):
     sections = {
         "prelude": [],
         "tags": [],
+        "mappings": [],
         "objects": [],
         "legend": [],
         "sounds": [],
@@ -26,6 +27,7 @@ def split_ps(input_str):
         "winconditions": [],
         "levels": [],
     }
+    optional_sections = ["tags","mappings"]
     section_headers = list(sections.keys())[1:]
     headers = re.finditer(
         r"^(" + "|".join(section_headers) + ") *$",
@@ -44,8 +46,9 @@ def split_ps(input_str):
     content = input_str[start:]
     content = re.sub(r"^(=*) *", "", content, flags=re.MULTILINE)
     sections[section].append(content.strip())
-    if not sections["tags"]:
-        del sections["tags"]
+    for optional_section in optional_sections:
+        if not sections[optional_section]:
+            del sections[optional_section]
 
     return sections
 
