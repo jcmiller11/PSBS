@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='psbs',
-    version='0.1.3',
+    version='0.1.4',
     python_requires='>=3.8',
     description='PuzzleScript Build System',
     long_description=long_description,
@@ -24,7 +24,8 @@ setup(
         'jinja2',
         'pyyaml',
         'Pillow',
-        'platformdirs'
+        'platformdirs',
+        'requests'
     ],
 
     classifiers=[
