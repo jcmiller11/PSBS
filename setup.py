@@ -15,7 +15,7 @@ setup(
     author='J.C. Miller',
     author_email='johncoreymiller@gmail.com',
     url='https://github.com/jcmiller11/PSBS',
-    download_url = 'https://github.com/jcmiller11/PSBS/archive/refs/tags/0.1.3.tar.gz',
+    download_url = 'https://github.com/jcmiller11/PSBS/archive/refs/tags/0.1.4.tar.gz',
     license='MIT',
     packages=find_packages(),
     package_data={'': ['example.txt']},
