@@ -23,7 +23,7 @@ class Tiled(Extension):
         # FIXME: does not work for larger than 5x5 objects
         if "\n" not in object_string:
             colors_string = object_string
-            pixels_string = ".....\n.....\n.....\n.....\n....."
+            pixels_string = "00000\n00000\n00000\n00000\n00000"
         else:
             colors_string, pixels_string = object_string.split("\n", 1)
         colors = [(0, 0, 0, 0)]
