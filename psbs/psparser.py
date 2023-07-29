@@ -1,5 +1,4 @@
 import re
-import itertools
 
 
 def redact(input_str, redact_char=" "):
@@ -92,9 +91,40 @@ def get_objects(input_str):
     return ps_objects
 
 
+def get_collision_order(input_str):
+    collisionlayers = get_section(input_str, "collisionlayers")
+    legend = get_section(input_str, "legend")
+
+    composite_matches = re.finditer(
+        r"^(\S+) += +(\S+ +or +\S+(?: +or +\S+)*)$",
+        legend,
+        flags=re.IGNORECASE | re.MULTILINE,
+    )
+    composite_objects = {}
+    for match in composite_matches:
+        composite_objects[match.group(1)] = [
+            x.strip() for x in match.group(2).split(" or ")
+        ]
+    collision_order = re.split(
+        r",\s*|\s+", collisionlayers, flags=re.MULTILINE
+    )
+    collision_order = list(filter(None, collision_order))
+    while (
+        len([i for i in composite_objects.keys() if i in collision_order]) > 0
+    ):
+        fixed_collision_order = []
+        for collision_object in collision_order:
+            if collision_object in composite_objects:
+                for composite_component in composite_objects[collision_object]:
+                    fixed_collision_order.append(composite_component)
+            else:
+                fixed_collision_order.append(collision_object)
+        collision_order = fixed_collision_order
+    return collision_order
+
+
 def get_tiles(input_str):
     legend = get_section(input_str, "legend")
-    collisionlayers = get_section(input_str, "collisionlayers")
     ps_objects = get_objects(input_str)
     tiles = {}
     tile_matches = re.finditer(
@@ -115,27 +145,10 @@ def get_tiles(input_str):
     for tile in tiles.values():
         if "background" not in map(str.lower, tile):
             tile.append("Background")
-    composite_matches = re.finditer(
-        r"^(\S+) += +(\S+ +or +\S+(?: +or +\S+)*)$",
-        legend,
-        flags=re.IGNORECASE | re.MULTILINE,
-    )
-    composite_objects = {}
-    for match in composite_matches:
-        composite_objects[match.group(1)] = [x.strip() for x in match.group(2).split(" or ")]
-    collision_order = re.split(r",\s*|\s+", collisionlayers, flags=re.MULTILINE)
-    collision_order = list(filter(None, collision_order))
-    while len([i for i in composite_objects.keys() if i in collision_order]) > 0:
-        fixed_collision_order = []
-        for collision_object in collision_order:
-            if collision_object in composite_objects:
-                for composite_component in composite_objects[collision_object]:
-                    fixed_collision_order.append(composite_component)
-            else:
-                fixed_collision_order.append(collision_object)
-        collision_order = fixed_collision_order
     for tile_key in tiles.keys():
-        tiles[tile_key] = sorted(tiles[tile_key], key=collision_order.index)
+        tiles[tile_key] = sorted(
+            tiles[tile_key], key=get_collision_order(input_str).index
+        )
     graphical_tiles = {}
     for glyph, names in tiles.items():
         graphical_tiles[glyph] = []

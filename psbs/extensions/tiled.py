@@ -456,7 +456,7 @@ class Tiled(Extension):
             shutil.rmtree(images_dir)
         make_dir(images_dir)
         tiles = get_tiles(input_str)
-        id = 0
+        tile_id = 0
         tileset = []
         for glyph, ps_objects in tiles.items():
             image = self.__object_to_pixels(ps_objects[0])
@@ -468,18 +468,18 @@ class Tiled(Extension):
                         self.__object_to_pixels(overlay),
                     )
             try:
-                image.save(path.join(images_dir, f"{id}.png"))
+                image.save(path.join(images_dir, f"{tile_id}.png"))
             except IOError as err:
-                print(f"Error: Unable to write image {id}.png\n  {err}")
+                print(f"Error: Unable to write image {tile_id}.png\n  {err}")
                 raise SystemExit(1) from err
             tileset.append(
                 {
                     "glyph": glyph,
-                    "id": id,
-                    "filename": path.join("images", f"{id}.png"),
+                    "id": tile_id,
+                    "filename": path.join("images", f"{tile_id}.png"),
                 }
             )
-            id += 1
+            tile_id += 1
         write_file(
             path.join(tileset_dir, "tileset.tsx"),
             self.__create_tileset_xml(tileset),
@@ -490,23 +490,24 @@ class Tiled(Extension):
         try:
             level_xml = ET.parse(file)
         except IOError as err:
-            raise self.ExtensionError(f"Unable to read level file\n  {err}")
+            print(f"Warning: Unable to read level file\n  {err}")
+            return ""
         source = level_xml.getroot()[0].attrib["source"]
         level_csv = level_xml.getroot()[1][0].text
         tileset_file = path.abspath(path.join(path.dirname(file), source))
-
         try:
             tileset_xml = ET.parse(tileset_file)
         except IOError as err:
-            raise self.ExtensionError(f"Unable to read tileset file\n  {err}")
+            print(f"Warning: Unable to read tileset file\n  {err}")
+            return ""
         tileset = {}
         for child in tileset_xml.getroot():
             if child.tag == "tile":
                 try:
                     tileset[child.attrib["id"]] = child[0][0].attrib["value"]
                 except (KeyError, IndexError):
-                    raise self.ExtensionError("Incompatible level file")
-
+                    print("Warning: Incompatible level file")
+                    return ""
         output = ""
         level_lines = level_csv.strip().split(",\n")
         for line in level_lines:
