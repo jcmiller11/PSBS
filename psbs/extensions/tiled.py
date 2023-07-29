@@ -20,7 +20,12 @@ class Tiled(Extension):
         return {"generate_tileset": False}
 
     def __object_to_pixels(self, object_string):
-        colors_string, pixels_string = object_string.split("\n", 1)
+        # FIXME: does not work for larger than 5x5 objects
+        if object_string == "transparent":
+            colors_string = "transparent"
+            pixels_string = ".....\n.....\n.....\n.....\n....."
+        else:
+            colors_string, pixels_string = object_string.split("\n", 1)
         colors = [(0, 0, 0, 0)]
         for color in colors_string.split():
             colors.append(self.__color_to_rgba(color))
@@ -433,7 +438,7 @@ class Tiled(Extension):
             image_tag.set("height", str(height))
             image_tag.set("source", str(tile["filename"]))
 
-        xml_as_string = ET.tostring(tileset_tag, encoding="utf8")
+        xml_as_string = ET.tostring(tileset_tag, encoding="utf-8")
         parsed_xml = minidom.parseString(xml_as_string)
         pretty_xml = parsed_xml.toprettyxml(indent="  ")
         return pretty_xml

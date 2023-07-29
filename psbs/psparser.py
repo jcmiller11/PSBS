@@ -1,4 +1,5 @@
 import re
+import itertools
 
 
 def redact(input_str, redact_char=" "):
@@ -14,7 +15,7 @@ def redact(input_str, redact_char=" "):
 
 
 def clean(input_str):
-    input_str = redact(input_str, redact_char="")
+    input_str = re.sub(r"(?:\()([^)]*)(?:\))", "", input_str)
     output = ""
     for line in input_str.splitlines():
         output += line.strip()
@@ -95,10 +96,6 @@ def get_tiles(input_str):
     legend = get_section(input_str, "legend")
     collisionlayers = get_section(input_str, "collisionlayers")
     ps_objects = get_objects(input_str)
-
-    collision_order = re.split(r",?\s+", collisionlayers, flags=re.MULTILINE)
-    collision_order = list(filter(None, collision_order))
-
     tiles = {}
     tile_matches = re.finditer(
         r"^(\S) += +((?:(?! or ).)*)$",
@@ -118,6 +115,25 @@ def get_tiles(input_str):
     for tile in tiles.values():
         if "background" not in map(str.lower, tile):
             tile.append("Background")
+    composite_matches = re.finditer(
+        r"^(\S+) += +(\S+ +or +\S+(?: +or +\S+)*)$",
+        legend,
+        flags=re.IGNORECASE | re.MULTILINE,
+    )
+    composite_objects = {}
+    for match in composite_matches:
+        composite_objects[match.group(1)] = [x.strip() for x in match.group(2).split(" or ")]
+    collision_order = re.split(r",?\s+", collisionlayers, flags=re.MULTILINE)
+    collision_order = list(filter(None, collision_order))
+    fixed_collision_order = []
+    while len([i for i in composite_objects.keys() if i in collision_order]) > 0:
+        for collision_object in collision_order:
+            if collision_object in composite_objects.keys():
+                for composite_component in composite_objects[collision_object]:
+                    fixed_collision_order.append(composite_component)
+            else:
+                fixed_collision_order.append(collision_object)
+        collision_order = fixed_collision_order
     for tile_key in tiles.keys():
         tiles[tile_key] = sorted(tiles[tile_key], key=collision_order.index)
     graphical_tiles = {}
