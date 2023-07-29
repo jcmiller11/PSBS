@@ -21,8 +21,8 @@ class Tiled(Extension):
 
     def __object_to_pixels(self, object_string):
         # FIXME: does not work for larger than 5x5 objects
-        if object_string == "transparent":
-            colors_string = "transparent"
+        if "\n" not in object_string:
+            colors_string = object_string
             pixels_string = ".....\n.....\n.....\n.....\n....."
         else:
             colors_string, pixels_string = object_string.split("\n", 1)

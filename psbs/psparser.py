@@ -123,12 +123,12 @@ def get_tiles(input_str):
     composite_objects = {}
     for match in composite_matches:
         composite_objects[match.group(1)] = [x.strip() for x in match.group(2).split(" or ")]
-    collision_order = re.split(r",?\s+", collisionlayers, flags=re.MULTILINE)
+    collision_order = re.split(r",\s*|\s+", collisionlayers, flags=re.MULTILINE)
     collision_order = list(filter(None, collision_order))
-    fixed_collision_order = []
     while len([i for i in composite_objects.keys() if i in collision_order]) > 0:
+        fixed_collision_order = []
         for collision_object in collision_order:
-            if collision_object in composite_objects.keys():
+            if collision_object in composite_objects:
                 for composite_component in composite_objects[collision_object]:
                     fixed_collision_order.append(composite_component)
             else:
