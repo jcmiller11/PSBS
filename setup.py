@@ -25,7 +25,8 @@ setup(
         'pyyaml',
         'Pillow',
         'platformdirs',
-        'requests'
+        'requests',
+        'numpy'
     ],
 
     classifiers=[

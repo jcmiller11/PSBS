@@ -18,6 +18,7 @@ def render_template(filename, config):
         comment_start_string="(#",
         comment_end_string="#)",
     )
+    post_processing_steps = []
     extensions = Extension.get_extensions()
     for extension in extensions:
         if extension.__name__ not in config:
@@ -25,10 +26,12 @@ def render_template(filename, config):
         ext_object = extension(config[extension.__name__])
         for func_name, function in ext_object.methods.items():
             jinja_env.globals[func_name] = function
+        for function in ext_object.post:
+            post_processing_steps.append(function)
 
     try:
         template = jinja_env.get_template(file)
-        return template.render()
+        output = template.render()
     except jinja2.exceptions.TemplateNotFound as err:
         print(f"Error: Unable to find template '{err}'")
         raise SystemExit(1) from err
@@ -41,3 +44,8 @@ def render_template(filename, config):
                 print(traceback_list[index + 1])
                 print(traceback_list[index + 2])
         raise SystemExit(1) from err
+
+    for post_function in post_processing_steps:
+        output = post_function(output)
+
+    return output
