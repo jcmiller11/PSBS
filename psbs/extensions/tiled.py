@@ -449,7 +449,7 @@ class Tiled(Extension):
             make_dir(tileset_dir)
         if path.exists(images_dir):
             shutil.rmtree(images_dir)
-            make_dir(images_dir)
+        make_dir(images_dir)
         tiles = get_tiles(input_str)
         id = 0
         tileset = []
