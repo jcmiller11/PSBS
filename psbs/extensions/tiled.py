@@ -5,7 +5,7 @@ from xml.dom import minidom
 from PIL import Image, ImageColor
 from numpy import array, uint8
 from psbs.extension import Extension
-from psbs.psparser import get_tiles
+from psbs.psparser import get_tiles, get_prelude_options
 from psbs.utils import make_dir, write_file
 
 
@@ -19,11 +19,11 @@ class Tiled(Extension):
     def get_config():
         return {"generate_tileset": False}
 
-    def __object_to_pixels(self, object_string):
+    def __object_to_pixels(self, object_string, size=5):
         # FIXME: does not work for larger than 5x5 objects
         if "\n" not in object_string:
             colors_string = object_string
-            pixels_string = "00000\n00000\n00000\n00000\n00000"
+            pixels_string = "\n".join(["0"*size]*size)
         else:
             colors_string, pixels_string = object_string.split("\n", 1)
         colors = [(0, 0, 0, 0)]
@@ -413,12 +413,12 @@ class Tiled(Extension):
                 color = palette[color]
         return ImageColor.getcolor(color, "RGBA")
 
-    def __create_tileset_xml(self, tileset, width=5, height=5):
+    def __create_tileset_xml(self, tileset, size=5):
         tileset_tag = ET.Element("tileset")
         tileset_tag.set("tiledversion", "1.10.1")
         tileset_tag.set("name", "psbs_generated_tileset")
-        tileset_tag.set("tilewidth", str(width))
-        tileset_tag.set("tileheight", str(height))
+        tileset_tag.set("tilewidth", str(size))
+        tileset_tag.set("tileheight", str(size))
         tileset_tag.set("tilecount", str(len(tileset)))
         tileset_tag.set("columns", "0")
         grid_tag = ET.SubElement(tileset_tag, "grid")
@@ -434,8 +434,8 @@ class Tiled(Extension):
             property_tag.set("name", "glyph")
             property_tag.set("value", str(tile["glyph"]))
             image_tag = ET.SubElement(tiles[tile["id"]], "image")
-            image_tag.set("width", str(width))
-            image_tag.set("height", str(height))
+            image_tag.set("width", str(size))
+            image_tag.set("height", str(size))
             image_tag.set("source", str(tile["filename"]))
 
         xml_as_string = ET.tostring(tileset_tag, encoding="utf-8")
@@ -444,6 +444,11 @@ class Tiled(Extension):
         return pretty_xml
 
     def write_tileset_files(self, input_str):
+        prelude = get_prelude_options(input_str)
+        sprite_size = 5
+        if "sprite_size" in prelude:
+            if prelude["sprite_size"].isdigit():
+                sprite_size = int(prelude["sprite_size"])
         if not self.config["generate_tileset"]:
             return input_str
         print("Creating tileset")
@@ -459,13 +464,13 @@ class Tiled(Extension):
         tile_id = 0
         tileset = []
         for glyph, ps_objects in tiles.items():
-            image = self.__object_to_pixels(ps_objects[0])
+            image = self.__object_to_pixels(ps_objects[0], sprite_size)
             if len(ps_objects) > 0:
                 for overlay in ps_objects[1:]:
                     image.paste(
-                        self.__object_to_pixels(overlay),
+                        self.__object_to_pixels(overlay, sprite_size),
                         (0, 0),
-                        self.__object_to_pixels(overlay),
+                        self.__object_to_pixels(overlay, sprite_size),
                     )
             try:
                 image.save(path.join(images_dir, f"{tile_id}.png"))
@@ -482,7 +487,7 @@ class Tiled(Extension):
             tile_id += 1
         write_file(
             path.join(tileset_dir, "tileset.tsx"),
-            self.__create_tileset_xml(tileset),
+            self.__create_tileset_xml(tileset, sprite_size),
         )
         return input_str
 

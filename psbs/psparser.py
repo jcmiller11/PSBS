@@ -79,6 +79,16 @@ def get_section(input_str, section_name, clean_output=True):
         return clean(output)
     return output
 
+def get_prelude_options(input_str):
+    prelude_options = {}
+    prelude_str = get_section(input_str, "prelude")
+    for line in prelude_str.splitlines():
+        tokens = line.split(maxsplit=1)
+        if len(tokens) == 1:
+            prelude_options[tokens[0]] = True
+        if len(tokens) == 2:
+            prelude_options[tokens[0]] = tokens[1]
+    return prelude_options
 
 def get_objects(input_str):
     object_strs = re.split(
@@ -87,7 +97,7 @@ def get_objects(input_str):
     ps_objects = {}
     for object_str in object_strs:
         object_str_lines = object_str.splitlines()
-        object_name = object_str_lines[0]
+        object_name = object_str_lines[0].lower()
         object_body = object_str_lines[1:]
         ps_objects[object_name] = "\n".join(object_body)
 
@@ -123,11 +133,12 @@ def get_collision_order(input_str):
             else:
                 fixed_collision_order.append(collision_object)
         collision_order = fixed_collision_order
+    collision_order = list(map(str.lower, collision_order))
     return collision_order
 
 
 def get_tiles(input_str):
-    legend = get_section(input_str, "legend")
+    legend = get_section(input_str, "legend").lower()
     ps_objects = get_objects(input_str)
     tiles = {}
     tile_matches = re.finditer(
@@ -144,10 +155,13 @@ def get_tiles(input_str):
         if len(tokens_in_name) > 0:
             ps_objects[tokens_in_name[0]] = ps_objects.pop(name)
             for tile_token in tokens_in_name[1:]:
-                tiles[tile_token] = [tokens_in_name[0]]
+                if len(tile_token) == 1:
+                    tiles[tile_token] = [tokens_in_name[0]]
+                elif tile_token.startswith('copy:'):
+                    ps_objects[tokens_in_name[0]] = "\n".join(body.splitlines()[:1]+ps_objects[tile_token[5:]].splitlines()[1:])
     for tile in tiles.values():
         if "background" not in map(str.lower, tile):
-            tile.append("Background")
+            tile.append("background")
     for tile_key in tiles.keys():
         tiles[tile_key] = sorted(
             tiles[tile_key], key=get_collision_order(input_str).index
