@@ -26,7 +26,7 @@ class Tiled(Extension):
             pixels_string = "\n".join(["0"*size]*size)
         else:
             colors_string, pixels_string = object_string.split("\n", 1)
-        colors = [(0, 0, 0, 0)]
+        colors = [ImageColor.getcolor("#00000000", "RGBA")]
         for color in colors_string.split():
             colors.append(self.__color_to_rgba(color, palette_name=palette_name))
         image_list = []
@@ -531,10 +531,11 @@ class Tiled(Extension):
                     print("Warning: Incompatible level file")
                     return ""
         output = ""
-        level_lines = level_csv.strip().split(",\n")
-        for line in level_lines:
-            level_tiles = line.split(",")
-            for tile in level_tiles:
-                output += tileset[str(int(tile) - 1)]
-            output += "\n"
+        if level_csv is not None:
+            level_lines = level_csv.strip().split(",\n")
+            for line in level_lines:
+                level_tiles = line.split(",")
+                for tile in level_tiles:
+                    output += tileset[str(int(tile) - 1)]
+                output += "\n"
         return output
