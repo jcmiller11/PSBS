@@ -158,6 +158,7 @@ def get_tiles(input_str):
                 if len(tile_token) == 1:
                     tiles[tile_token] = [tokens_in_name[0]]
                 elif tile_token.startswith('copy:'):
+                    # handle PuzzleScript+ copy feature
                     ps_objects[tokens_in_name[0]] = "\n".join(body.splitlines()[:1]+ps_objects[tile_token[5:]].splitlines()[1:])
     for tile in tiles.values():
         if "background" not in map(str.lower, tile):
