@@ -2,23 +2,25 @@ import re
 
 
 def redact(input_str, redact_char=" "):
-    # find all comments
-    comments = re.finditer(r"(?:\()([^)]*)(?:\))", input_str)
-    for comment in comments:
-        start = comment.span()[0]
-        end = comment.span()[1]
-        # replace any non-newline character with the redact_char
-        redacted = re.sub(r"[^\n]", redact_char, comment.group())
-        input_str = input_str[:start] + redacted + input_str[end:]
-    return input_str
+    depth = 0
+    output = ""
+    for character in input_str:
+        if character == "(":
+            depth += 1
+        if depth > 0 and character != "\n":
+            output += redact_char
+        else:
+            output += character
+        if character == ")":
+            depth -= 1
+        if depth < 0:
+            depth = 0
+    return output
 
 
 def clean(input_str):
-    input_str = re.sub(r"(?:\()([^)]*)(?:\))", "", input_str)
-    output = ""
-    for line in input_str.splitlines():
-        output += line.strip()
-        output += "\n"
+    input_str = redact(input_str, redact_char="")
+    output = "\n".join([line.strip() for line in input_str.splitlines()])
     return output
 
 
@@ -63,11 +65,7 @@ def split_ps(input_str):
 
 
 def get_engine(input_str):
-    start_str = "http"
-    end_str = "editor.html"
-    start = input_str.find(start_str)
-    end = input_str.find(end_str)
-    return input_str[start:end]
+    return re.search(r"(http.*)(?:editor\.html)", input_str).group(1)
 
 
 def get_section(input_str, section_name, clean_output=True):
