@@ -19,7 +19,7 @@ class Tiled(Extension):
     def get_config():
         return {"generate_tileset": False}
 
-    def __object_to_pixels(self, object_string, size=5):
+    def __object_to_pixels(self, object_string, size=5, palette_name="arnecolors"):
         # FIXME: does not work for larger than 5x5 objects
         if "\n" not in object_string:
             colors_string = object_string
@@ -28,7 +28,7 @@ class Tiled(Extension):
             colors_string, pixels_string = object_string.split("\n", 1)
         colors = [(0, 0, 0, 0)]
         for color in colors_string.split():
-            colors.append(self.__color_to_rgba(color))
+            colors.append(self.__color_to_rgba(color, palette_name=palette_name))
         image_list = []
         for line in pixels_string.split("\n"):
             line_list = []
@@ -406,7 +406,16 @@ class Tiled(Extension):
                 "pink": "#ec2b8f",
             },
         }
-        palette = color_palettes[palette_name]
+        palette_name_list = ["mastersystem", "gameboycolour", "amiga", "arnecolors", "famicom", "atari", "pastel", "ega", "amstrad", "proteus_mellow", "proteus_rich", "proteus_night", "c64", "whitingjp"]
+        if palette_name.isdigit():
+            try:
+                palette_name = palette_name_list[int(palette_name)]
+            except IndexError:
+                pass
+        if palette_name in color_palettes:
+            palette = color_palettes[palette_name]
+        else:
+            palette = color_palettes["arnecolors"]
         palette["transparent"] = "#00000000"
         if color[0] != "#":
             if color in palette:
@@ -449,6 +458,9 @@ class Tiled(Extension):
         if "sprite_size" in prelude:
             if prelude["sprite_size"].isdigit():
                 sprite_size = int(prelude["sprite_size"])
+        color_palette = "arnecolors"
+        if "color_palette" in prelude:
+            color_palette = prelude["color_palette"]
         if not self.config["generate_tileset"]:
             return input_str
         print("Creating tileset")
@@ -460,17 +472,21 @@ class Tiled(Extension):
         if path.exists(images_dir):
             shutil.rmtree(images_dir)
         make_dir(images_dir)
-        tiles = get_tiles(input_str)
+        try:
+            tiles = get_tiles(input_str)
+        except Exception as err:
+            print(f"Warning: unable to create tileset\n  {err}")
+        # FIXME: psparser needs better exception handling so I don't need to do except Exception here
         tile_id = 0
         tileset = []
         for glyph, ps_objects in tiles.items():
-            image = self.__object_to_pixels(ps_objects[0], sprite_size)
+            image = self.__object_to_pixels(ps_objects[0], sprite_size, palette_name=color_palette)
             if len(ps_objects) > 0:
                 for overlay in ps_objects[1:]:
                     image.paste(
-                        self.__object_to_pixels(overlay, sprite_size),
+                        self.__object_to_pixels(overlay, sprite_size, palette_name=color_palette),
                         (0, 0),
-                        self.__object_to_pixels(overlay, sprite_size),
+                        self.__object_to_pixels(overlay, sprite_size, palette_name=color_palette),
                     )
             try:
                 image.save(path.join(images_dir, f"{tile_id}.png"))

@@ -140,6 +140,7 @@ def get_collision_order(input_str):
 def get_tiles(input_str):
     legend = get_section(input_str, "legend").lower()
     ps_objects = get_objects(input_str)
+    collision_order = get_collision_order(input_str)
     tiles = {}
     tile_matches = re.finditer(
         r"^(\S) += +((?:(?! or ).)*)$",
@@ -160,12 +161,21 @@ def get_tiles(input_str):
                 elif tile_token.startswith('copy:'):
                     # handle PuzzleScript+ copy feature
                     ps_objects[tokens_in_name[0]] = "\n".join(body.splitlines()[:1]+ps_objects[tile_token[5:]].splitlines()[1:])
+    for glyph, name in tiles.items():
+        if len(name) == 1:
+            if name[0] in collision_order:
+                collision_order.insert(collision_order.index(name[0]), glyph)
+            elif glyph in collision_order:
+                collision_order.insert(collision_order.index(glyph), name[0])
+            if name[0] in ps_objects:
+                ps_objects[glyph] = ps_objects[name[0]]
     for tile in tiles.values():
-        if "background" not in map(str.lower, tile):
+        if "background" not in tile:
             tile.append("background")
+    # FIXME: object glyphs can be used in collision layers!
     for tile_key in tiles.keys():
         tiles[tile_key] = sorted(
-            tiles[tile_key], key=get_collision_order(input_str).index
+            tiles[tile_key], key=collision_order.index
         )
     graphical_tiles = {}
     for glyph, names in tiles.items():
