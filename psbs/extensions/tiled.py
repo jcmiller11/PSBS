@@ -476,6 +476,7 @@ class Tiled(Extension):
             tiles = get_tiles(input_str)
         except Exception as err:
             print(f"Warning: unable to create tileset\n  {err}")
+            return input_str
         # FIXME: psparser needs better exception handling so I don't need to do except Exception here
         tile_id = 0
         tileset = []
