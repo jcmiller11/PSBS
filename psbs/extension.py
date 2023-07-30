@@ -9,12 +9,11 @@ class Extension:
         self.methods = {}
         self.post = []
         self.config = config
-        if self.get_config():
-            for key, value in self.get_config().items():
-                if key not in self.config:
-                    self.config[key] = None
-                if self.config[key] is None:
-                    self.config[key] = value
+        for key, value in self.get_config().items():
+            if key not in self.config:
+                self.config[key] = None
+            if self.config[key] is None:
+                self.config[key] = value
 
     def register(self, name, function):
         if name not in self.methods:
@@ -25,7 +24,7 @@ class Extension:
 
     @staticmethod
     def get_config():
-        return None
+        return {}
 
     @classmethod
     def get_extensions(cls):
