@@ -65,7 +65,12 @@ def split_ps(input_str):
 
 
 def get_engine(input_str):
-    return re.search(r"(http.*)(?:editor\.html)", input_str).group(1)
+    match = re.search(r"(http.*)(?:editor\.html)", input_str)
+    if match is None:
+        output = "https://www.puzzlescript.net/"
+    else:
+        output = match.group(1)
+    return output
 
 
 def get_section(input_str, section_name, clean_output=True):
