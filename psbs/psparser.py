@@ -97,10 +97,9 @@ def get_objects(input_str):
     ps_objects = {}
     for object_str in object_strs:
         object_str_lines = object_str.splitlines()
-        object_name = object_str_lines[0].lower()
+        object_name = object_str_lines[0]
         object_body = object_str_lines[1:]
         ps_objects[object_name] = "\n".join(object_body)
-
     return ps_objects
 
 
@@ -133,14 +132,20 @@ def get_collision_order(input_str):
             else:
                 fixed_collision_order.append(collision_object)
         collision_order = fixed_collision_order
-    collision_order = list(map(str.lower, collision_order))
     return collision_order
 
 
 def get_tiles(input_str):
-    legend = get_section(input_str, "legend").lower()
+    legend = get_section(input_str, "legend")
     ps_objects = get_objects(input_str)
     collision_order = get_collision_order(input_str)
+    prelude = get_prelude_options(input_str)
+
+    if "case_sensitive" not in prelude:
+        ps_objects = { key.lower(): value for key, value in ps_objects.items() }
+        collision_order = list(map(str.lower, collision_order))
+        legend = legend.lower()
+
     tiles = {}
     tile_matches = re.finditer(
         r"^(\S) += +((?:(?! or ).)*)$",
@@ -169,10 +174,15 @@ def get_tiles(input_str):
                 collision_order.insert(collision_order.index(glyph), name[0])
             if name[0] in ps_objects:
                 ps_objects[glyph] = ps_objects[name[0]]
+    #get the name of the Background object in case of case_sensitive
+    background_name = "background"
+    for object_name in ps_objects.keys():
+        if object_name.lower() == "background":
+            background_name = object_name
     for tile in tiles.values():
-        if "background" not in tile:
-            tile.append("background")
-    # FIXME: object glyphs can be used in collision layers!
+        if background_name not in tile:
+            tile.append(background_name)
+
     for tile_key in tiles.keys():
         tiles[tile_key] = sorted(
             tiles[tile_key], key=collision_order.index
