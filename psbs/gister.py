@@ -68,7 +68,7 @@ class Gister:
                 raise self.GistError(response)
             # I can't remember why I was using this
             # keeping it here in case I remember
-            #if "message" in response:
+            # if "message" in response:
             #    raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")

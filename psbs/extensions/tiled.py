@@ -5,7 +5,7 @@ from xml.dom import minidom
 from PIL import Image, ImageColor
 from numpy import array, uint8
 from psbs.extension import Extension
-from psbs.psparser import get_tiles, get_prelude_options
+from psbs.psparser import PSParser
 from psbs.utils import make_dir, write_file
 
 
@@ -19,16 +19,19 @@ class Tiled(Extension):
     def get_config():
         return {"generate_tileset": False}
 
-    def __object_to_pixels(self, object_string, size=5, palette_name="arnecolors"):
-        # FIXME: does not work for larger than 5x5 objects
+    def __object_to_pixels(
+        self, object_string, size=5, palette_name="arnecolors"
+    ):
         if "\n" not in object_string:
             colors_string = object_string
-            pixels_string = "\n".join(["0"*size]*size)
+            pixels_string = "\n".join(["0" * size] * size)
         else:
             colors_string, pixels_string = object_string.split("\n", 1)
         colors = [ImageColor.getcolor("#00000000", "RGBA")]
         for color in colors_string.split():
-            colors.append(self.__color_to_rgba(color, palette_name=palette_name))
+            colors.append(
+                self.__color_to_rgba(color, palette_name=palette_name)
+            )
         image_list = []
         for line in pixels_string.split("\n"):
             line_list = []
@@ -406,16 +409,30 @@ class Tiled(Extension):
                 "pink": "#ec2b8f",
             },
         }
-        palette_name_list = ["mastersystem", "gameboycolour", "amiga", "arnecolors", "famicom", "atari", "pastel", "ega", "amstrad", "proteus_mellow", "proteus_rich", "proteus_night", "c64", "whitingjp"]
+        palette_name_list = [
+            "mastersystem",
+            "gameboycolour",
+            "amiga",
+            "arnecolors",
+            "famicom",
+            "atari",
+            "pastel",
+            "ega",
+            "amstrad",
+            "proteus_mellow",
+            "proteus_rich",
+            "proteus_night",
+            "c64",
+            "whitingjp",
+        ]
         if palette_name.isdigit():
             try:
-                palette_name = palette_name_list[int(palette_name)]
+                palette_name = palette_name_list[int(palette_name) - 1]
             except IndexError:
                 pass
-        if palette_name in color_palettes:
-            palette = color_palettes[palette_name]
-        else:
-            palette = color_palettes["arnecolors"]
+        palette = color_palettes.get(
+            palette_name, color_palettes["arnecolors"]
+        )
         palette["transparent"] = "#00000000"
         if color[0] != "#":
             if color in palette:
@@ -453,14 +470,14 @@ class Tiled(Extension):
         return pretty_xml
 
     def write_tileset_files(self, input_str):
-        prelude = get_prelude_options(input_str)
+        parser = PSParser(input_str)
         sprite_size = 5
-        if "sprite_size" in prelude:
-            if prelude["sprite_size"].isdigit():
-                sprite_size = int(prelude["sprite_size"])
-        color_palette = "arnecolors"
-        if "color_palette" in prelude:
-            color_palette = prelude["color_palette"]
+        if "sprite_size" in parser.prelude_options:
+            if parser.prelude_options["sprite_size"].isdigit():
+                sprite_size = int(parser.prelude_options["sprite_size"])
+        color_palette = parser.prelude_options.get(
+            "color_palette", "arnecolors"
+        )
         if not self.config["generate_tileset"]:
             return input_str
         print("Creating tileset")
@@ -473,21 +490,28 @@ class Tiled(Extension):
             shutil.rmtree(images_dir)
         make_dir(images_dir)
         try:
-            tiles = get_tiles(input_str)
+            tiles = parser.get_tiles()
         except Exception as err:
             print(f"Warning: unable to create tileset\n  {err}")
             return input_str
-        # FIXME: psparser needs better exception handling so I don't need to do except Exception here
+        # FIXME: psparser needs better exception handling
+        # so I don't need to do except Exception here
         tile_id = 0
         tileset = []
         for glyph, ps_objects in tiles.items():
-            image = self.__object_to_pixels(ps_objects[0], sprite_size, palette_name=color_palette)
+            image = self.__object_to_pixels(
+                ps_objects[0], sprite_size, palette_name=color_palette
+            )
             if len(ps_objects) > 0:
                 for overlay in ps_objects[1:]:
                     image.paste(
-                        self.__object_to_pixels(overlay, sprite_size, palette_name=color_palette),
+                        self.__object_to_pixels(
+                            overlay, sprite_size, palette_name=color_palette
+                        ),
                         (0, 0),
-                        self.__object_to_pixels(overlay, sprite_size, palette_name=color_palette),
+                        self.__object_to_pixels(
+                            overlay, sprite_size, palette_name=color_palette
+                        ),
                     )
             try:
                 image.save(path.join(images_dir, f"{tile_id}.png"))

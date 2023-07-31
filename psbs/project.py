@@ -3,11 +3,10 @@ from shutil import rmtree
 
 from .gister import Gister
 from .config import Config
-from .psparser import split_ps, get_engine
-from .templatebuilder import make_template
-from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
-from .template import render_template
+from .psparser import PSParser
+from .template import Template
 from .extension import Extension
+from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 
 
 class PSBSProject:
@@ -33,12 +32,12 @@ class PSBSProject:
 
         # Build the script.txt
         print("Building script.txt")
-        source = render_template(
+        template = Template(
             path.join("src", self.config["template"]), self.config
         )
 
         print(f"Writing file {script_path}")
-        write_file(script_path, source)
+        write_file(script_path, template.render())
 
     def upload(self):
         gist_id = self.config["gist_id"]
@@ -70,7 +69,7 @@ class PSBSProject:
             print("Downloading data from gist")
             gist = Gister(gist_id=gist_id)
             source = gist.read("script.txt")
-            engine = get_engine(gist.read("readme.txt"))
+            engine = PSParser.get_engine(gist.read("readme.txt"))
         elif file:
             source = read_file(file)
         else:
@@ -78,7 +77,7 @@ class PSBSProject:
                 path.join(path.realpath(path.dirname(__file__)), "example.txt")
             )
 
-        src_tree = split_ps(source)
+        src_tree = PSParser(source).source_tree
 
         if new_gist:
             print("Creating new gist")
@@ -90,10 +89,7 @@ class PSBSProject:
             "engine": engine,
             "template": "main.pss",
         }
-
-        for extension in Extension.get_extensions():
-            if extension.get_config():
-                config_dict[extension.__name__] = extension.get_config()
+        config_dict.update(Extension.get_extension_configs())
 
         print("Building directory structure")
         make_dir(project_name)
@@ -107,7 +103,7 @@ class PSBSProject:
             print("Creating template file")
             write_file(
                 path.join(project_name, "src", "main.pss"),
-                make_template(src_tree),
+                Template.make_template(src_tree),
             )
 
             print("Creating source files")

@@ -110,10 +110,10 @@ A helper function has been added to the template environment `Image(filename)` t
     Target
     ((image("images/target.png")))
 
-Additionally, this helper function contains the following optional parameters (alpha=False, max_colors=10, x=0, y=0, width=None, height=None)
+Additionally, this helper function contains the following optional parameters (alpha=False, max_colors=10, left=0, top=0, width=None, height=None)
 
-- x: (int) horizontal position in image to start importing from
-- y: (int) vertical position in image to start importing from
+- left: (int) horizontal position in image to start importing from
+- top: (int) vertical position in image to start importing from
 - width: (int) width of the object to import, if None set to the width of the image file
 - height: (int) height of the object to import, if None set to the height of the image file
 
@@ -122,5 +122,5 @@ By using the last four parameters listed one can load objects from a single imag
     (% set directions = ["down","left","up","right"] %) (# Can be placed in your main template #)
     (% for dir in directions %)
     Player_((dir))
-    ((image("images/player.png",x=loop.index0*5,width=5,height=5)))
+    ((image("images/player.png",left=loop.index0*5,width=5,height=5)))
     (% endfor %)

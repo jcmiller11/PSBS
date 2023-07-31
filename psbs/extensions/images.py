@@ -49,8 +49,8 @@ class Images(Extension):
     def image_to_object(
         self,
         file,
-        x=0,
-        y=0,
+        left=0,
+        top=0,
         width=None,
         height=None,
     ):
@@ -70,14 +70,14 @@ class Images(Extension):
             self.loaded_images[file] = image
         # Crop image if needed
         if width:
-            right = x + width
+            right = left + width
         else:
             right = image.size[0]
         if height:
-            bottom = y + height
+            bottom = top + height
         else:
             bottom = image.size[1]
-        image = image.crop((x, y, right, bottom))
+        image = image.crop((left, top, right, bottom))
         image = image.convert("RGBA")
         result = self.__pixel_list_to_sprite(
             image.getdata(), width=image.size[0]

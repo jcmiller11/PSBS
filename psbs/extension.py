@@ -35,5 +35,13 @@ class Extension:
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
         return cls.__subclasses__()
 
+    @classmethod
+    def get_extension_configs(cls):
+        config_dict = {}
+        for extension in cls.get_extensions():
+            if extension.get_config():
+                config_dict[extension.__name__] = extension.get_config()
+        return config_dict
+
     class ExtensionError(TemplateError):
         """Thrown when the extension has a problem with the template"""
