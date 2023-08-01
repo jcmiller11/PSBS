@@ -489,11 +489,12 @@ class Tiled(Extension):
         if path.exists(images_dir):
             shutil.rmtree(images_dir)
         make_dir(images_dir)
-        try:
-            tiles = parser.get_tiles()
-        except Exception as err:
-            print(f"Warning: unable to create tileset\n  {err}")
-            return input_str
+        # try:
+        # tiles = parser.get_tiles()
+        tiles = parser.get_glyphs()
+        # except Exception as err:
+        #    print(f"Warning: unable to create tileset\n  {err}")
+        #    return input_str
         # FIXME: psparser needs better exception handling
         # so I don't need to do except Exception here
         tile_id = 0

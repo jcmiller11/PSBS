@@ -88,109 +88,139 @@ class PSParser:
         ps_objects = {}
         for object_str in object_strs:
             object_str_lines = object_str.splitlines()
-            object_name = object_str_lines[0]
-            object_body = object_str_lines[1:]
-            ps_objects[object_name] = "\n".join(object_body)
+            name = object_str_lines.pop(0)
+            if "case_sensitive" not in self.prelude_options:
+                name = name.lower()
+            colors = object_str_lines.pop(0)
+            body = "\n".join(object_str_lines)
+            # ps_objects[object_name] = body
+            # consider using dict:
+            synonyms = []
+            tokens_in_name = name.split()
+            if len(tokens_in_name) > 0:
+                name = tokens_in_name.pop(0)
+                for token in tokens_in_name:
+                    if token.startswith("copy:"):
+                        # handle PuzzleScript+ copy feature
+                        body = ps_objects[token[5:]]["body"]
+                    else:
+                        synonyms.append(token)
+            ps_objects[name] = {
+                "colors": colors,
+                "body": body,
+                "synonyms": synonyms,
+            }
         return ps_objects
 
-    def get_collision_order(self):
-        collisionlayers = self.sections["collisionlayers"]
-        legend = self.sections["legend"]
-
-        composite_matches = re.finditer(
-            r"^(\S+) += +(\S+ +or +\S+(?: +or +\S+)*)$",
-            legend,
-            flags=re.IGNORECASE | re.MULTILINE,
-        )
-        composite_objects = {}
-        for match in composite_matches:
-            composite_objects[match.group(1)] = [
-                x.strip() for x in match.group(2).split(" or ")
-            ]
-        collision_order = re.split(
-            r",\s*|\s+", collisionlayers, flags=re.MULTILINE
-        )
-        collision_order = list(filter(None, collision_order))
-        while len([i for i in composite_objects if i in collision_order]) > 0:
-            fixed_collision_order = []
-            for collision_object in collision_order:
-                if collision_object in composite_objects:
-                    for composite_component in composite_objects[
-                        collision_object
-                    ]:
-                        fixed_collision_order.append(composite_component)
-                else:
-                    fixed_collision_order.append(collision_object)
-            collision_order = fixed_collision_order
-        return collision_order
-
-    def get_tiles(self):
-        # This function is a mess, please clean it up
+    def get_glyphs(self):
         legend = self.sections["legend"]
         ps_objects = self.get_objects()
-        collision_order = self.get_collision_order()
-        prelude = self.prelude_options
+        collisionlayers = self.sections["collisionlayers"]
 
-        # get the name of the Background object in case of case_sensitive
+        # handle case sensitivity
         background_name = "background"
         for object_name in ps_objects:
             if object_name.lower() == "background":
                 background_name = object_name
-
-        if "case_sensitive" not in prelude:
-            background_name = background_name.lower()
-            ps_objects = {
-                key.lower(): value for key, value in ps_objects.items()
-            }
-            collision_order = list(map(str.lower, collision_order))
+        if "case_sensitive" not in self.prelude_options:
             legend = legend.lower()
+            collisionlayers = collisionlayers.lower()
 
-        tiles = {}
-        tile_matches = re.finditer(
-            r"^(\S) += +((?:(?! or ).)*)$",
+        synonyms = {}
+        properties = {}  # Properties apply to collisionlayers
+        aggregates = {}  # Aggregates apply to glyphs
+        matches = re.finditer(
+            r"^(\S+) += +(\S+(?: +(?:and|or) +\S+)*)$",
             legend,
-            flags=re.IGNORECASE | re.MULTILINE,
+            flags=re.MULTILINE | re.IGNORECASE,
         )
-        for match in tile_matches:
-            tiles[match.group(1)] = re.split(
-                " and ", match.group(2), flags=re.IGNORECASE
-            )
-        for name, body in ps_objects.copy().items():
-            tokens_in_name = name.split()
-            if len(tokens_in_name) > 0:
-                ps_objects[tokens_in_name[0]] = ps_objects.pop(name)
-                for tile_token in tokens_in_name[1:]:
-                    if len(tile_token) == 1:
-                        tiles[tile_token] = [tokens_in_name[0]]
-                    elif tile_token.startswith("copy:"):
-                        # handle PuzzleScript+ copy feature
-                        ps_objects[tokens_in_name[0]] = "\n".join(
-                            body.splitlines()[:1]
-                            + ps_objects[tile_token[5:]].splitlines()[1:]
-                        )
-        for glyph, name in tiles.items():
-            if len(name) == 1:
-                if name[0] in collision_order:
-                    collision_order.insert(
-                        collision_order.index(name[0]), glyph
-                    )
-                elif glyph in collision_order:
-                    collision_order.insert(
-                        collision_order.index(glyph), name[0]
-                    )
-                if name[0] in ps_objects:
-                    ps_objects[glyph] = ps_objects[name[0]]
-        for tile in tiles.values():
-            if background_name not in tile:
-                tile.append(background_name)
+        for match in matches:
+            if " and " in match.group(2):
+                aggregates[match.group(1)] = re.split(
+                    r" +and +", match.group(2), flags=re.IGNORECASE
+                )
+            elif " or " in match.group(2):
+                properties[match.group(1)] = re.split(
+                    r" +or +", match.group(2), flags=re.IGNORECASE
+                )
+            else:
+                synonyms[match.group(1)] = match.group(2)
+        for ps_object in ps_objects:
+            for synonym in ps_objects[ps_object]["synonyms"]:
+                synonyms[synonym] = ps_object
+            synonyms[ps_object] = ps_object
+        # resolve synonyms
+        for synonym in synonyms:
+            if synonyms[synonym] in synonyms:
+                synonyms[synonym] = synonyms[synonyms[synonym]]
 
-        for tile_key in tiles:
-            tiles[tile_key] = sorted(
-                tiles[tile_key], key=collision_order.index
-            )
-        graphical_tiles = {}
-        for glyph, names in tiles.items():
-            graphical_tiles[glyph] = []
-            for name in names:
-                graphical_tiles[glyph].append(ps_objects[name])
-        return graphical_tiles
+        def resolve_dict(input_dict):
+            # This is failing on gridblocked and selene without the check
+            # for in synonyms perhaps the dict needs to be
+            # recursively resolved, fix ths
+            output = {}
+            for key in input_dict:
+                output[key] = []
+                for object_name in input_dict[key]:
+                    if object_name in input_dict:
+                        for inner_key in input_dict[object_name]:
+                            if inner_key in synonyms:
+                                output[key].append(synonyms[inner_key])
+                            else:
+                                output[key].append(inner_key)
+                    else:
+                        if object_name in synonyms:
+                            output[key].append(synonyms[object_name])
+                        else:
+                            output[key].append(object_name)
+            return output
+
+        properties = resolve_dict(properties)
+        aggregates = resolve_dict(aggregates)
+
+        glyphs = {}
+        for synonym in synonyms:
+            if len(synonym) == 1:
+                if synonyms[synonym] in aggregates:
+                    glyphs[synonym] = aggregates[synonyms[synonym]]
+                else:
+                    glyphs[synonym] = [synonyms[synonym]]
+
+        for aggregate in aggregates:
+            if len(aggregate) == 1:
+                glyphs[aggregate] = aggregates[aggregate]
+
+        # Same problem here with some things not showing up in synonyms,
+        # selene is lacking a temp2?  This should be easier to track down
+        collision_order = []
+        for collision_object in re.split(
+            r",\s*|\s+", collisionlayers, flags=re.MULTILINE
+        ):
+            if collision_object in properties:
+                for inner_object in properties[collision_object]:
+                    if inner_object in synonyms:
+                        collision_order.append(synonyms[inner_object])
+                    else:
+                        collision_order.append(inner_object)
+            else:
+                if collision_object in synonyms:
+                    collision_order.append(synonyms[collision_object])
+                else:
+                    collision_order.append(collision_object)
+
+        for glyph in glyphs:
+            if background_name not in glyphs[glyph]:
+                glyphs[glyph].append(background_name)
+            glyphs[glyph] = sorted(glyphs[glyph], key=collision_order.index)
+            glyph_objects = []
+            for object_name in glyphs[glyph]:
+                glyph_objects.append(
+                    "\n".join(
+                        [
+                            ps_objects[object_name]["colors"],
+                            ps_objects[object_name]["body"],
+                        ]
+                    ).strip()
+                )
+            glyphs[glyph] = glyph_objects
+        return glyphs
