@@ -55,9 +55,8 @@ class Images(Extension):
         height=None,
     ):
         if self.config["max_colors"] > 36:
-            raise self.ExtensionError(
-                "Image helper function doesn't support more than 36 colors"
-            )
+            print("Warning: max_colors config values over 36 not supported")
+            self.config["max_colors"] = 36
         if file in self.loaded_images:
             image = self.loaded_images[file]
         else:
