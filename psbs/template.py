@@ -26,6 +26,8 @@ class Template:
             ext_object = extension(config[extension.__name__])
             for func_name, function in ext_object.methods.items():
                 self.jinja_env.globals[func_name] = function
+            for func_name, function in ext_object.filters.items():
+                self.jinja_env.filters[func_name] = function
             for function in ext_object.post:
                 self.postprocessing_steps.append(function)
 

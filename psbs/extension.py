@@ -7,6 +7,7 @@ from jinja2.exceptions import TemplateError
 class Extension:
     def __init__(self, config):
         self.methods = {}
+        self.filters = {}
         self.post = []
         self.config = config
         for key, value in self.get_config().items():
@@ -18,6 +19,10 @@ class Extension:
     def register(self, name, function):
         if name not in self.methods:
             self.methods[name] = function
+
+    def register_filter(self, name, function):
+        if name not in self.filters:
+            self.filters[name] = function
 
     def register_post(self, function):
         self.post.append(function)
