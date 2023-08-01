@@ -16,6 +16,9 @@ class PSParser:
             if len(tokens) == 2:
                 self.prelude_options[tokens[0]] = tokens[1]
 
+    class ParseError(Exception):
+        """Thrown when unable to parse the input PS"""
+
     @staticmethod
     def __redact_comments(input_str, redact_char=" "):
         depth = 0
@@ -113,6 +116,8 @@ class PSParser:
         return ps_objects
 
     def get_glyphs(self):
+        # Code Smell: this method is way too long, consider breaking
+        # it up in the future however it's working pretty well for now
         legend = self.sections["legend"]
         ps_objects = self.get_objects()
         collisionlayers = self.sections["collisionlayers"]
@@ -155,24 +160,32 @@ class PSParser:
                 synonyms[synonym] = synonyms[synonyms[synonym]]
 
         def resolve_dict(input_dict):
-            # This is failing on gridblocked and selene without the check
-            # for in synonyms perhaps the dict needs to be
-            # recursively resolved, fix ths
+            must_recurse = True
             output = {}
-            for key in input_dict:
-                output[key] = []
-                for object_name in input_dict[key]:
-                    if object_name in input_dict:
-                        for inner_key in input_dict[object_name]:
-                            if inner_key in synonyms:
-                                output[key].append(synonyms[inner_key])
-                            else:
-                                output[key].append(inner_key)
-                    else:
-                        if object_name in synonyms:
-                            output[key].append(synonyms[object_name])
+            while must_recurse:
+                # This can loop forever if there are circular references
+                # consider adding a max number of loops
+                must_recurse = False
+                output = {}
+                for key in input_dict:
+                    output[key] = []
+                    for object_name in input_dict[key]:
+                        if object_name in input_dict:
+                            for inner_key in input_dict[object_name]:
+                                if inner_key in synonyms:
+                                    output[key].append(synonyms[inner_key])
+                                else:
+                                    output[key].append(inner_key)
                         else:
-                            output[key].append(object_name)
+                            if object_name in synonyms:
+                                output[key].append(synonyms[object_name])
+                            else:
+                                output[key].append(object_name)
+                for key in output:
+                    for object_name in output[key]:
+                        if object_name in output:
+                            must_recurse = True
+                input_dict = output
             return output
 
         properties = resolve_dict(properties)
@@ -190,8 +203,6 @@ class PSParser:
             if len(aggregate) == 1:
                 glyphs[aggregate] = aggregates[aggregate]
 
-        # Same problem here with some things not showing up in synonyms,
-        # selene is lacking a temp2?  This should be easier to track down
         collision_order = []
         for collision_object in re.split(
             r",\s*|\s+", collisionlayers, flags=re.MULTILINE
@@ -211,7 +222,12 @@ class PSParser:
         for glyph in glyphs:
             if background_name not in glyphs[glyph]:
                 glyphs[glyph].append(background_name)
-            glyphs[glyph] = sorted(glyphs[glyph], key=collision_order.index)
+            try:
+                glyphs[glyph] = sorted(glyphs[glyph], key=collision_order.index)
+            except ValueError as err:
+                raise self.ParseError(
+                    f"Can't find object in collisionlayers:\n  {err}"
+                )
             glyph_objects = []
             for object_name in glyphs[glyph]:
                 glyph_objects.append(
