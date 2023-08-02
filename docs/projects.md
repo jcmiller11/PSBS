@@ -8,7 +8,7 @@
     │   └── readme.txt
     └── src
         ├── collisionlayers.pss    (Default template files)
-        ├── legend.pss             (you can organize your project's templates however you like)
+        ├── legend.pss
         ├── levels.pss
         ├── main.pss
         ├── objects.pss
@@ -24,10 +24,14 @@ At the root of your project you will find a file called config.yaml containing c
 
 - gist_id: the id of the gist the upload and run commands should use to store this project in
 - engine: the url of the fork you are using, by default https://www.puzzlescript.net/
-- template: the name of your root template file, by default main.pssengine: https://auroriax.github.io/PuzzleScript/
+- template: the name of your root template file, by default main.pss
 
 Below these are optional config variables for template extensions
 
+- Build:
+  - name: the release name supplied by the build test in templates, debug by default
+- Tiled:
+  - generate_tileset: wether or not to generate a Tiled tileset when building your project, false by default
 - Images:
-  - alpha: whether to include the RGBA alpha values for transparency supported by some forks
+  - alpha: whether to include the RGBA alpha values for transparency supported by some forks, by default false
   - max_colors: maximum colors in output object, PuzzleScript can only handle 10 by default but some forks support up to 36 colors
