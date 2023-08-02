@@ -30,10 +30,10 @@ class PSParser:
             split_line = re.split(
                 "message ", line, maxsplit=1, flags=re.IGNORECASE
             )
-            if len(split_line) < 2:
-                split_line.append("")
             messages_removed += split_line[0]
-            messages_removed += (split_line[1]).replace("(", " ")
+            if len(split_line) > 1:
+                messages_removed += "message "
+                messages_removed += (split_line[1]).replace("(", " ")
             messages_removed += "\n"
 
         for character in messages_removed:
