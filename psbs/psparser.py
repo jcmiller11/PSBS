@@ -22,28 +22,20 @@ class PSParser:
     @staticmethod
     def __redact_comments(input_str, redact_char=" "):
         depth = 0
-        messages_removed = ""
         output = ""
-        # This is technically still not correct but the rules for parenthesis
-        # inside of messages are quite baroque, consider fixing at some point
-        for line in input_str.splitlines():
-            split_line = re.split(
-                "message ", line, maxsplit=1, flags=re.IGNORECASE
-            )
-            messages_removed += split_line[0]
-            if len(split_line) > 1:
-                messages_removed += "message "
-                messages_removed += (split_line[1]).replace("(", " ")
-            messages_removed += "\n"
-
-        for character in messages_removed:
-            if character == "(":
+        in_a_message = False
+        for character in input_str:
+            if output[-8:].lower() == "message ":
+                in_a_message = True
+            if character == "\n":
+                in_a_message = False
+            if character == "(" and not in_a_message:
                 depth += 1
-            if depth > 0 and character != "\n":
+            if depth > 0 and character != "\n" and not in_a_message:
                 output += redact_char
             else:
                 output += character
-            if character == ")":
+            if character == ")" and not in_a_message:
                 depth -= 1
             depth = max(depth, 0)
         return output
