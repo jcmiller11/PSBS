@@ -65,13 +65,13 @@ class PSBSProject:
         source = ""
         engine = "https://www.puzzlescript.net/"
 
-        if gist_id:
+        if file:
+            source = read_file(file)
+        elif gist_id:
             print("Downloading data from gist")
             gist = Gister(gist_id=gist_id)
             source = gist.read("script.txt")
             engine = PSParser.get_engine(gist.read("readme.txt"))
-        elif file:
-            source = read_file(file)
         else:
             source = read_file(
                 path.join(path.realpath(path.dirname(__file__)), "example.txt")
