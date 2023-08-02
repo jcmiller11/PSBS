@@ -22,8 +22,21 @@ class PSParser:
     @staticmethod
     def __redact_comments(input_str, redact_char=" "):
         depth = 0
+        messages_removed = ""
         output = ""
-        for character in input_str:
+        # This is technically still not correct but the rules for parenthesis
+        # inside of messages are quite baroque, consider fixing at some point
+        for line in input_str.splitlines():
+            split_line = re.split(
+                "message ", line, maxsplit=1, flags=re.IGNORECASE
+            )
+            if len(split_line) < 2:
+                split_line.append("")
+            messages_removed += split_line[0]
+            messages_removed += (split_line[1]).replace("(", " ")
+            messages_removed += "\n"
+
+        for character in messages_removed:
             if character == "(":
                 depth += 1
             if depth > 0 and character != "\n":
@@ -223,7 +236,9 @@ class PSParser:
             if background_name not in glyphs[glyph]:
                 glyphs[glyph].append(background_name)
             try:
-                glyphs[glyph] = sorted(glyphs[glyph], key=collision_order.index)
+                glyphs[glyph] = sorted(
+                    glyphs[glyph], key=collision_order.index
+                )
             except ValueError as err:
                 raise self.ParseError(
                     f"Can't find object in collisionlayers:\n  {err}"
