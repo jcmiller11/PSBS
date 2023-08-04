@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
+
+    <title>PSBS Docs</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <meta name="description" content="Documentation for PSBS: The PuzzleScript Build System">
+
+    <link rel="stylesheet" media="(prefers-color-scheme: dark)"
+        href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
+    <link rel="stylesheet" media="(prefers-color-scheme: light)"
+        href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script>
+        // Docsify Configuration (see https://docsify.js.org/#/configuration)
+        window.$docsify = {
+            name: 'PSBS Docs',
+            logo: '/media/logo.svg',
+
+            // Sidebar Configuration
+            auto2top: true,
+            loadSidebar: true,
+            alias: {
+                '/.*/_sidebar.md': '/_sidebar.md'
+            },
+            maxLevel: 0,
+            // Set subMaxLevel to 0 to remove automatic display of page table of contents (TOC) in Sidebar
+            subMaxLevel: 2,
+
+            // Search Plugin Configuration
+            search: {
+                placeholder: 'Type to search',
+                noData: 'No matches found.',
+                // Headline depth, 1 - 6
+                depth: 2,
+            }
+        };
+    </script>
+
+    <!-- Required -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script>
+
+    <!-- Recommended -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script>
+        /*
+          This is NOT a proper PSBS template language parser
+          It is good enough for my manually input examples, for now, though
+        */
+        Prism.languages.psbs = {
+            'comment': {
+                pattern: /\(#[\s\S]*?(?:#\)|$)/i,
+                greedy: true
+            },
+            'statement': {
+                pattern: /\(%[\s\S]*?(?:%\)|$)/i,
+                greedy: true,
+                inside: Prism.languages["python"]
+            },
+            'expression': {
+                pattern: /\(\([\s\S]*?(?:\)\)|$)/i,
+                greedy: true,
+                inside: Prism.languages["python"]
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -64,8 +64,12 @@ class Gister:
                 raise self.GistError("404: File not found")
             if response.status_code == 403:
                 raise self.GistError("403: Forbidden")
-            if "message" in response:
+            if response.status_code >= 400:
                 raise self.GistError(response)
+            # I can't remember why I was using this
+            # keeping it here in case I remember
+            # if "message" in response:
+            #    raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")
             raise SystemExit(1) from err

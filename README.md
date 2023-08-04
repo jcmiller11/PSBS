@@ -8,14 +8,15 @@ This is an early development release and changes may be made to the project stru
 
 ## Features
 
- - Compile PuzzleScript games from many files using Jinja2 templates
- - Import images and spritesheets directly into your PuzzleScript game
- - Load existing PuzzleScript projects right from their gists
- - Load existing PuzzleScript projects from a source text file
- - Save PuzzleScript projects to gists
- - Launch your project from play.html or the PuzzleScript editor
- - Supports most PuzzleScript forks including [Pattern:Script](https://github.com/ClementSparrow/Pattern-Script)
- - Use your favorite version control for your PuzzleScript Projects
+ - Compile PuzzleScript games from many files using Jinja2 templates!
+ - Import images and spritesheets directly into your PuzzleScript game!
+ - Load existing PuzzleScript projects right from their gists!
+ - Load existing PuzzleScript projects from a source text file!
+ - Save PuzzleScript projects to gists!
+ - Launch your project from play.html or the PuzzleScript editor!
+ - Supports most PuzzleScript forks!
+ - Use your favorite version control for your PuzzleScript projects!
+ - (Tiled)[https://www.mapeditor.org/] level editor integration!
 
 ## Installing
 
@@ -97,11 +98,15 @@ Below these are optional config variables for template extensions
 
 ## Templates
 
-PSBS uses Jinja2, a fast, expressive, extensible templating engine, to build your PuzzleScript project.  To learn more about all of the features available to you check out the Jinja2 [Template Designer Documentation](https://jinja.palletsprojects.com/en/3.1.x/templates/).
+PSBS uses Jinja2, a fast, expressive, extensible templating engine, to build your PuzzleScript project.
+
+I'm currently working on [official documentation](https://jcmiller11.github.io/PSBS/) but this is a work in progress.
+
+To learn more about all of the features available to you check out the Jinja2 [Template Designer Documentation](https://jinja.palletsprojects.com/en/3.1.x/templates/).
 
 To avoid conflicting with valid PuzzleScript code, the Jinja2 Tags have been changed as follows:
 
-(% blocks %) (( variables )) (# comments #)
+(% statements %) (( expressions )) (# comments #)
 
 ## Images
 
@@ -110,10 +115,10 @@ A helper function has been added to the template environment `Image(filename)` t
     Target
     ((image("images/target.png")))
 
-Additionally, this helper function contains the following optional parameters (alpha=False, max_colors=10, x=0, y=0, width=None, height=None)
+Additionally, this helper function contains the following optional parameters (alpha=False, max_colors=10, left=0, top=0, width=None, height=None)
 
-- x: (int) horizontal position in image to start importing from
-- y: (int) vertical position in image to start importing from
+- left: (int) horizontal position in image to start importing from
+- top: (int) vertical position in image to start importing from
 - width: (int) width of the object to import, if None set to the width of the image file
 - height: (int) height of the object to import, if None set to the height of the image file
 
@@ -122,5 +127,43 @@ By using the last four parameters listed one can load objects from a single imag
     (% set directions = ["down","left","up","right"] %) (# Can be placed in your main template #)
     (% for dir in directions %)
     Player_((dir))
-    ((image("images/player.png",x=loop.index0*5,width=5,height=5)))
+    ((image("images/player.png",left=loop.index0*5,width=5,height=5)))
     (% endfor %)
+
+## Tiled
+
+`tiled(filename)`
+
+Imports a [Tiled](https://www.mapeditor.org) map as a level!  If you set generate_tileset to true in your config.yaml PSBS will attempt to generate a Tiled tileset from your game in the bin directory of your project.  Tiled maps made with this tileset can be imported.
+
+Tileset generation not compatible with Pattern:Script at this point in time.
+
+```
+message Welcome to the first level!
+((tiled("src/levels/level1.tmx")))
+
+message Here comes level 2!
+((tiled("src/levels/level2.tmx")))
+```
+
+## Releases
+
+As of PSBS 0.2.0 a release name option has been added to config.yaml, this can be access within your template files using the following functions:
+
+get_build: returns the release name
+
+is_debug: returns true if the release name is "debug"
+
+is_release: returns true if the release name is "release"
+
+```
+(% if is_debug %)
+debug
+verbose_logging
+(% endif %)
+```
+
+```
+markerobject
+(% "transparent" if is_release else "red" %)
+```
