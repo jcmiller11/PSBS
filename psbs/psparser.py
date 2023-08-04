@@ -12,9 +12,9 @@ class PSParser:
         for line in self.sections["prelude"].splitlines():
             tokens = line.split(maxsplit=1)
             if len(tokens) == 1:
-                self.prelude_options[tokens[0]] = True
+                self.prelude_options[tokens[0].lower()] = True
             if len(tokens) == 2:
-                self.prelude_options[tokens[0]] = tokens[1]
+                self.prelude_options[tokens[0].lower()] = tokens[1]
 
     class ParseError(Exception):
         """Thrown when unable to parse the input PS"""

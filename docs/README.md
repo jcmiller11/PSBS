@@ -11,7 +11,7 @@
   <img src="media/pypi.png" style="height:2em;vertical-align:middle;">
 </picture>PSBS on PyPI](https://pypi.org/project/psbs/)
 
-PSBS combines multiple files into one puzzlescript source file and uploads it to the web.
+PSBS combines multiple files into one puzzlescript source file and can export it to an HTML file or an online game hosted on a gist!
 
 This is an early development release and changes may be made to the project structure and config file formats in the future.
 
@@ -25,7 +25,7 @@ If you don't have Python and pip installed: [Download Python](https://www.python
 
 ## Connecting to GitHub
 
-PSBS will build your projects into PuzzleScript source without interacting with GitHub at all, however uploading and running your projects requires an authorization token.  You can check if PSBS currently has an auth token by entering `psbs token`.
+PSBS will build your projects into PuzzleScript games without interacting with GitHub at all, however uploading and running your projects from gists requires an authorization token.  You can check if PSBS currently has an auth token by entering `psbs token`.
 
 By default PSBS will attempt to run `gh auth token` to recieve an authorization token from the GitHub command line tool.  If you would like to use a different token or prefer not to install the GitHub command line tool you can run the following command.
 

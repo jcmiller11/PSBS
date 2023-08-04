@@ -2,7 +2,7 @@
 
 The PuzzleScript Build System!
 
-PSBS combines multiple files into one puzzlescript source file and uploads it to the web.
+PSBS combines multiple files into one puzzlescript source file and can export it to an HTML file or an online game hosted on a gist!
 
 This is an early development release and changes may be made to the project structure and config file formats in the future.
 
@@ -12,7 +12,8 @@ This is an early development release and changes may be made to the project stru
  - Import images and spritesheets directly into your PuzzleScript game!
  - Load existing PuzzleScript projects right from their gists!
  - Load existing PuzzleScript projects from a source text file!
- - Save PuzzleScript projects to gists!
+ - Export PuzzleScript projects to html files!
+ - Export PuzzleScript projects to gists!
  - Launch your project from play.html or the PuzzleScript editor!
  - Supports most PuzzleScript forks!
  - Use your favorite version control for your PuzzleScript projects!
@@ -28,7 +29,7 @@ If you don't have Python and pip installed: [Download Python](https://www.python
 
 ## Connecting to GitHub
 
-PSBS will build your projects into PuzzleScript source without interacting with GitHub at all, however uploading and running your projects requires an authorization token.
+PSBS will build your projects into PuzzleScript games without interacting with GitHub at all, however uploading and running your projects from gists requires an authorization token.
 
 By default PSBS will attempt to run `gh auth token` to recieve an authorization token from the GitHub command line tool.  If you would like to use a different token or prefer not to install the GitHub command line tool you can run the following command.
 
@@ -44,9 +45,9 @@ Commands:
 
 `psbs build` Builds the project in the current working directory
 
-`psbs upload` Builds project then uploads it to gist
+`psbs export` Builds project then export to game
 
-`psbs run` Builds project, uploads it, then runs it in your web browser
+`psbs run` Builds project, exports it, then runs it in your web browser
 
 `psbs token` Check or set the GitHub auth token
 
@@ -85,7 +86,7 @@ For more information on these commands and to see available flags enter `psbs he
 
 At the root of your project you will find a file called config.yaml containing configuration variables for your project
 
-- gist_id: the id of the gist the upload and run commands should use to store this project in
+- gist_id: the id of the gist the export and run commands can use to store this project in
 - engine: the url of the fork you are using, by default https://www.puzzlescript.net/
 - template: the name of your root template file, by default main.pssengine: https://auroriax.github.io/PuzzleScript/
 

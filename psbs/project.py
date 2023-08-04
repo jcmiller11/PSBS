@@ -1,11 +1,13 @@
 from os import path
 from shutil import rmtree
+from pathlib import PurePath
 
-from .gister import Gister
 from .config import Config
+from .extension import Extension
+from .htmlbuilder import build_html
+from .gister import Gister
 from .psparser import PSParser
 from .template import Template
-from .extension import Extension
 from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 
 
@@ -39,25 +41,38 @@ class PSBSProject:
         print(f"Writing file {script_path}")
         write_file(script_path, template.render())
 
+    def export(self):
+        if not self.config["gist_id"]:
+            print("Writing game to html file")
+            return build_html(
+                self.config["engine"],
+                read_file(path.join("bin", "script.txt"))
+            )
+        else:
+            self.upload()
+            return None
+
     def upload(self):
-        gist_id = self.config["gist_id"]
         if not self.config["gist_id"]:
             print("Error: Unable to upload without a gist_id in config file")
             raise SystemExit(1)
 
         print("Updating gist")
-        gist = Gister(gist_id=gist_id)
+        gist = Gister(gist_id=self.config["gist_id"])
         gist.write(path.join("bin", "readme.txt"))
         gist.write(path.join("bin", "script.txt"))
 
-    def run(self, editor=False):
+    def run(self, filename, editor=False):
         print("Opening in browser")
-        url = self.config["engine"]
-        if editor:
-            url += "editor.html?hack="
+        if filename:
+            url = PurePath(path.abspath(filename)).as_uri()
         else:
-            url += "play.html?p="
-        url += self.config["gist_id"]
+            url = self.config["engine"]
+            if editor:
+                url += "editor.html?hack="
+            else:
+                url += "play.html?p="
+            url += self.config["gist_id"]
         run_in_browser(url)
 
     @staticmethod

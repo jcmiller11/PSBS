@@ -6,9 +6,9 @@
 
 [`psbs build`](command-line-interface#build) Builds the project in the current working directory
 
-[`psbs upload`](command-line-interface#upload) Builds project then uploads it to gist
+[`psbs export`](command-line-interface#export) Builds project then export to game
 
-[`psbs run`](command-line-interface#run) Builds project, uploads it, then runs it in your web browser
+[`psbs run`](command-line-interface#run) Builds project, exports it, then runs it in your web browser
 
 [`psbs token`](command-line-interface#token) Check or set the GitHub auth token
 
@@ -59,29 +59,25 @@ Builds the project in the current working directory.
 
 This is the heart of PSBS's functionality.  Takes the source files in your project's src/ directory and compiles them into a PuzzleScript game which can will be found in your project's bin/ directory.
 
-## Upload
+## Export
 
-`psbs upload`
+`psbs export`
 
-Builds project then uploads it to gist.
+Builds project then exports it to a game.
 
-Runs psbs build and then uploads the file to the gist id found in your project's config.yaml.
+Runs psbs build and then exports your project to a game.
 
-!> Requires a [GitHub auth token](getting-started#connecting-to-github).
+If a gist id found in your project's config.yaml the game will be exported there, otherwise it will be exported to a local html file.
 
 ## Run
 
 `psbs run [--editor,-e]`
 
-Builds project, uploads it, then runs it in your web browser.
+Builds project, exports it, then runs it in your web browser.
 
-Runs psbs build and then uploads the file to the gist id found in your project's config.yaml, then opens up a browser to PuzzleScript's play.html pointed at that gist.
+Runs psbs build, exports the project to a game, then runs it in your web browser.  If a gist id is found in your project's config.yaml it will be exported there and your browser will be opened to PuzzleScript's play.html pointed at that gist.  If no gist id is found a local html file will be exported and opened in your web browser.
 
-The location of the play.html used will be determined by the engine url in your config.yaml.  Change this to run the game in a different fork.
-
-Alternatively, if the -e flag is given it will open to editor.html instead.
-
-!> Requires a [Github auth token](getting-started#connecting-to-github).
+Alternatively, if running from a gist if the -e flag is given it will open to editor.html instead.
 
 #### Options:
 - --editor, -e
