@@ -16,7 +16,7 @@ This is an early development release and changes may be made to the project stru
  - Launch your project from play.html or the PuzzleScript editor!
  - Supports most PuzzleScript forks!
  - Use your favorite version control for your PuzzleScript projects!
- - (Tiled)[https://www.mapeditor.org/] level editor integration!
+ - [Tiled](https://www.mapeditor.org/) level editor integration!
 
 ## Installing
 
