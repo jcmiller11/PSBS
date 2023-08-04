@@ -2,6 +2,8 @@
 
 ## cycler
 
+## get_build
+
 ## image
 
 `image(filename, alpha=False, max_colors=10, left=0, top=0, width=None, height=None)`
@@ -31,7 +33,24 @@ Player_(( dir ))
 (( image("images/player.png",left=loop.index0*5,width=5,height=5) ))
 (% endfor %)
 ```
+## is_debug
+
+## is_release
 
 ## range
 
 ## tiled
+
+`tiled(filename)`
+
+Imports a [Tiled](https://www.mapeditor.org) map as a level!  If you set generate_tileset to true in your config.yaml PSBS will attempt to generate a Tiled tileset from your game in the bin directory of your project.  Tiled maps made with this tileset can be imported.
+
+!> Tileset generation not compatible with Pattern:Script at this point in time
+
+```psbs
+message Welcome to the first level!
+((tiled("src/levels/level1.tmx")))
+
+message Here comes level 2!
+((tiled("src/levels/level2.tmx")))
+```
