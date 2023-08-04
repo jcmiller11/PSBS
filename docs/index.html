@@ -29,6 +29,9 @@
             // Sidebar Configuration
             auto2top: true,
             loadSidebar: true,
+            alias: {
+                '/.*/_sidebar.md': '/_sidebar.md'
+            },
             maxLevel: 0,
             // Set subMaxLevel to 0 to remove automatic display of page table of contents (TOC) in Sidebar
             subMaxLevel: 2,
@@ -51,6 +54,31 @@
     <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
 
+    <!-- Other -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script>
+        /*
+          This is NOT a proper PSBS template language parser
+          It is good enough for my manually input examples, for now, though
+        */
+        Prism.languages.psbs = {
+            'comment': {
+                pattern: /\(#[\s\S]*?(?:#\)|$)/i,
+                greedy: true
+            },
+            'statement': {
+                pattern: /\(%[\s\S]*?(?:%\)|$)/i,
+                greedy: true,
+                inside: Prism.languages["python"]
+            },
+            'expression': {
+                pattern: /\(\([\s\S]*?(?:\)\)|$)/i,
+                greedy: true,
+                inside: Prism.languages["python"]
+            }
+        };
+    </script>
 </body>
 
 </html>

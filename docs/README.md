@@ -1,6 +1,15 @@
 # PSBS
 
-The PuzzleScript Build System!
+### The PuzzleScript Build System!
+
+[<picture>
+  <source srcset="media/github-mark-white.png" media="(prefers-color-scheme: dark)">
+  <img src="media/github-mark.png" style="height:2em;vertical-align:middle;">
+</picture>PSBS on GitHub](https://github.com/jcmiller11/PSBS)
+
+[<picture>
+  <img src="media/pypi.png" style="height:2em;vertical-align:middle;">
+</picture>PSBS on PyPI](https://pypi.org/project/psbs/)
 
 PSBS combines multiple files into one puzzlescript source file and uploads it to the web.
 

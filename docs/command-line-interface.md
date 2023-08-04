@@ -24,7 +24,7 @@ The -n flag will create a new gist for the project to upload to and run from.
 
 If a gist id or text file are supplied the project source files will automatically be populated with the contents. If both a gist and a file are given the project will be built from the source in the text file but be configured to upload and run from the supplied gist id.
 
-Note: Creating a new gist or building from a gist require a [GitHub auth token](getting-started#connecting-to-github).
+!> Creating a new gist or building from a gist require a [GitHub auth token](getting-started#connecting-to-github).
 
 #### Options:
 - --new-gist, -n
@@ -36,21 +36,21 @@ Note: Creating a new gist or building from a gist require a [GitHub auth token](
 
 #### Examples:
 Create a new project named myproject, and create a new gist on your GitHub account for it
-
-    psbs new -n myproject
-
+```bash
+psbs new -n myproject
+```
 Create a new project named myproject from a text file
-
-    psbs new -n -f puzzlescript.txt myproject
-
+```bash
+psbs new -n -f puzzlescript.txt myproject
+```
 Create a new project named myproject from a text file, and create a new gist on your GitHub account for it
-
-    psbs new -f puzzlescript.txt myproject
-
+```bash
+psbs new -f puzzlescript.txt myproject
+```
 Create a new project named myproject from a supplied gist on your GitHub account
-
-    psbs new -g e3435763f6b7bee395251a909dcd89c3 myproject
-
+```bash
+psbs new -g e3435763f6b7bee395251a909dcd89c3 myproject
+```
 ## Build
 
 `psbs build`
@@ -67,7 +67,7 @@ Builds project then uploads it to gist.
 
 Runs psbs build and then uploads the file to the gist id found in your project's config.yaml.
 
-Note: Requires a [GitHub auth token](getting-started#connecting-to-github).
+!> Requires a [GitHub auth token](getting-started#connecting-to-github).
 
 ## Run
 
@@ -81,7 +81,7 @@ The location of the play.html used will be determined by the engine url in your 
 
 Alternatively, if the -e flag is given it will open to editor.html instead.
 
-Note: Requires a [Github auth token](getting-started#connecting-to-github).
+!> Requires a [Github auth token](getting-started#connecting-to-github).
 
 #### Options:
 - --editor, -e
