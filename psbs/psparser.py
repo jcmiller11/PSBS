@@ -95,29 +95,33 @@ class PSParser:
         )
         ps_objects = {}
         for object_str in object_strs:
-            object_str_lines = object_str.splitlines()
-            name = object_str_lines.pop(0)
-            if "case_sensitive" not in self.prelude_options:
-                name = name.lower()
-            colors = object_str_lines.pop(0)
-            body = "\n".join(object_str_lines)
-            # ps_objects[object_name] = body
-            # consider using dict:
-            synonyms = []
-            tokens_in_name = name.split()
-            if len(tokens_in_name) > 0:
-                name = tokens_in_name.pop(0)
-                for token in tokens_in_name:
-                    if token.startswith("copy:"):
-                        # handle PuzzleScript+ copy feature
-                        body = ps_objects[token[5:]]["body"]
-                    else:
-                        synonyms.append(token)
-            ps_objects[name] = {
-                "colors": colors,
-                "body": body,
-                "synonyms": synonyms,
-            }
+            try:
+                object_str_lines = object_str.splitlines()
+                name = object_str_lines.pop(0)
+                if "case_sensitive" not in self.prelude_options:
+                    name = name.lower()
+                colors = object_str_lines.pop(0)
+                body = "\n".join(object_str_lines)
+                # ps_objects[object_name] = body
+                # consider using dict:
+                synonyms = []
+                tokens_in_name = name.split()
+                if len(tokens_in_name) > 0:
+                    name = tokens_in_name.pop(0)
+                    for token in tokens_in_name:
+                        if token.startswith("copy:"):
+                            # handle PuzzleScript+ copy feature
+                            body = ps_objects[token[5:]]["body"]
+                        else:
+                            synonyms.append(token)
+                ps_objects[name] = {
+                    "colors": colors,
+                    "body": body,
+                    "synonyms": synonyms,
+                }
+            except IndexError:
+                print("Warning: unable to parse object:")
+                print(object_str)
         return ps_objects
 
     def get_glyphs(self):
