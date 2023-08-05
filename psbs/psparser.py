@@ -181,15 +181,9 @@ class PSParser:
                     for object_name in input_dict[key]:
                         if object_name in input_dict:
                             for inner_key in input_dict[object_name]:
-                                if inner_key in synonyms:
-                                    output[key].append(synonyms[inner_key])
-                                else:
-                                    output[key].append(inner_key)
+                                output[key].append(synonyms.get(inner_key, inner_key))
                         else:
-                            if object_name in synonyms:
-                                output[key].append(synonyms[object_name])
-                            else:
-                                output[key].append(object_name)
+                            output[key].append(synonyms.get(object_name, object_name))
                 for key in output:
                     for object_name in output[key]:
                         if object_name in output:
@@ -203,10 +197,7 @@ class PSParser:
         glyphs = {}
         for synonym in synonyms:
             if len(synonym) == 1:
-                if synonyms[synonym] in aggregates:
-                    glyphs[synonym] = aggregates[synonyms[synonym]]
-                else:
-                    glyphs[synonym] = [synonyms[synonym]]
+                glyphs[synonym] = aggregates.get(synonyms[synonym], [synonyms[synonym]])
 
         for aggregate in aggregates:
             if len(aggregate) == 1:
@@ -218,15 +209,9 @@ class PSParser:
         ):
             if collision_object in properties:
                 for inner_object in properties[collision_object]:
-                    if inner_object in synonyms:
-                        collision_order.append(synonyms[inner_object])
-                    else:
-                        collision_order.append(inner_object)
+                    collision_order.append(synonyms.get(inner_object,inner_object))
             else:
-                if collision_object in synonyms:
-                    collision_order.append(synonyms[collision_object])
-                else:
-                    collision_order.append(collision_object)
+                collision_order.append(synonyms.get(collision_object, collision_object))
 
         for glyph in glyphs:
             if background_name not in glyphs[glyph]:
