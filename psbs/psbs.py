@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from sys import argv
 
 from .project import PSBSProject
 from .token import get_token, set_token
@@ -83,7 +82,8 @@ def main():
     elif args.command == "run":
         project = PSBSProject()
         project.build()
-        project.run(project.export(), editor=args.editor)
+        project.export()
+        project.run(editor=args.editor)
     elif args.command == "new":
         PSBSProject.create(
             args.name,

@@ -14,6 +14,7 @@ from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
 class PSBSProject:
     def __init__(self, config_filename="config.yaml"):
         self.config = Config(config_filename)
+        self.filename = None
 
     def build(self):
         # Check for target directory
@@ -44,27 +45,20 @@ class PSBSProject:
     def export(self):
         if not self.config["gist_id"]:
             print("Writing game to html file")
-            return build_html(
+            self.filename = build_html(
                 self.config["engine"],
                 read_file(path.join("bin", "script.txt")),
             )
-        self.upload()
-        return None
+        else:
+            print("Updating gist")
+            gist = Gister(gist_id=self.config["gist_id"])
+            gist.write(path.join("bin", "readme.txt"))
+            gist.write(path.join("bin", "script.txt"))
 
-    def upload(self):
-        if not self.config["gist_id"]:
-            print("Error: Unable to upload without a gist_id in config file")
-            raise SystemExit(1)
-
-        print("Updating gist")
-        gist = Gister(gist_id=self.config["gist_id"])
-        gist.write(path.join("bin", "readme.txt"))
-        gist.write(path.join("bin", "script.txt"))
-
-    def run(self, filename, editor=False):
+    def run(self, editor=False):
         print("Opening in browser")
-        if filename:
-            url = PurePath(path.abspath(filename)).as_uri()
+        if self.filename:
+            url = PurePath(path.abspath(self.filename)).as_uri()
         else:
             url = self.config["engine"]
             if editor:
