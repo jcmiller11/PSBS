@@ -8,7 +8,7 @@ from .utils import write_file
 
 def build_html(engine, source):
     standalone_url = "/".join(engine.split("/") + ["standalone_inlined.txt"])
-    response = get(standalone_url,timeout=5)
+    response = get(standalone_url, timeout=5)
     if response.status_code != 200:
         print("Error: Can't build html game")
         print(f"  Unable to download {standalone_url}")
