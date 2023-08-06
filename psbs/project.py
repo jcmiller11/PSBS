@@ -46,11 +46,10 @@ class PSBSProject:
             print("Writing game to html file")
             return build_html(
                 self.config["engine"],
-                read_file(path.join("bin", "script.txt"))
+                read_file(path.join("bin", "script.txt")),
             )
-        else:
-            self.upload()
-            return None
+        self.upload()
+        return None
 
     def upload(self):
         if not self.config["gist_id"]:

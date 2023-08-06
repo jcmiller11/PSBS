@@ -1,4 +1,4 @@
-from argparse import ArgumentParser, SUPPRESS
+from argparse import ArgumentParser
 from sys import argv
 
 from .project import PSBSProject
@@ -6,11 +6,6 @@ from .token import get_token, set_token
 
 
 def main():
-
-    if len(argv) > 1 and argv[1].lower() == "upload":
-        print("Warning: Upload command deprecated, please use export instead in the future")
-        argv[1] = "export"
-
     parser = ArgumentParser(
         description="PSBS: PuzzleScript Build System", add_help=False
     )
@@ -22,7 +17,7 @@ def main():
         "run": "Build project, export, then run in web browser",
         "new": "Create a new project",
         "token": "Check or set GitHub auth token",
-        "help": "Display help dialog"
+        "help": "Display help dialog",
     }
     commands = {}
     for command, help_text in commands_dict.items():
@@ -88,7 +83,7 @@ def main():
     elif args.command == "run":
         project = PSBSProject()
         project.build()
-        project.run(project.export(),editor=args.editor)
+        project.run(project.export(), editor=args.editor)
     elif args.command == "new":
         PSBSProject.create(
             args.name,

@@ -165,15 +165,16 @@ class PSParser:
             synonyms[ps_object] = ps_object
         # resolve synonyms
         for synonym in synonyms:
-            if synonyms[synonym] in synonyms:
-                synonyms[synonym] = synonyms[synonyms[synonym]]
+            synonyms[synonym] = synonyms.get(
+                synonyms[synonym], synonyms[synonym]
+            )
 
         def resolve_dict(input_dict):
             must_recurse = True
             output = {}
             while must_recurse:
                 # This can loop forever if there are circular references
-                # consider adding a max number of loops
+                # consider adding a max number of loops maybe?
                 must_recurse = False
                 output = {}
                 for key in input_dict:
@@ -181,9 +182,13 @@ class PSParser:
                     for object_name in input_dict[key]:
                         if object_name in input_dict:
                             for inner_key in input_dict[object_name]:
-                                output[key].append(synonyms.get(inner_key, inner_key))
+                                output[key].append(
+                                    synonyms.get(inner_key, inner_key)
+                                )
                         else:
-                            output[key].append(synonyms.get(object_name, object_name))
+                            output[key].append(
+                                synonyms.get(object_name, object_name)
+                            )
                 for key in output:
                     for object_name in output[key]:
                         if object_name in output:
@@ -197,7 +202,9 @@ class PSParser:
         glyphs = {}
         for synonym in synonyms:
             if len(synonym) == 1:
-                glyphs[synonym] = aggregates.get(synonyms[synonym], [synonyms[synonym]])
+                glyphs[synonym] = aggregates.get(
+                    synonyms[synonym], [synonyms[synonym]]
+                )
 
         for aggregate in aggregates:
             if len(aggregate) == 1:
@@ -209,9 +216,13 @@ class PSParser:
         ):
             if collision_object in properties:
                 for inner_object in properties[collision_object]:
-                    collision_order.append(synonyms.get(inner_object,inner_object))
+                    collision_order.append(
+                        synonyms.get(inner_object, inner_object)
+                    )
             else:
-                collision_order.append(synonyms.get(collision_object, collision_object))
+                collision_order.append(
+                    synonyms.get(collision_object, collision_object)
+                )
 
         for glyph in glyphs:
             if background_name not in glyphs[glyph]:

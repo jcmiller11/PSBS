@@ -6,10 +6,10 @@ class Filters(Extension):
         super().__init__(config)
         self.register_filter("wrap", self.wrap_to_width)
 
-    def wrap_to_width(self, input, width=5):
+    def wrap_to_width(self, input_text, width=5):
         output = ""
-        for line in str(input).splitlines():
+        for line in str(input_text).splitlines():
             output += "\n".join(
-                [line[i : i + 5] for i in range(0, len(line), 5)]
+                [line[i : i + width] for i in range(0, len(line), width)]
             )
         return output
