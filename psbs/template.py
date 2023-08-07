@@ -17,6 +17,7 @@ class Template:
             variable_end_string="))",
             comment_start_string="(#",
             comment_end_string="#)",
+            extensions=['jinja2.ext.do'],
         )
         self.postprocessing_steps = []
         extensions = Extension.get_extensions()
