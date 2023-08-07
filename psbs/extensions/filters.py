@@ -16,9 +16,12 @@ class Filters(Extension):
         return output
 
     def combine_levels(self, levels_list, columns = 0):
-        if columns == 0:
-            columns = len(levels_list)
-        rows = (levels_list[pos:pos + columns] for pos in range(0, len(levels_list), columns))
+        if isinstance(levels_list[0], list):
+            rows = levels_list
+        elif columns == 0:
+            rows = [levels_list]
+        else:
+            rows = [levels_list[pos:pos + columns] for pos in range(0, len(levels_list), columns)]
         def combine_row(list):
             level_lines = []
             for level_number, level in enumerate(list):
