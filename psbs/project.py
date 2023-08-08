@@ -8,7 +8,7 @@ from .htmlbuilder import build_html
 from .gister import Gister
 from .psparser import PSParser
 from .template import Template
-from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser
+from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser, print_ps_console
 
 
 class PSBSProject:
@@ -16,7 +16,7 @@ class PSBSProject:
         self.config = Config(config_filename)
         self.filename = None
 
-    def build(self):
+    def build(self, verbose=False):
         # Check for target directory
         if not path.exists("bin"):
             print("bin directory does not exist, creating one")
@@ -35,12 +35,14 @@ class PSBSProject:
 
         # Build the script.txt
         print("Building script.txt")
-        template = Template(
+        source = Template(
             path.join("src", self.config["template"]), self.config
-        )
+        ).render()
 
         print(f"Writing file {script_path}")
-        write_file(script_path, template.render())
+        write_file(script_path, source)
+        if verbose:
+            print_ps_console(source)
 
     def export(self):
         if not self.config["gist_id"]:

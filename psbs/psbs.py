@@ -70,18 +70,26 @@ def main():
         type=str,
     )
 
+    for verbosible_command in [commands["build"], commands["run"], commands["export"]]:
+        verbosible_command.add_argument(
+            "--verbose",
+            "-v",
+            help="Display PuzzleScript console output",
+            action="store_true",
+        )
+
     args = parser.parse_args()
 
     if args.command == "build":
         project = PSBSProject()
-        project.build()
+        project.build(verbose=args.verbose)
     elif args.command == "export":
         project = PSBSProject()
-        project.build()
+        project.build(verbose=args.verbose)
         project.export()
     elif args.command == "run":
         project = PSBSProject()
-        project.build()
+        project.build(verbose=args.verbose)
         project.export()
         project.run(editor=args.editor)
     elif args.command == "new":

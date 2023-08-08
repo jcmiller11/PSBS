@@ -26,7 +26,8 @@ setup(
         'Pillow',
         'platformdirs',
         'requests',
-        'numpy'
+        'numpy',
+        'pyppeteer'
     ],
 
     classifiers=[

@@ -1,6 +1,9 @@
 import webbrowser
 from os import mkdir
+from asyncio import get_event_loop
+from json import dumps
 
+from pyppeteer import launch
 import yaml
 
 
@@ -66,3 +69,20 @@ def run_in_browser(url):
     except webbrowser.Error as err:
         print("Error: Unable to launch browser")
         raise SystemExit(1) from err
+
+def print_ps_console(source):
+    async def run_in_psfork():
+        browser = await launch()
+        page = await browser.newPage()
+        await page.goto('https://www.puzzlescript.net/editor.html')
+        await page.evaluate('editor.setValue('+dumps(source)+')')
+        await page.evaluate('compile(["restart"])')
+        for message in await page.querySelectorAll("div#consoletextarea div"):
+            message_text = await page.evaluate('(element) => element.textContent', message)
+            if message_text == "=================================":
+                pass
+            elif message_text.startswith("Rule Assembly"):
+                print(message_text.split("===========")[-1])
+            else:
+                print(message_text)
+    get_event_loop().run_until_complete(run_in_psfork())
