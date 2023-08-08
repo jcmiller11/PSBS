@@ -8,7 +8,14 @@ from .htmlbuilder import build_html
 from .gister import Gister
 from .psparser import PSParser
 from .template import Template
-from .utils import read_file, write_file, write_yaml, make_dir, run_in_browser, print_ps_console
+from .utils import (
+    read_file,
+    write_file,
+    write_yaml,
+    make_dir,
+    run_in_browser,
+    print_ps_console,
+)
 
 
 class PSBSProject:
@@ -98,7 +105,7 @@ class PSBSProject:
             "gist_id": gist_id,
             "engine": engine,
             "template": "main.pss",
-            "user_extensions": []
+            "user_extensions": [],
         }
         config_dict.update(Extension.get_extension_configs())
 

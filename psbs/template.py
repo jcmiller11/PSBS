@@ -17,12 +17,12 @@ class Template:
             variable_end_string="))",
             comment_start_string="(#",
             comment_end_string="#)",
-            extensions=['jinja2.ext.do'],
+            extensions=["jinja2.ext.do"],
             trim_blocks=True,
             lstrip_blocks=True,
         )
         self.postprocessing_steps = []
-        user_extensions = config.get("user_extensions",[])
+        user_extensions = config.get("user_extensions", [])
         extensions = Extension.get_extensions(user_extensions)
         for extension in extensions:
             if extension.__name__ not in config:

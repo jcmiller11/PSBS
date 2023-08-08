@@ -35,11 +35,9 @@ class Filters(Extension):
         for line in levels_string.splitlines():
             output += line.split("message")[0].strip()
             output += "\n"
-        return re.split(
-            r"(?<=\S)\n+\n+(?=\S)", output
-        )
+        return re.split(r"(?<=\S)\n+\n+(?=\S)", output)
 
-    def combine_levels(self, levels_list, columns = 0):
+    def combine_levels(self, levels_list, columns=0):
         if isinstance(levels_list, str):
             levels_list = self.levels_to_list(levels_list)
         try:
@@ -51,10 +49,14 @@ class Filters(Extension):
         elif columns == 0:
             rows = [levels_list]
         else:
-            rows = [levels_list[pos:pos + columns] for pos in range(0, len(levels_list), columns)]
-        def combine_row(list):
+            rows = [
+                levels_list[pos : pos + columns]
+                for pos in range(0, len(levels_list), columns)
+            ]
+
+        def combine_row(input_list):
             level_lines = []
-            for level_number, level in enumerate(list):
+            for level in input_list:
                 level = level.strip()
                 for line_number, line in enumerate(level.splitlines()):
                     line = line.strip()
@@ -63,6 +65,7 @@ class Filters(Extension):
                     else:
                         level_lines[line_number] += line
             return level_lines
+
         output = ""
         for row in rows:
             for line in combine_row(row):

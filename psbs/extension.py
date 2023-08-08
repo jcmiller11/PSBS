@@ -35,7 +35,7 @@ class Extension:
         return {}
 
     @classmethod
-    def get_extensions(cls, user_extensions = ""):
+    def get_extensions(cls, user_extensions=""):
         for extension in glob.glob(
             join(dirname(__file__), "extensions", "*.py")
         ):
@@ -44,8 +44,7 @@ class Extension:
         for extension in user_extensions:
             module_name = f"psbs.extensions.{basename(extension)[:-3].lower()}"
             spec = util.spec_from_file_location(
-                module_name,
-                abspath(extension)
+                module_name, abspath(extension)
             )
             if spec and spec.loader:
                 module = util.module_from_spec(spec)
@@ -54,7 +53,7 @@ class Extension:
         return cls.__subclasses__()
 
     @classmethod
-    def get_extension_configs(cls, user_extensions = ""):
+    def get_extension_configs(cls, user_extensions=""):
         config_dict = {}
         for extension in cls.get_extensions(user_extensions):
             if extension.get_config():

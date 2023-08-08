@@ -70,7 +70,11 @@ def main():
         type=str,
     )
 
-    for verbosible_command in [commands["build"], commands["run"], commands["export"]]:
+    for verbosible_command in [
+        commands["build"],
+        commands["run"],
+        commands["export"],
+    ]:
         verbosible_command.add_argument(
             "--verbose",
             "-v",
