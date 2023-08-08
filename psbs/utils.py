@@ -62,7 +62,7 @@ def make_dir(filename):
 
 def run_in_browser(url):
     try:
-        webbrowser.open(url, new=2)
+        webbrowser.open(url)
     except webbrowser.Error as err:
         print("Error: Unable to launch browser")
         raise SystemExit(1) from err
