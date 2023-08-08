@@ -1,10 +1,14 @@
+import re
+
 from psbs.extension import Extension
+from psbs.psparser import PSParser
 
 
 class Filters(Extension):
     def __init__(self, config):
         super().__init__(config)
         self.register_filter("wrap", self.wrap_to_width)
+        self.register_filter("levels_to_list", self.levels_to_list)
         self.register_filter("combine_levels", self.combine_levels)
 
     def wrap_to_width(self, input_text, width=5):
@@ -15,7 +19,23 @@ class Filters(Extension):
             )
         return output
 
+    def levels_to_list(self, levels_string):
+        levels_string = PSParser.redact_comments(levels_string, redact_char="")
+        output = ""
+        for line in levels_string.splitlines():
+            output += line.split("message")[0].strip()
+            output += "\n"
+        return re.split(
+            r"(?<=\S)\n+\n+(?=\S)", output
+        )
+
     def combine_levels(self, levels_list, columns = 0):
+        if isinstance(levels_list, str):
+            levels_list = self.levels_to_list(levels_list)
+        try:
+            levels_list = list(levels_list)
+        except TypeError as err:
+            raise self.ExtensionError(err)
         if isinstance(levels_list[0], list):
             rows = levels_list
         elif columns == 0:

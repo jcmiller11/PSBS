@@ -1,6 +1,9 @@
-from os.path import join, dirname, basename, isfile
+from os.path import join, dirname, basename, isfile, abspath
 import glob
-from importlib import import_module
+from importlib import import_module, util
+
+import sys
+
 from jinja2.exceptions import TemplateError
 
 
@@ -32,18 +35,28 @@ class Extension:
         return {}
 
     @classmethod
-    def get_extensions(cls):
+    def get_extensions(cls, user_extensions = ""):
         for extension in glob.glob(
             join(dirname(__file__), "extensions", "*.py")
         ):
             if isfile(extension) and not extension.endswith("__init__.py"):
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
+        for extension in user_extensions:
+            module_name = f"psbs.extensions.{basename(extension)[:-3].lower()}"
+            spec = util.spec_from_file_location(
+                module_name,
+                abspath(extension)
+            )
+            if spec and spec.loader:
+                module = util.module_from_spec(spec)
+                sys.modules[module_name] = module
+                spec.loader.exec_module(module)
         return cls.__subclasses__()
 
     @classmethod
-    def get_extension_configs(cls):
+    def get_extension_configs(cls, user_extensions = ""):
         config_dict = {}
-        for extension in cls.get_extensions():
+        for extension in cls.get_extensions(user_extensions):
             if extension.get_config():
                 config_dict[extension.__name__] = extension.get_config()
         return config_dict

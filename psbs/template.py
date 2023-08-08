@@ -20,7 +20,8 @@ class Template:
             extensions=['jinja2.ext.do'],
         )
         self.postprocessing_steps = []
-        extensions = Extension.get_extensions()
+        user_extensions = config.get("user_extensions",[])
+        extensions = Extension.get_extensions(user_extensions)
         for extension in extensions:
             if extension.__name__ not in config:
                 config[extension.__name__] = {}

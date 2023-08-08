@@ -20,7 +20,7 @@ class PSParser:
         """Thrown when unable to parse the input PS"""
 
     @staticmethod
-    def __redact_comments(input_str, redact_char=" "):
+    def redact_comments(input_str, redact_char=" "):
         depth = 0
         output = ""
         in_a_message = False
@@ -42,7 +42,7 @@ class PSParser:
 
     @staticmethod
     def __clean(input_str):
-        input_str = PSParser.__redact_comments(input_str, redact_char="")
+        input_str = PSParser.redact_comments(input_str, redact_char="")
         output = "\n".join([line.strip() for line in input_str.splitlines()])
         return output
 
@@ -68,7 +68,7 @@ class PSParser:
         section_headers = list(sections.keys())[1:]
         headers = re.finditer(
             r"^(" + "|".join(section_headers) + ") *$",
-            PSParser.__redact_comments(self.source),
+            PSParser.redact_comments(self.source),
             flags=re.IGNORECASE | re.MULTILINE,
         )
 

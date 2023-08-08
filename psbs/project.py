@@ -96,6 +96,7 @@ class PSBSProject:
             "gist_id": gist_id,
             "engine": engine,
             "template": "main.pss",
+            "user_extensions": []
         }
         config_dict.update(Extension.get_extension_configs())
 
