@@ -8,6 +8,7 @@ class Filters(Extension):
     def __init__(self, config):
         super().__init__(config)
         self.register_filter("wrap", self.wrap_to_width)
+        self.register_filter("add_prefix", self.add_prefix)
         self.register_filter("levels_to_list", self.levels_to_list)
         self.register_filter("combine_levels", self.combine_levels)
 
@@ -17,6 +18,15 @@ class Filters(Extension):
             output += "\n".join(
                 [line[i : i + width] for i in range(0, len(line), width)]
             )
+        return output
+
+    def add_prefix(self, input_text, prefix):
+        input_text = PSParser.redact_comments(input_text, redact_char="")
+        output = ""
+        for line in input_text.splitlines():
+            line = line.split("message")[0].strip()
+            if line != "":
+                output += f"{prefix} {line}\n"
         return output
 
     def levels_to_list(self, levels_string):
