@@ -18,6 +18,8 @@ class Template:
             comment_start_string="(#",
             comment_end_string="#)",
             extensions=['jinja2.ext.do'],
+            trim_blocks=True,
+            lstrip_blocks=True,
         )
         self.postprocessing_steps = []
         user_extensions = config.get("user_extensions",[])
