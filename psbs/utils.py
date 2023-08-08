@@ -81,6 +81,9 @@ def print_ps_console(source):
             message_text = await page.evaluate('(element) => element.textContent', message)
             if message_text == "=================================":
                 pass
+            elif message_text.startswith("too many errors"):
+                print(message_text)
+                raise SystemExit(1)
             elif message_text.startswith("Rule Assembly"):
                 print(message_text.split("===========")[-1])
             else:
