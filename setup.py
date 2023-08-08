@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='psbs',
-    version='0.2.3',
+    version='0.3.0',
     python_requires='>=3.8',
     description='PuzzleScript Build System',
     long_description=long_description,
@@ -15,7 +15,7 @@ setup(
     author='J.C. Miller',
     author_email='johncoreymiller@gmail.com',
     url='https://github.com/jcmiller11/PSBS',
-    download_url = 'https://github.com/jcmiller11/PSBS/archive/refs/tags/0.2.3.tar.gz',
+    download_url = 'https://github.com/jcmiller11/PSBS/archive/refs/tags/0.3.0.tar.gz',
     license='MIT',
     packages=find_packages(),
     package_data={'': ['example.txt']},
