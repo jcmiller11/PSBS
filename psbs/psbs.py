@@ -70,15 +70,15 @@ def main():
         type=str,
     )
 
-    for verbosible_command in [
+    for verifiable_command in [
         commands["build"],
         commands["run"],
         commands["export"],
     ]:
-        verbosible_command.add_argument(
-            "--verbose",
+        verifiable_command.add_argument(
+            "--verify",
             "-v",
-            help="Display PuzzleScript console output",
+            help="Verify compilation and display PuzzleScript console output",
             action="store_true",
         )
 
@@ -86,14 +86,14 @@ def main():
 
     if args.command == "build":
         project = PSBSProject()
-        project.build(verbose=args.verbose)
+        project.build(verify=args.verify)
     elif args.command == "export":
         project = PSBSProject()
-        project.build(verbose=args.verbose)
+        project.build(verify=args.verify)
         project.export()
     elif args.command == "run":
         project = PSBSProject()
-        project.build(verbose=args.verbose)
+        project.build(verify=args.verify)
         project.export()
         project.run(editor=args.editor)
     elif args.command == "new":

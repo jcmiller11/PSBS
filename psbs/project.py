@@ -23,7 +23,7 @@ class PSBSProject:
         self.config = Config(config_filename)
         self.filename = None
 
-    def build(self, verbose=False):
+    def build(self, verify=False):
         # Check for target directory
         if not path.exists("bin"):
             print("bin directory does not exist, creating one")
@@ -48,7 +48,7 @@ class PSBSProject:
 
         print(f"Writing file {script_path}")
         write_file(script_path, source)
-        if verbose:
+        if verify:
             print_ps_console(source)
 
     def export(self):
