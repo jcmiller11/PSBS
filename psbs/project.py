@@ -1,6 +1,10 @@
 from os import path
 from shutil import rmtree
 from pathlib import PurePath
+from asyncio import get_event_loop
+from json import dumps
+
+from pyppeteer import launch
 
 from .config import Config
 from .extension import Extension
@@ -14,7 +18,7 @@ from .utils import (
     write_yaml,
     make_dir,
     run_in_browser,
-    print_ps_console,
+    url_join,
 )
 
 
@@ -36,8 +40,8 @@ class PSBSProject:
         print(f"Writing file {readme_path}")
         write_file(
             readme_path,
-            "Play this game by pasting the script in "
-            f"{self.config['engine']}editor.html",
+            "Play this game by pasting the script in " +
+            url_join(self.config['engine'], "editor.html"),
         )
 
         # Build the script.txt
@@ -49,7 +53,7 @@ class PSBSProject:
         print(f"Writing file {script_path}")
         write_file(script_path, source)
         if verify:
-            print_ps_console(source)
+            self.print_ps_console(source)
 
     def export(self):
         if not self.config["gist_id"]:
@@ -69,13 +73,36 @@ class PSBSProject:
         if self.filename:
             url = PurePath(path.abspath(self.filename)).as_uri()
         else:
-            url = self.config["engine"]
             if editor:
-                url += "editor.html?hack="
+                url = url_join(self.config["engine"], "editor.html?hack=")
             else:
-                url += "play.html?p="
+                url = url_join(self.config["engine"], "play.html?p=")
             url += self.config["gist_id"]
         run_in_browser(url)
+
+    def print_ps_console(self, source):
+        async def run_in_psfork():
+            browser = await launch()
+            page = await browser.newPage()
+            editor_url = url_join(self.config["engine"], "editor.html")
+            await page.goto(editor_url)
+            await page.evaluate("editor.setValue(" + dumps(source) + ")")
+            await page.evaluate('compile(["restart"])')
+            for message in await page.querySelectorAll("div#consoletextarea div"):
+                message_text = await page.evaluate(
+                    "(element) => element.textContent", message
+                )
+                if message_text == "=================================":
+                    pass
+                elif message_text.startswith("too many errors"):
+                    print(message_text)
+                    raise SystemExit(1)
+                elif message_text.startswith("Rule Assembly"):
+                    print(message_text.split("===========")[-1])
+                else:
+                    print(message_text)
+
+        get_event_loop().run_until_complete(run_in_psfork())
 
     @staticmethod
     def create(project_name, gist_id=None, file=None, new_gist=False):

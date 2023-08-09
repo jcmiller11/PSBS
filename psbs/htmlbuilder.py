@@ -3,11 +3,11 @@ from os import path
 from requests import get
 
 from .psparser import PSParser
-from .utils import write_file
+from .utils import write_file, url_join
 
 
 def build_html(engine, source):
-    standalone_url = "/".join(engine.split("/") + ["standalone_inlined.txt"])
+    standalone_url = url_join(engine, "standalone_inlined.txt")
     response = get(standalone_url, timeout=5)
     if response.status_code != 200:
         print("Error: Can't build html game")
@@ -24,6 +24,9 @@ def build_html(engine, source):
         homepage_stripped_protocol = homepage
     standalone_html = standalone_html.replace(
         "__GAMETITLE__", parser.prelude_options.get("title", "My Game")
+    )
+    standalone_html = standalone_html.replace(
+        "__AUTHOR__", parser.prelude_options.get("author", "")
     )
     standalone_html = standalone_html.replace("__HOMEPAGE__", homepage)
     standalone_html = standalone_html.replace(
