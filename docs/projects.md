@@ -25,7 +25,7 @@ At the root of your project you will find a file called config.yaml containing c
 - gist_id: the id of the gist the upload and run commands should use to store this project in
 - engine: the url of the fork you are using, by default https://www.puzzlescript.net/
 - template: the name of your root template file, by default main.pss
-- user_extensions: a list of .py files to load as custom user extensions
+- user_extensions: a list of .py files to load as [custom user extensions](extensions)
 
 Below these are optional config variables for template extensions
 

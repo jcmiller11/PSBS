@@ -1,8 +1,12 @@
 # Functions
 
-## cycler
+PSBS gives you access to all of Jinja's [builtin functions](https://jinja.palletsprojects.com/en/3.1.x/templates/#builtin-globals) as well as Jinja's [builtin tests](https://jinja.palletsprojects.com/en/3.1.x/templates/#builtin-tests) (tests are Jinja's name for functions that return a boolean True/False value) but also offers some extra functions to help with PuzzleScript development
 
 ## get_build
+
+`get_build()`
+
+Returns a string containing the name of the build as configured in your config.yaml.  For most use cases you should probably be using [is_debug](templates/functions#is_debug) or [is_release](templates/functions#is_release) instead.
 
 ## image
 
@@ -33,11 +37,26 @@ Player_(( dir ))
 (( image("images/player.png",left=loop.index0*5,width=5,height=5) ))
 (% endfor %)
 ```
-## is_debug
+## debug
 
-## is_release
+`debug()`
 
-## range
+Returns True if the name of the build in your config.yaml is "debug"
+
+```psbs
+title My Game
+author Me
+(% if debug %)
+verbose_logging
+debug
+(% endif %)
+```
+
+## release
+
+`release()`
+
+Returns True if the name of the build in your config.yaml is "release"
 
 ## tiled
 

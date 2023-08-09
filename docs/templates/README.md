@@ -43,10 +43,85 @@ Player2
 (( character_sprite ))
 ```
 
-## Whitespace
+## For
 
-Control structures in PSBS templates preserve whitespace.
+Loop over each item in a sequence.  For example to create four identical sprites called Player1, Player2, Player3, and Player4:
 
-## Escaping
+```psbs
+(% for playernum in range(4) %)
+Player(( playernum+1 ))
+black orange white blue
+.000.
+.111.
+22222
+.333.
+.3.3.
+(% endfor %)
+```
 
-Occasionally you may want
+Within a loop block some special variables are accessible
+
+- loop.index
+  - The current iteration of the loop. (1 indexed) |
+- loop.index0
+  - The current iteration of the loop. (0 indexed)
+- loop.revindex
+  - The number of iterations from the end of the loop (1 indexed)
+- loop.revindex0
+  - The number of iterations from the end of the loop (0 indexed)
+- loop.first
+  - True if first iteration.
+- loop.last
+  - True if last iteration.
+- loop.length
+  - The number of items in the sequence.
+- loop.cycle
+  - A helper function to cycle between a list of sequences. See the explanation below.
+- loop.depth
+  - Indicates how deep in a recursive loop the rendering currently is. Starts at level 1
+- loop.depth0
+  - Indicates how deep in a recursive loop the rendering currently is. Starts at level 0
+- loop.previtem
+  - The item from the previous iteration of the loop. Undefined during the first iteration.
+- loop.nextitem
+  - The item from the following iteration of the loop. Undefined during the last iteration.
+- loop.changed(*val)
+  - True if previously called with a different value (or not called at all).
+
+## If
+
+A standard if statement that tests if a statement is True or False and only runs the contents of its block if True.
+
+```psbs
+Player(( playernum ))
+{% if playernum == 1 %}
+red
+{% elif playernum == 2 %}
+blue
+{% else %}
+green
+{% endif %}
+```
+
+## Macros
+
+Macros are similar to functions in regular programming languages, they can be used to put often used idioms into reusable blocks.
+
+```psbs
+(% macro push(pusher, pushee) %)
+[ > (( pusher )) | (( pushee )) ] -> [ > (( pusher )) | > (( pushee )) ]
+(% endmacro %)
+
+(( push("Player", "Crate") ))
+(# [ > Player | Crate ] -> [ > Player | > Crate ] #)
+```
+
+## Include
+
+Inserts another source file into your template.  Included source files inherit the scope of the parent file but not the other way around.
+
+```psbs
+(% set playername = "Fred" %)
+(% include "objects.pss" %)
+(# playername variable is accessible within objects.pss #)
+```
