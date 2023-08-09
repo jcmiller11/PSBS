@@ -88,7 +88,7 @@ At the root of your project you will find a file called config.yaml containing c
 
 - gist_id: the id of the gist the export and run commands can use to store this project in
 - engine: the url of the fork you are using, by default https://www.puzzlescript.net/
-- template: the name of your root template file, by default main.pssengine: https://auroriax.github.io/PuzzleScript/
+- template: the name of your root template file, by default main.pss
 
 Below these are optional config variables for template extensions
 
