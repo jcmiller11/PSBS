@@ -88,7 +88,7 @@ Accepts a string containing puzzlescript levels and outputs a list where each it
 #)
 ```
 
-## wrap_to_width
+## wrap
 
 `wrap(width=5)`
 
