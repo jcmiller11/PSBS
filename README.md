@@ -6,6 +6,8 @@ PSBS combines multiple files into one puzzlescript source file and can export it
 
 For more information view the [official PSBS Documentation](https://jcmiller11.github.io/PSBS/)
 
+![Screenshot of PSBS in action](/docs/media/screenshot.png?raw=true)
+
 ## Features
 
  - Compile PuzzleScript games from many files using Jinja2 templates!
