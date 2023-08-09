@@ -29,3 +29,9 @@ If you already have Python 3.8 or greater and pip installed simply run the follo
 `pip install psbs`
 
 If you don't have Python and pip installed: [Download Python](https://www.python.org/downloads/)
+
+## Contributing
+
+While I'd be grateful to receive pull requests, at this moment in time prior to doing an official 1.0.0 release what I would really like help with is testing!  Please use PSBS to its fullest and if you encounter any odd behaviors don't hesitate to raise an Issue!
+
+I would like PSBS to have friendly error handling that returns nice, brief, and useful error messages rather than a full stack trace, however it's challenging to make sure I've caught every possible exception, so if you run into a stack trace while using PSBS please raise an Issue!
