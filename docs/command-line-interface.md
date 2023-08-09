@@ -27,11 +27,11 @@ If a gist id or text file are supplied the project source files will automatical
 !> Creating a new gist or building from a gist require a [GitHub auth token](getting-started#connecting-to-github).
 
 #### Options:
-- --new-gist, -n
+- \-\-new-gist, -n
    - Create a new gist for the project
-- --from-gist GIST_ID, -g GIST_ID
+- \-\-from-gist GIST_ID, -g GIST_ID
    - Build project from existing source at supplied gist
-- --from-file FILE, -f FILE
+- \-\-from-file FILE, -f FILE
    - Build project from existing source in supplied file
 
 #### Examples:
@@ -60,7 +60,7 @@ Builds the project in the current working directory.
 This is the heart of PSBS's functionality.  Takes the source files in your project's src/ directory and compiles them into a PuzzleScript game which can will be found in your project's bin/ directory.
 
 #### Options:
-- --verify, -v
+- \-\-verify, -v
    - Verify compilation and display PuzzleScript console output
 
 !> The first time a command is run with the --verify option a headless version of Chromium will be downloaded to run the selected PuzzleScript fork's compiler in
@@ -76,7 +76,7 @@ Runs psbs build and then exports your project to a game.
 If a gist id found in your project's config.yaml the game will be exported there, otherwise it will be exported to a local html file.
 
 #### Options:
-- --verify, -v
+- \-\-verify, -v
    - Verify compilation and display PuzzleScript console output
 
 ## Run
@@ -90,9 +90,9 @@ Runs psbs build, exports the project to a game, then runs it in your web browser
 Alternatively, if running from a gist if the -e flag is given it will open to editor.html instead.
 
 #### Options:
-- --editor, -e
+- \-\-editor, -e
    - Run project in PuzzleScript editor
-- --verify, -v
+- \-\-verify, -v
    - Verify compilation and display PuzzleScript console output
 
 ## Token
