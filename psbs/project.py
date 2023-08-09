@@ -82,7 +82,13 @@ class PSBSProject:
 
     def print_ps_console(self, source):
         async def run_in_psfork():
-            browser = await launch()
+            try:
+                browser = await launch()
+            except OSError as err:
+                print(f"Failed to launch headless Chromium instance\n  {err}")
+                print("On Windows this may be caused by this issue:")
+                print("https://github.com/pyppeteer/pyppeteer/issues/248")
+                raise SystemExit(1) from err
             page = await browser.newPage()
             editor_url = url_join(self.config["engine"], "editor.html")
             await page.goto(editor_url)
