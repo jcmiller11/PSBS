@@ -40,8 +40,8 @@ class PSBSProject:
         print(f"Writing file {readme_path}")
         write_file(
             readme_path,
-            "Play this game by pasting the script in " +
-            url_join(self.config['engine'], "editor.html"),
+            "Play this game by pasting the script in "
+            + url_join(self.config["engine"], "editor.html"),
         )
 
         # Build the script.txt
@@ -88,7 +88,9 @@ class PSBSProject:
             await page.goto(editor_url)
             await page.evaluate("editor.setValue(" + dumps(source) + ")")
             await page.evaluate('compile(["restart"])')
-            for message in await page.querySelectorAll("div#consoletextarea div"):
+            for message in await page.querySelectorAll(
+                "div#consoletextarea div"
+            ):
                 message_text = await page.evaluate(
                     "(element) => element.textContent", message
                 )

@@ -21,24 +21,26 @@ Comments allow you to put comments in your template or comment out sections of y
 ## Variables
 
 Variables can be assigned with the set expression and used throughout your template.
+
+If the set expression does not contain an assignment it is assumed to be a block assignment and any content before an (% endset %) tag will be assigned to the variable as a string.
+
 ```psbs
 (% set hat_color = "red" %)
+(% set character_sprite %)
+.000.
+.111.
+22222
+.333.
+.3.3.
+(% endset %)
 
 Player1
 (( hat_color )) orange white blue
-.000.
-.111.
-22222
-.333.
-.3.3.
+(( character_sprite ))
 
 Player2
 (( hat_color )) orange black grey
-.000.
-.111.
-22222
-.333.
-.3.3.
+(( character_sprite ))
 ```
 
 ## Whitespace

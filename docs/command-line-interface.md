@@ -59,6 +59,12 @@ Builds the project in the current working directory.
 
 This is the heart of PSBS's functionality.  Takes the source files in your project's src/ directory and compiles them into a PuzzleScript game which can will be found in your project's bin/ directory.
 
+#### Options:
+- --verify, -v
+   - Verify compilation and display PuzzleScript console output
+
+!> The first time a command is run with the --verify option a headless version of Chromium will be downloaded to run the selected PuzzleScript fork's compiler in
+
 ## Export
 
 `psbs export`
@@ -68,6 +74,10 @@ Builds project then exports it to a game.
 Runs psbs build and then exports your project to a game.
 
 If a gist id found in your project's config.yaml the game will be exported there, otherwise it will be exported to a local html file.
+
+#### Options:
+- --verify, -v
+   - Verify compilation and display PuzzleScript console output
 
 ## Run
 
@@ -82,6 +92,8 @@ Alternatively, if running from a gist if the -e flag is given it will open to ed
 #### Options:
 - --editor, -e
    - Run project in PuzzleScript editor
+- --verify, -v
+   - Verify compilation and display PuzzleScript console output
 
 ## Token
 

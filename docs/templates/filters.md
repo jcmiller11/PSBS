@@ -1,53 +1,11 @@
 # Filters
 
-## abs
+PSBS gives you access to all of Jinja's [builtin filters](https://jinja.palletsprojects.com/en/3.1.x/templates/#list-of-builtin-filters) but also offers some extras to help with PuzzleScript development
 
-## map
+## add_prefix
 
-## select
+## combine_levels
 
-## max
+## levels_to_list
 
-## upper
-
-## batch
-
-## min
-
-## capitalize
-
-## sort
-
-## int
-
-## random
-
-## string
-
-## default
-
-## items
-
-## join
-
-## sum
-
-## last
-
-## replace
-
-## title
-
-## length
-
-## reverse
-
-## first
-
-## list
-
-## round
-
-## trim
-
-## lower
+## wrap_to_width
