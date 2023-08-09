@@ -35,6 +35,7 @@ Using the parameters here you can also load objects from a single image as a spr
 (% for dir in directions %)
 Player_(( dir ))
 (( image("images/player.png",left=loop.index0*5,width=5,height=5) ))
+
 (% endfor %)
 ```
 ## debug
