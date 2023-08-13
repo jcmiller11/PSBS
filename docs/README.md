@@ -23,6 +23,10 @@ If you already have Python 3.8 or greater and pip installed simply run the follo
 
 If you don't have Python and pip installed: [Download Python](https://www.python.org/downloads/)
 
+If you already have an older version of PSBS installed you can upgrade to the latest version with
+
+`pip install psbs --upgrade`
+
 ## Connecting to GitHub
 
 PSBS will build your projects into PuzzleScript games without interacting with GitHub at all, however uploading and running your projects from gists requires an authorization token.  You can check if PSBS currently has an auth token by entering `psbs token`.

@@ -6,7 +6,7 @@ PSBS combines multiple files into one puzzlescript source file and can export it
 
 For more information view the [official PSBS Documentation](https://jcmiller11.github.io/PSBS/)
 
-![Screenshot of PSBS in action](/docs/media/screenshot.png?raw=true)
+![Screenshot of PSBS in action](https://github.com/jcmiller11/psbs/blob/master/docs/media/screenshot.png?raw=true)
 
 ## Features
 
@@ -29,6 +29,10 @@ If you already have Python 3.8 or greater and pip installed simply run the follo
 `pip install psbs`
 
 If you don't have Python and pip installed: [Download Python](https://www.python.org/downloads/)
+
+If you already have an older version of PSBS installed you can upgrade to the latest version with
+
+`pip install psbs --upgrade`
 
 ## Contributing
 
