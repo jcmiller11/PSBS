@@ -102,8 +102,6 @@ class PSParser:
                     name = name.lower()
                 colors = object_str_lines.pop(0)
                 body = "\n".join(object_str_lines)
-                # ps_objects[object_name] = body
-                # consider using dict:
                 synonyms = []
                 tokens_in_name = name.split()
                 if len(tokens_in_name) > 0:
