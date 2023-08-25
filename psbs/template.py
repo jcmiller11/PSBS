@@ -63,8 +63,9 @@ class Template:
             if section != "prelude":
                 lines.extend([
                     f"{'=' * (len(section) + 1)}",
-                    f"{section.upper()}",
-                    f"{'=' * (len(section) + 1)}\n"
+                    section.upper(),
+                    f"{'=' * (len(section) + 1)}",
+                    ""
                 ])
             if not content:
                 content = [""]
