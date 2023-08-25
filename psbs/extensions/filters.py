@@ -13,6 +13,7 @@ class Filters(Extension):
         self.register_filter("combine_levels", self.combine_levels)
 
     def wrap_to_width(self, input_text, width=5):
+        # can this be replaced with textwrap?
         output = ""
         for line in str(input_text).splitlines():
             output += "\n".join(
@@ -66,11 +67,8 @@ class Filters(Extension):
                         level_lines[line_number] += line
             return level_lines
 
-        output = ""
-        # consider replacing output with a list
-        # to avoid immutable string modification in loop
+        output = []
         for row in rows:
             for line in combine_row(row):
-                output += line
-                output += "\n"
-        return output.strip()
+                output.append(line)
+        return "\n".join(output)
