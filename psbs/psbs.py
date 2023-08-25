@@ -13,9 +13,9 @@ class _CLIParser:
         self.parser = ArgumentParser(
             description="PSBS: PuzzleScript Build System", add_help=False
         )
-        self.commands = self.add_commands()
+        self.commands = self.__add_commands()
 
-    def add_commands(self):
+    def __add_commands(self):
         subparser = self.parser.add_subparsers(
             title="Commands", dest="command"
         )
