@@ -94,7 +94,7 @@ class _CLIParser:
             verifiable_command.add_argument(
                 "--verify",
                 "-v",
-                help="Verify compilation and display PuzzleScript console output",
+                help="Verify compilation and show PuzzleScript console output",
                 action="store_true",
             )
         return commands

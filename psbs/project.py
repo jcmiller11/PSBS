@@ -37,11 +37,11 @@ class PSBSProject:
         script_path = path.join("bin", "script.txt")
 
         # Build the readme.txt
+        editor_url = url_join(self.config["engine"], "editor.html")
         print(f"Writing file {readme_path}")
         write_file(
             readme_path,
-            "Play this game by pasting the script in "
-            + url_join(self.config["engine"], "editor.html"),
+            f"Play this game by pasting the script in {editor_url}",
         )
 
         # Build the script.txt
