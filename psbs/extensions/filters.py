@@ -67,6 +67,8 @@ class Filters(Extension):
             return level_lines
 
         output = ""
+        # consider replacing output with a list
+        # to avoid immutable string modification in loop
         for row in rows:
             for line in combine_row(row):
                 output += line

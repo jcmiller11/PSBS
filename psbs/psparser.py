@@ -28,23 +28,22 @@ class PSParser:
     @staticmethod
     def redact_comments(input_str, redact_char=" "):
         depth = 0
-        output = ""
+        output = []
         in_a_message = False
         for character in input_str:
-            if output[-8:].lower() == "message ":
+            if len(output) > 8 and ''.join(output[-8:]).lower() == "message ":
                 in_a_message = True
             if character == "\n":
                 in_a_message = False
             if character == "(" and not in_a_message:
                 depth += 1
             if depth > 0 and character != "\n" and not in_a_message:
-                output += redact_char
+                output.append(redact_char)
             else:
-                output += character
+                output.append(character)
             if character == ")" and not in_a_message:
-                depth -= 1
-            depth = max(depth, 0)
-        return output
+                depth = max(depth - 1, 0)
+        return "".join(output)
 
     @staticmethod
     def __clean(input_str):
@@ -167,9 +166,9 @@ class PSParser:
         # Populate synonyms using ps_objects data
         synonyms.update(
             {
-                synonym: ps_object
-                for ps_object in ps_objects
-                for synonym in ps_objects[ps_object]["synonyms"]
+                synonym: key
+                for key, value in ps_objects.items()
+                for synonym in value["synonyms"]
             }
         )
         synonyms.update({ps_object: ps_object for ps_object in ps_objects})
@@ -229,7 +228,7 @@ class PSParser:
         return glyphs
 
     @staticmethod
-    def __resolve_dict(input_dict, synonyms={}):
+    def __resolve_dict(input_dict, synonyms=None):
         output = {}
 
         while True:  # Continue resolving until no changes occur
@@ -244,7 +243,7 @@ class PSParser:
                     if value in input_dict:
                         resolved_values.extend(input_dict[value])
                         changed = True
-                    else:
+                    elif synonyms:
                         # Use synonyms if value is not in input_dict
                         resolved_values.append(synonyms.get(value, value))
 
@@ -254,5 +253,5 @@ class PSParser:
             if not changed:
                 return output
 
-            # Set input_dict to output to continue resolving with updated values
+            # Set input_dict to output to continue with updated values
             input_dict = output

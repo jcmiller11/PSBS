@@ -56,11 +56,11 @@ class Gister:
                 )
             if response.status_code == 422:
                 raise self.GistError("422: Validation failed")
-            elif response.status_code == 404:
+            if response.status_code == 404:
                 raise self.GistError("404: File not found")
-            elif response.status_code == 403:
+            if response.status_code == 403:
                 raise self.GistError("403: Forbidden")
-            elif response.status_code >= 400:
+            if response.status_code >= 400:
                 raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")

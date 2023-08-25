@@ -58,16 +58,19 @@ class Template:
 
     @staticmethod
     def make_template(src_tree):
-        output = ""
+        lines = []
         for section, content in src_tree.items():
             if section != "prelude":
-                output += f"{'=' * (len(section) + 1)}\n{section.upper()}\n" \
-                          f"{'=' * (len(section) + 1)}\n\n"
+                lines.extend([
+                    f"{'=' * (len(section) + 1)}",
+                    f"{section.upper()}",
+                    f"{'=' * (len(section) + 1)}\n"
+                ])
             if not content:
                 content = [""]
             for index, _ in enumerate(content, start=1):
                 index_str = "" if len(content) == 1 else str(index)
                 src_filename = f"{section}{index_str}.pss"
-                output += f'(% include "{src_filename}" %)\n'
-            output += "\n"
-        return output.strip()
+                lines.append(f'(% include "{src_filename}" %)')
+            lines.append("")
+        return "\n".join(lines).strip()
