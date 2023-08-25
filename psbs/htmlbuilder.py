@@ -16,34 +16,26 @@ def build_html(engine, source):
         raise SystemExit(1)
     standalone_html = response.content.decode("UTF-8")
     parser = PSParser(source)
-    title = parser.prelude_options.get("title", "My Game")
-    homepage = parser.prelude_options.get("homepage", engine)
-    if "://" in homepage:
-        homepage_stripped_protocol = homepage.split("://", 1)[1]
-    else:
-        homepage_stripped_protocol = homepage
-    standalone_html = standalone_html.replace(
-        "__GAMETITLE__", parser.prelude_options.get("title", "My Game")
-    )
-    standalone_html = standalone_html.replace(
-        "__AUTHOR__", parser.prelude_options.get("author", "")
-    )
-    standalone_html = standalone_html.replace("__HOMEPAGE__", homepage)
-    standalone_html = standalone_html.replace(
-        "__HOMEPAGE_STRIPPED_PROTOCOL__", homepage_stripped_protocol
-    )
-    standalone_html = standalone_html.replace(
-        "___BGCOLOR___",
-        parser.prelude_options.get("background_color", "black"),
-    )
-    standalone_html = standalone_html.replace(
-        "___TEXTCOLOR___",
-        parser.prelude_options.get("text_color", "lightblue"),
-    )
-    # for some reason some older forks have extra quotes
-    standalone_html = standalone_html.replace('"__GAMEDAT__"', dumps(source))
-    standalone_html = standalone_html.replace("__GAMEDAT__", dumps(source))
+    prelude_options = parser.prelude_options
 
-    filename = path.join("bin", title + ".html")
-    write_file(path.join("bin", title + ".html"), standalone_html)
+    replacements = {
+        "__GAMETITLE__": prelude_options.get("title", "My Game"),
+        "__AUTHOR__": prelude_options.get("author", ""),
+        "__HOMEPAGE__": prelude_options.get("homepage", engine),
+        "__HOMEPAGE_STRIPPED_PROTOCOL__": prelude_options.get(
+            "homepage", engine
+        ).split("://", 1)[-1],
+        "___BGCOLOR___": prelude_options.get("background_color", "black"),
+        "___TEXTCOLOR___": prelude_options.get("text_color", "lightblue"),
+        '"__GAMEDAT__"': dumps(source),
+        "__GAMEDAT__": dumps(source),
+    }
+
+    for placeholder, value in replacements.items():
+        standalone_html = standalone_html.replace(placeholder, value)
+
+    filename = path.join(
+        "bin", prelude_options.get("title", "My Game") + ".html"
+    )
+    write_file(filename, standalone_html)
     return filename

@@ -12,20 +12,17 @@ class Extension:
         self.methods = {}
         self.filters = {}
         self.post = []
-        self.config = config
-        for key, value in self.get_config().items():
-            if key not in self.config:
-                self.config[key] = None
-            if self.config[key] is None:
-                self.config[key] = value
+        # Replace missing or None config values with default values
+        self.config = {
+            key: value if config.get(key) is None else config.get(key, value)
+            for key, value in self.get_config().items()
+        }
 
     def register(self, name, function):
-        if name not in self.methods:
-            self.methods[name] = function
+        self.methods.setdefault(name, function)
 
     def register_filter(self, name, function):
-        if name not in self.filters:
-            self.filters[name] = function
+        self.filters.setdefault(name, function)
 
     def register_post(self, function):
         self.post.append(function)
@@ -36,11 +33,14 @@ class Extension:
 
     @classmethod
     def get_extensions(cls, user_extensions=""):
-        for extension in glob.glob(
-            join(dirname(__file__), "extensions", "*.py")
-        ):
+        import_path = join(dirname(__file__), "extensions")
+
+        # Import built-in extensions
+        for extension in glob.glob(join(import_path, "*.py")):
             if isfile(extension) and not extension.endswith("__init__.py"):
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
+
+        # Import user-defined extensions
         for extension in user_extensions:
             module_name = f"psbs.extensions.{basename(extension)[:-3].lower()}"
             spec = util.spec_from_file_location(
@@ -50,6 +50,7 @@ class Extension:
                 module = util.module_from_spec(spec)
                 sys.modules[module_name] = module
                 spec.loader.exec_module(module)
+
         return cls.__subclasses__()
 
     @classmethod

@@ -15,9 +15,9 @@ def get_token(verbose=False):
     try:
         if verbose:
             print("Reading token from gh-cli")
-        token = subprocess.check_output(["gh", "auth", "token"])
-        token = token.decode("utf-8")
-        token = token.strip()
+        token = subprocess.check_output(
+            ["gh", "auth", "token"], text=True
+        ).strip()
         return token
     except FileNotFoundError as err:
         print("ERROR: gh-cli does not appear to be installed")

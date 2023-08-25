@@ -21,15 +21,12 @@ class Gister:
 
     def read(self, file):
         filename = path.basename(file)
-        if self.content is None:
-            response = self.__request()
-            self.content = response.json()
+        self.content = self.content or self.__request().json()
         try:
-            file_content = self.content["files"][filename]["content"]
+            return self.content["files"][filename]["content"]
         except KeyError as err:
             print(f"Error: File {filename} not found in gist {self.gist_id}")
             raise SystemExit(1) from err
-        return file_content
 
     def create(self, name=""):
         placeholder = "This project has not been built yet"
@@ -41,9 +38,8 @@ class Gister:
                 "script.txt": {"content": placeholder},
             },
         }
-        response = self.__request(data=json.dumps(data), post=True)
-        response_body = response.json()
-        return response_body["id"]
+        response = self.__request(data=json.dumps(data), post=True).json()
+        return response["id"]
 
     def __request(self, data=None, post=False):
         headers = {"Authorization": f"token {self.token}"}
@@ -60,16 +56,12 @@ class Gister:
                 )
             if response.status_code == 422:
                 raise self.GistError("422: Validation failed")
-            if response.status_code == 404:
+            elif response.status_code == 404:
                 raise self.GistError("404: File not found")
-            if response.status_code == 403:
+            elif response.status_code == 403:
                 raise self.GistError("403: Forbidden")
-            if response.status_code >= 400:
+            elif response.status_code >= 400:
                 raise self.GistError(response)
-            # I can't remember why I was using this
-            # keeping it here in case I remember
-            # if "message" in response:
-            #    raise self.GistError(response)
         except ConnectionError as err:
             print("Error: Unable to connect to GitHub")
             raise SystemExit(1) from err

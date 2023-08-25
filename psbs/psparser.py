@@ -5,16 +5,22 @@ class PSParser:
     def __init__(self, source):
         self.source = source
         self.source_tree = self.split_ps()
-        self.sections = {}
-        for section, content in self.source_tree.items():
-            self.sections[section] = PSParser.__clean("\n".join(content))
-        self.prelude_options = {}
-        for line in self.sections["prelude"].splitlines():
+        self.sections = {
+            section: PSParser.__clean("\n".join(content))
+            for section, content in self.source_tree.items()
+        }
+        self.prelude_options = self.__parse_prelude(self.sections["prelude"])
+
+    @staticmethod
+    def __parse_prelude(prelude_section):
+        prelude_options = {}
+        for line in prelude_section.splitlines():
             tokens = line.split(maxsplit=1)
             if len(tokens) == 1:
-                self.prelude_options[tokens[0].lower()] = True
-            if len(tokens) == 2:
-                self.prelude_options[tokens[0].lower()] = tokens[1]
+                prelude_options[tokens[0].lower()] = True
+            elif len(tokens) == 2:
+                prelude_options[tokens[0].lower()] = tokens[1]
+        return prelude_options
 
     class ParseError(Exception):
         """Thrown when unable to parse the input PS"""
@@ -123,125 +129,130 @@ class PSParser:
         return ps_objects
 
     def get_glyphs(self):
-        # Code Smell: this method is way too long, consider breaking
-        # it up in the future however it's working pretty well for now
+        # Retrieve relevant sections and objects
         legend = self.sections["legend"]
         ps_objects = self.get_objects()
         collisionlayers = self.sections["collisionlayers"]
 
-        # handle case sensitivity
-        background_name = "background"
-        for object_name in ps_objects:
-            if object_name.lower() == "background":
-                background_name = object_name
+        synonyms = {}  # Dictionary to store synonyms
+        properties = {}  # Properties apply to collisionlayers
+        aggregates = {}  # Aggregates apply to glyphs
+
+        # Handle case sensitivity
+        background_name = next(
+            (obj for obj in ps_objects if obj.lower() == "background"),
+            "background",
+        )
         if "case_sensitive" not in self.prelude_options:
             legend = legend.lower()
             collisionlayers = collisionlayers.lower()
 
-        synonyms = {}
-        properties = {}  # Properties apply to collisionlayers
-        aggregates = {}  # Aggregates apply to glyphs
-        matches = re.finditer(
+        # Extract information from the legend section
+        for key, values in re.findall(
             r"^(\S+) += +(\S+(?: +(?:and|or) +\S+)*)$",
             legend,
             flags=re.MULTILINE | re.IGNORECASE,
-        )
-        for match in matches:
-            if " and " in match.group(2):
-                aggregates[match.group(1)] = re.split(
-                    r" +and +", match.group(2), flags=re.IGNORECASE
-                )
-            elif " or " in match.group(2):
-                properties[match.group(1)] = re.split(
-                    r" +or +", match.group(2), flags=re.IGNORECASE
-                )
-            else:
-                synonyms[match.group(1)] = match.group(2)
-        for ps_object in ps_objects:
-            for synonym in ps_objects[ps_object]["synonyms"]:
-                synonyms[synonym] = ps_object
-            synonyms[ps_object] = ps_object
-        # resolve synonyms
-        for synonym in synonyms:
-            synonyms[synonym] = synonyms.get(
-                synonyms[synonym], synonyms[synonym]
-            )
-
-        def resolve_dict(input_dict):
-            must_recurse = True
-            output = {}
-            while must_recurse:
-                # This can loop forever if there are circular references
-                # consider adding a max number of loops maybe?
-                must_recurse = False
-                output = {}
-                for key in input_dict:
-                    output[key] = []
-                    for object_name in input_dict[key]:
-                        if object_name in input_dict:
-                            for inner_key in input_dict[object_name]:
-                                output[key].append(
-                                    synonyms.get(inner_key, inner_key)
-                                )
-                        else:
-                            output[key].append(
-                                synonyms.get(object_name, object_name)
-                            )
-                for key in output:
-                    for object_name in output[key]:
-                        if object_name in output:
-                            must_recurse = True
-                input_dict = output
-            return output
-
-        properties = resolve_dict(properties)
-        aggregates = resolve_dict(aggregates)
-
-        glyphs = {}
-        for synonym in synonyms:
-            if len(synonym) == 1:
-                glyphs[synonym] = aggregates.get(
-                    synonyms[synonym], [synonyms[synonym]]
-                )
-
-        for aggregate in aggregates:
-            if len(aggregate) == 1:
-                glyphs[aggregate] = aggregates[aggregate]
-
-        collision_order = []
-        for collision_object in re.split(
-            r",\s*|\s+", collisionlayers, flags=re.MULTILINE
         ):
-            if collision_object in properties:
-                for inner_object in properties[collision_object]:
-                    collision_order.append(
-                        synonyms.get(inner_object, inner_object)
-                    )
-            else:
-                collision_order.append(
-                    synonyms.get(collision_object, collision_object)
+            if " and " in values:
+                aggregates[key] = re.split(
+                    r" +and +", values, flags=re.IGNORECASE
                 )
+            elif " or " in values:
+                properties[key] = re.split(
+                    r" +or +", values, flags=re.IGNORECASE
+                )
+            else:
+                synonyms[key] = values
 
+        # Populate synonyms using ps_objects data
+        synonyms.update(
+            {
+                synonym: ps_object
+                for ps_object in ps_objects
+                for synonym in ps_objects[ps_object]["synonyms"]
+            }
+        )
+        synonyms.update({ps_object: ps_object for ps_object in ps_objects})
+
+        # Resolve synonyms
+        synonyms = {
+            synonym: synonyms.get(synonym, synonym) for synonym in synonyms
+        }
+
+        # Resolve properties and aggregates using synonyms
+        properties = self.__resolve_dict(properties, synonyms)
+        aggregates = self.__resolve_dict(aggregates, synonyms)
+
+        # Create glyphs dictionary
+        glyphs = {
+            synonym: aggregates.get(synonyms[synonym], [synonyms[synonym]])
+            for synonym in synonyms
+            if len(synonym) == 1
+        }
+
+        # Update glyphs dictionary with single-character aggregates
+        glyphs.update(
+            {key: value for key, value in aggregates.items() if len(key) == 1}
+        )
+
+        # Build collision order based on resolved synonyms and properties
+        collision_order = [
+            synonyms.get(inner_object, inner_object)
+            for collision_object in re.split(
+                r",\s*|\s+", collisionlayers, flags=re.MULTILINE
+            )
+            for inner_object in properties.get(
+                collision_object, [collision_object]
+            )
+        ]
+
+        # Construct glyph objects with resolved properties and order
         for glyph in glyphs:
             if background_name not in glyphs[glyph]:
                 glyphs[glyph].append(background_name)
             try:
-                glyphs[glyph] = sorted(
-                    glyphs[glyph], key=collision_order.index
-                )
+                glyphs[glyph].sort(key=collision_order.index)
             except ValueError as err:
                 raise self.ParseError(
                     f"Can't find object in collisionlayers:\n  {err}"
                 )
-            glyph_objects = []
-            for object_name in glyphs[glyph]:
-                glyph_objects.append(
-                    "\n".join(
-                        [
-                            ps_objects[object_name]["colors"],
-                            ps_objects[object_name]["body"],
-                        ]
-                    ).strip()
-                )
-            glyphs[glyph] = glyph_objects
+
+            glyphs[glyph] = [
+                "\n".join(
+                    [
+                        ps_objects[object_name]["colors"],
+                        ps_objects[object_name]["body"],
+                    ]
+                ).strip()
+                for object_name in glyphs[glyph]
+            ]
         return glyphs
+
+    @staticmethod
+    def __resolve_dict(input_dict, synonyms={}):
+        output = {}
+
+        while True:  # Continue resolving until no changes occur
+            changed = False
+
+            # Iterate through items in the input_dict
+            for key, values in input_dict.items():
+                resolved_values = []
+
+                # Iterate through values of the current key
+                for value in values:
+                    if value in input_dict:
+                        resolved_values.extend(input_dict[value])
+                        changed = True
+                    else:
+                        # Use synonyms if value is not in input_dict
+                        resolved_values.append(synonyms.get(value, value))
+
+                output[key] = resolved_values
+
+            # If no changes occurred in this iteration, exit the loop
+            if not changed:
+                return output
+
+            # Set input_dict to output to continue resolving with updated values
+            input_dict = output

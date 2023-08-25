@@ -25,15 +25,12 @@ class Template:
         user_extensions = config.get("user_extensions", [])
         extensions = Extension.get_extensions(user_extensions)
         for extension in extensions:
-            if extension.__name__ not in config:
-                config[extension.__name__] = {}
+            config.setdefault(extension.__name__, {})
             ext_object = extension(config[extension.__name__])
-            for func_name, function in ext_object.methods.items():
-                self.jinja_env.globals[func_name] = function
-            for func_name, function in ext_object.filters.items():
-                self.jinja_env.filters[func_name] = function
-            for function in ext_object.post:
-                self.postprocessing_steps.append(function)
+
+            self.jinja_env.globals.update(ext_object.methods)
+            self.jinja_env.filters.update(ext_object.filters)
+            self.postprocessing_steps.extend(ext_object.post)
 
     def render(self):
         try:
@@ -55,28 +52,22 @@ class Template:
         return output
 
     def postprocess(self, input_str):
-        output = input_str
         for post_function in self.postprocessing_steps:
-            output = post_function(output)
-        return output
+            input_str = post_function(input_str)
+        return input_str
 
     @staticmethod
     def make_template(src_tree):
         output = ""
-        for section in src_tree:
+        for section, content in src_tree.items():
             if section != "prelude":
-                if section != "prelude":
-                    output += "=" * (len(section) + 1)
-                    output += f"\n{section.upper()}\n"
-                    output += "=" * (len(section) + 1)
-                    output += "\n\n"
-            if not src_tree[section]:
-                src_tree[section] = [""]
-            for index in range(len(src_tree[section])):
-                index += 1
-                if len(src_tree[section]) == 1:
-                    index = ""
-                src_filename = f"{section}{index}.pss"
+                output += f"{'=' * (len(section) + 1)}\n{section.upper()}\n" \
+                          f"{'=' * (len(section) + 1)}\n\n"
+            if not content:
+                content = [""]
+            for index, _ in enumerate(content, start=1):
+                index_str = "" if len(content) == 1 else str(index)
+                src_filename = f"{section}{index_str}.pss"
                 output += f'(% include "{src_filename}" %)\n'
             output += "\n"
         return output.strip()
