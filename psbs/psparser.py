@@ -139,7 +139,8 @@ class PSParser:
         # Redact comments using the redact_comments method from PSParser class.
         input_str = PSParser.redact_comments(input_str, redact_char="")
 
-        # Join the cleaned lines after stripping leading and trailing whitespace.
+        # Join the cleaned lines after stripping leading and trailing
+        # whitespace.
         output = "\n".join([line.strip() for line in input_str.splitlines()])
         return output
 
@@ -154,7 +155,7 @@ class PSParser:
         Returns:
             str: The extracted engine URL or a default URL if not found.
         """
-        # Use regular expression to search for an engine URL pattern in the input.
+        # Use regular expression to search for an engine URL pattern.
         match = re.search(r"(http.*)(?:editor\.html)", input_str)
 
         # If a match is found, return the captured group (engine URL).
@@ -163,10 +164,12 @@ class PSParser:
 
     def split_ps(self):
         """
-        Split the PuzzleScript source code into different sections based on section headers.
+        Split the PuzzleScript source code into different sections based on
+        section headers.
 
         Returns:
-            dict: A dictionary containing parsed sections of the PuzzleScript source.
+            dict: A dictionary containing parsed sections of the PuzzleScript
+            source.
 
         Example:
             ps_parser = PSParser(source)
@@ -380,7 +383,7 @@ class PSParser:
     @staticmethod
     def __resolve_dict(input_dict, synonyms=None):
         """
-        Private utility method to recursively resolve references in a dictionary.
+        Private utility method to recursively resolve references in a dict.
 
         This method recursively resolves synonyms in a given dictionary. It
         iterates through the dictionary, replacing values with their
