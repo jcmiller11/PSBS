@@ -63,10 +63,10 @@ class PSParser:
         for line in prelude_section.splitlines():
             tokens = line.split(maxsplit=1)
             if len(tokens) == 1:
-                # If there's only one token, set the option to True.
+                # If there's only one token, set option to True.
                 prelude_options[tokens[0].lower()] = True
             elif len(tokens) == 2:
-                # If there are two tokens, set the option to the provided value.
+                # If there are two tokens, set option to the provided value.
                 prelude_options[tokens[0].lower()] = tokens[1]
         return prelude_options
 
@@ -391,7 +391,7 @@ class PSParser:
 
         Args:
             input_dict (dict): The dictionary to be resolved.
-            synonyms (dict, optional): A dictionary containing synonym mappings.
+            synonyms (dict, optional): A dict containing synonym mappings.
             Defaults to None.
 
         Returns:
