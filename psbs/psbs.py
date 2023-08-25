@@ -4,39 +4,11 @@ from .project import PSBSProject
 from .token import get_token, set_token
 
 
-def main():
-    parser = CLIParser()
-    args = parser.parse_args()
-
-    if args.command in ["build", "export", "run"]:
-        project = PSBSProject()
-        project.build(verify=args.verify)
-        if args.command in ["export", "run"]:
-            project.export()
-        if args.command == "run":
-            project.run(editor=args.editor)
-    elif args.command == "new":
-        PSBSProject.create(
-            args.name,
-            gist_id=args.gist_id,
-            file=args.file,
-            new_gist=args.new_gist,
-        )
-    elif args.command == "token":
-        if args.token:
-            set_token(args.token)
-        else:
-            print(get_token(verbose=True))
-    elif args.command == "help":
-        if args.topic:
-            parser.commands[args.topic].print_help()
-        else:
-            parser.print_help()
-    elif args.command is None:
-        parser.print_help()
+def _main():
+    _CLIParser().parse_args()
 
 
-class CLIParser:
+class _CLIParser:
     def __init__(self):
         self.parser = ArgumentParser(
             description="PSBS: PuzzleScript Build System", add_help=False
@@ -60,6 +32,13 @@ class CLIParser:
             commands[command] = subparser.add_parser(
                 command, help=help_text, description=help_text, add_help=False
             )
+        commands["build"].set_defaults(func=self.build_project)
+        commands["export"].set_defaults(func=self.export_project)
+        commands["run"].set_defaults(func=self.run_project)
+        commands["new"].set_defaults(func=self.new_project)
+        commands["token"].set_defaults(func=self.token)
+        commands["help"].set_defaults(func=self.print_help)
+        self.parser.set_defaults(func=self.print_help, topic=None)
 
         commands["run"].add_argument(
             "--editor",
@@ -121,7 +100,39 @@ class CLIParser:
         return commands
 
     def parse_args(self):
-        return self.parser.parse_args()
+        args = self.parser.parse_args()
+        args.func(args)
 
-    def print_help(self):
-        self.parser.print_help()
+    def build_project(self, args):
+        project = PSBSProject()
+        project.build(verify=args.verify)
+        return project
+
+    def export_project(self, args):
+        project = self.build_project(args)
+        project.export()
+        return project
+
+    def run_project(self, args):
+        project = self.export_project(args)
+        project.run()
+
+    def new_project(self, args):
+        PSBSProject.create(
+            args.name,
+            gist_id=args.gist_id,
+            file=args.file,
+            new_gist=args.new_gist,
+        )
+
+    def token(self, args):
+        if args.token:
+            set_token(args.token)
+        else:
+            print(get_token(verbose=True))
+
+    def print_help(self, args):
+        if args.topic:
+            self.commands[args.topic].print_help()
+        else:
+            self.parser.print_help()

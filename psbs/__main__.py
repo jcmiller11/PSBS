@@ -1,4 +1,4 @@
-from .psbs import main
+from .psbs import _main
 
 
-main()
+_main()
