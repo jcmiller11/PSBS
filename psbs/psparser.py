@@ -31,7 +31,7 @@ class PSParser:
         output = []
         in_a_message = False
         for character in input_str:
-            if len(output) > 8 and ''.join(output[-8:]).lower() == "message ":
+            if len(output) > 8 and "".join(output[-8:]).lower() == "message ":
                 in_a_message = True
             if character == "\n":
                 in_a_message = False

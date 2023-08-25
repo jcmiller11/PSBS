@@ -61,12 +61,14 @@ class Template:
         lines = []
         for section, content in src_tree.items():
             if section != "prelude":
-                lines.extend([
-                    f"{'=' * (len(section) + 1)}",
-                    section.upper(),
-                    f"{'=' * (len(section) + 1)}",
-                    ""
-                ])
+                lines.extend(
+                    [
+                        f"{'=' * (len(section) + 1)}",
+                        section.upper(),
+                        f"{'=' * (len(section) + 1)}",
+                        "",
+                    ]
+                )
             if not content:
                 content = [""]
             for index, _ in enumerate(content, start=1):
