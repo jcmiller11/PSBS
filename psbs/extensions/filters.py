@@ -32,11 +32,10 @@ class Filters(Extension):
 
     def levels_to_list(self, levels_string):
         levels_string = PSParser.redact_comments(levels_string, redact_char="")
-        output = ""
+        output = []
         for line in levels_string.splitlines():
-            output += line.split("message")[0].strip()
-            output += "\n"
-        return re.split(r"(?<=\S)\n+\n+(?=\S)", output)
+            output.append(line.split("message")[0].strip())
+        return re.split(r"(?<=\S)\n+\n+(?=\S)", "\n".join(output))
 
     def combine_levels(self, levels_list, columns=0):
         if isinstance(levels_list, str):

@@ -20,6 +20,7 @@ class Template:
             extensions=["jinja2.ext.do"],
             trim_blocks=True,
             lstrip_blocks=True,
+            keep_trailing_newline = True,
         )
         self.postprocessing_steps = []
         user_extensions = config.get("user_extensions", [])
@@ -66,7 +67,6 @@ class Template:
                         f"{'=' * (len(section) + 1)}",
                         section.upper(),
                         f"{'=' * (len(section) + 1)}",
-                        "",
                     ]
                 )
             if not content:
@@ -74,6 +74,5 @@ class Template:
             for index, _ in enumerate(content, start=1):
                 index_str = "" if len(content) == 1 else str(index)
                 src_filename = f"{section}{index_str}.pss"
-                lines.append(f'(% include "{src_filename}" %)')
-            lines.append("")
+                lines.append(f'(% include "{src_filename}" +%)')
         return "\n".join(lines).strip()

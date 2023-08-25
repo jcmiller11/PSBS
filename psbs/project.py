@@ -168,7 +168,7 @@ class PSBSProject:
                     src_filename = f"{section_name}{index}.pss"
                     write_file(
                         path.join(project_name, "src", src_filename),
-                        src_content,
+                        f"\n{src_content}\n",
                     )
         except SystemExit as err:
             print("Cleaning up!")
