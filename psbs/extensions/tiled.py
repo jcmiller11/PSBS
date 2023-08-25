@@ -1,6 +1,6 @@
 from os import path
 import shutil
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
 from xml.dom import minidom
 from PIL import Image, ImageColor
 from numpy import array, uint8
@@ -440,31 +440,33 @@ class Tiled(Extension):
         return ImageColor.getcolor(color, "RGBA")
 
     def __create_tileset_xml(self, tileset, size=5):
-        tileset_tag = ET.Element("tileset")
+        tileset_tag = ElementTree.Element("tileset")
         tileset_tag.set("tiledversion", "1.10.1")
         tileset_tag.set("name", "psbs_generated_tileset")
         tileset_tag.set("tilewidth", str(size))
         tileset_tag.set("tileheight", str(size))
         tileset_tag.set("tilecount", str(len(tileset)))
         tileset_tag.set("columns", "0")
-        grid_tag = ET.SubElement(tileset_tag, "grid")
+        grid_tag = ElementTree.SubElement(tileset_tag, "grid")
         grid_tag.set("orientation", "orthogonal")
         grid_tag.set("width", "1")
         grid_tag.set("height", "1")
         tiles = []
         for tile in tileset:
-            tiles.append(ET.SubElement(tileset_tag, "tile"))
+            tiles.append(ElementTree.SubElement(tileset_tag, "tile"))
             tiles[tile["id"]].set("id", str(tile["id"]))
-            properties = ET.SubElement(tiles[tile["id"]], "properties")
-            property_tag = ET.SubElement(properties, "property")
+            properties = ElementTree.SubElement(
+                tiles[tile["id"]], "properties"
+            )
+            property_tag = ElementTree.SubElement(properties, "property")
             property_tag.set("name", "glyph")
             property_tag.set("value", str(tile["glyph"]))
-            image_tag = ET.SubElement(tiles[tile["id"]], "image")
+            image_tag = ElementTree.SubElement(tiles[tile["id"]], "image")
             image_tag.set("width", str(size))
             image_tag.set("height", str(size))
             image_tag.set("source", str(tile["filename"]))
 
-        xml_as_string = ET.tostring(tileset_tag, encoding="utf-8")
+        xml_as_string = ElementTree.tostring(tileset_tag, encoding="utf-8")
         parsed_xml = minidom.parseString(xml_as_string)
         pretty_xml = parsed_xml.toprettyxml(indent="  ")
         return pretty_xml
@@ -532,7 +534,7 @@ class Tiled(Extension):
 
     def parse_level(self, file):
         try:
-            level_xml = ET.parse(file)
+            level_xml = ElementTree.parse(file)
         except IOError as err:
             print(f"Warning: Unable to read level file\n  {err}")
             return ""
@@ -540,7 +542,7 @@ class Tiled(Extension):
         level_csv = level_xml.getroot()[1][0].text
         tileset_file = path.abspath(path.join(path.dirname(file), source))
         try:
-            tileset_xml = ET.parse(tileset_file)
+            tileset_xml = ElementTree.parse(tileset_file)
         except IOError as err:
             print(f"Warning: Unable to read tileset file\n  {err}")
             return ""
