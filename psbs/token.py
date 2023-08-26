@@ -10,6 +10,7 @@ import subprocess
 from platformdirs import user_data_dir
 from .utils import read_file, write_file
 
+
 def get_token(verbose=False):
     """
     Get an authentication token for GitHub.
@@ -50,6 +51,7 @@ def get_token(verbose=False):
     except subprocess.CalledProcessError as err:
         print("ERROR: gh-cli refuses to provide token")
         raise SystemExit(1) from err
+
 
 def set_token(token):
     """
