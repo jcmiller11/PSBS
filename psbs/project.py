@@ -100,14 +100,12 @@ class PSBSProject:
                 message_text = await page.evaluate(
                     "(element) => element.textContent", message
                 )
-                if message_text == "=================================":
-                    pass
-                elif message_text.startswith("too many errors"):
+                if message_text.startswith("too many errors"):
                     print(message_text)
                     raise SystemExit(1)
                 elif message_text.startswith("Rule Assembly"):
                     print(message_text.split("===========")[-1])
-                else:
+                elif message_text != "=================================":
                     print(message_text)
 
         get_event_loop().run_until_complete(run_in_psfork())

@@ -142,7 +142,7 @@ class Template:
         lines = []
         for section, content in src_tree.items():
             if section != "prelude":
-                # Add section delimiters.
+                # Add section headers.
                 lines.extend(
                     [
                         f"{'=' * (len(section) + 1)}",
@@ -156,5 +156,6 @@ class Template:
                 # Number the included files unless there is only one
                 index_str = "" if len(content) == 1 else str(index)
                 src_filename = f"{section}{index_str}.pss"
+                # Include the current source file
                 lines.append(f'(% include "{src_filename}" +%)')
         return "\n".join(lines).strip()
