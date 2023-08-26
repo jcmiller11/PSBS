@@ -1,4 +1,6 @@
 """
+TEMPLATE MODULE
+
 This module provides a class for rendering PSBS templates with Jinja2.
 
 The Template class in this module offers functionality for rendering Jinja2

@@ -1,5 +1,5 @@
 """
-PSPARSER
+PSPARSER MODULE
 
 This file provides the PSParser class for parsing and processing
 PuzzleScript source code.
