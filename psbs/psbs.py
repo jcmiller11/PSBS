@@ -35,7 +35,6 @@ class _CLIParser:
 
     def __add_commands(self):
         """
-        Private method.
         Add subcommands to the command-line parser and set their associated
         functions.
 
@@ -44,7 +43,9 @@ class _CLIParser:
             argument parsers.
         """
         # Create a subparser for handling subcommands
-        subparser = self.parser.add_subparsers(title="Commands", dest="command")
+        subparser = self.parser.add_subparsers(
+            title="Commands", dest="command"
+        )
         # Initialize a dictionary to store subcommands and their associated parsers.
         commands = {}
 

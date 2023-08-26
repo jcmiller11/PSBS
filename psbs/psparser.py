@@ -7,6 +7,7 @@ PuzzleScript source code.
 
 import re
 
+
 class PSParser:
     """
     A class for parsing and processing PuzzleScript source code.
@@ -34,6 +35,7 @@ class PSParser:
         get_glyphs(self): Extracts and organizes glyphs and their associated
         sprite data.
     """
+
     def __init__(self, source):
         self.source = source
         self.source_tree = self.split_ps()
@@ -87,7 +89,7 @@ class PSParser:
         Returns:
             str: The input source code with comments redacted.
         """
-        depth = 0 # Number to track depth of nested comments
+        depth = 0  # Number to track depth of nested comments
         output = []
         in_a_message = False
 
@@ -186,7 +188,7 @@ class PSParser:
             "levels": [],
         }
 
-       # Splitting the source into sections based on section headers
+        # Splitting the source into sections based on section headers
         section_headers = list(sections.keys())[1:]
         headers = re.finditer(
             r"^(" + "|".join(section_headers) + ") *$",
