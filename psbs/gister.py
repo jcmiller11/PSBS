@@ -39,13 +39,16 @@ class Gister:
             },
         }
         response = self.__request(data=json.dumps(data), post=True).json()
-        return response["id"]
+        return response["id"]  # Return the ID of the created Gist
 
     def __request(self, data=None, post=False):
         headers = {"Authorization": f"token {self.token}"}
+
+        # URL for updating existing Gist
         query_url = f"https://api.github.com/gists/{self.gist_id}"
         try:
             if post:
+                # URL for creating new Gist
                 query_url = "https://api.github.com/gists"
                 response = requests.post(
                     query_url, headers=headers, timeout=5, data=data
@@ -54,6 +57,7 @@ class Gister:
                 response = requests.patch(
                     query_url, headers=headers, timeout=5, data=data
                 )
+            # Check response status codes and handle errors
             if response.status_code == 422:
                 raise self.GistError("422: Validation failed")
             if response.status_code == 404:

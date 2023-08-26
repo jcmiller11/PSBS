@@ -46,7 +46,7 @@ class _CLIParser:
         subparser = self.parser.add_subparsers(
             title="Commands", dest="command"
         )
-        # Initialize a dictionary to store subcommands and their associated parsers.
+        # Initialize a dict to store subcommands and their associated parsers.
         commands = {}
 
         # Define the descriptions for each subcommand.

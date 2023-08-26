@@ -1,7 +1,8 @@
 """
 TOKEN MANAGEMENT MODULE
 
-This module provides functions for retrieving and setting authentication tokens.
+This module provides functions for retrieving and setting authentication
+tokens.
 """
 
 from os import path
