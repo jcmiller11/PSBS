@@ -1,3 +1,10 @@
+"""
+EXTENSION MODULE
+
+This module provides functionality for loading and managing PSBS extensions.
+
+"""
+
 from os.path import join, dirname, basename, isfile, abspath
 import glob
 from importlib import import_module, util
@@ -8,6 +15,32 @@ from jinja2.exceptions import TemplateError
 
 
 class Extension:
+    """
+    A class for loading and managing PSBS extensions.
+
+    This class provides functionality for registering extension methods,
+    filters, and post-processing functions, as well as loading both built-in
+    and user-defined extensions.
+
+    Args:
+        config (dict): Configuration settings for the extension.
+
+    Attributes:
+        methods (dict): A dictionary to store registered extension methods.
+        filters (dict): A dictionary to store registered extension filters.
+        post (list): A list to store registered post-processing functions.
+        config (dict): Configuration settings for the extension.
+
+    Methods:
+        register(self, name, function): Registers an extension method.
+        register_filter(self, name, function): Registers an extension filter.
+        register_post(self, function): Registers a post-processing function.
+        get_config(cls): Returns the configuration settings for the extension.
+        get_extensions(cls, user_extensions=""): Loads and returns extensions.
+        get_extension_configs(cls, user_extensions=""): Returns configuration
+        settings for available extensions.
+    """
+
     def __init__(self, config):
         self.methods = {}
         self.filters = {}
@@ -19,20 +52,60 @@ class Extension:
         }
 
     def register(self, name, function):
+        """
+        Register an extension method.
+
+        Args:
+            name (str): The name to register the method under.
+            function (callable): The function to be registered.
+        """
         self.methods.setdefault(name, function)
 
     def register_filter(self, name, function):
+        """
+        Register an extension filter.
+
+        Args:
+            name (str): The name to register the filter under.
+            function (callable): The filter function to be registered.
+        """
         self.filters.setdefault(name, function)
 
     def register_post(self, function):
+        """
+        Register a post-processing function.
+
+        Args:
+            function (callable): The post-processing function to be registered.
+        """
         self.post.append(function)
 
     @staticmethod
     def get_config():
+        """
+        Get configuration settings for the extension.
+
+        This method returns an empty dictionary by default.
+        Subclasses can override this method to provide specific configuration
+        settings.
+
+        Returns:
+            dict: Configuration settings for the extension.
+        """
         return {}
 
     @classmethod
     def get_extensions(cls, user_extensions=""):
+        """
+        Load and return available extensions.
+
+        Args:
+            user_extensions (list, optional): List of paths to user-defined
+            extension files. Defaults to an empty list.
+
+        Returns:
+            list: A list of Extension subclass instances.
+        """
         import_path = join(dirname(__file__), "extensions")
 
         # Import built-in extensions
@@ -55,6 +128,16 @@ class Extension:
 
     @classmethod
     def get_extension_configs(cls, user_extensions=""):
+        """
+        Get configuration settings for available extensions.
+
+        Args:
+            user_extensions (list, optional): List of paths to user-defined
+            extension files. Defaults to an empty list.
+
+        Returns:
+            dict: Configuration settings for available extensions.
+        """
         config_dict = {}
         for extension in cls.get_extensions(user_extensions):
             if extension.get_config():
