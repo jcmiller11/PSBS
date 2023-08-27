@@ -25,15 +25,17 @@ class Filters(Extension):
         output = []
         for line in input_text.splitlines():
             if line.strip() == "":
+                # Don't add prefix if line is empty
                 output.append("")
             else:
-                output.append(f"{prefix} {line}\n")
+                output.append(f"{prefix} {line}")
         return "\n".join(output)
 
     def levels_to_list(self, levels_string):
         levels_string = PSParser.redact_comments(levels_string, redact_char="")
         output = []
         for line in levels_string.splitlines():
+            # Remove messages from output
             output.append(line.split("message")[0].strip())
         return re.split(r"(?<=\S)\n+\n+(?=\S)", "\n".join(output))
 
