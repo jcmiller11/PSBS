@@ -67,7 +67,7 @@ class Gister:
                 raise self.GistError("403: Forbidden")
             if response.status_code >= 400:
                 raise self.GistError(response)
-        except ConnectionError as err:
+        except (ConnectionError, requests.exceptions.ConnectionError) as err:
             raise PSBSError("Error: Unable to connect to GitHub") from err
         except self.GistError as err:
             raise PSBSError(
