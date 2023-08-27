@@ -38,6 +38,10 @@ def get_config(config_file=None):
                         target_dict[key] = type(target_dict[key])(
                             update_dict[key]
                         )
+                        # Maintain compatibility with config files generated
+                        # by old buggy version
+                        if target_dict[key] == "None":
+                            target_dict[key] = ""
                     except (ValueError, TypeError):
                         # If type conversion fails leave default value
                         print(
