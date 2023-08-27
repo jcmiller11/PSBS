@@ -1,9 +1,31 @@
+"""
+CONFIG MODULE
+
+This module provides functions for loading configuration settings.
+
+"""
+
 from .utils import read_yaml
 
 from .extension import Extension
 
 
 def get_config(config_file=None):
+    """
+    Get configuration settings.
+
+    This function returns the configuration settings, which includes both
+    default values and if a configuration file is provided merges them with
+    the values loaded from that file.
+
+    Args:
+        config_file (str, optional): The path to the configuration file to
+        load. Defaults to None.
+
+    Returns:
+        dict: The merged configuration settings.
+
+    """
     # Define default values
     defaults = {
         "gist_id": "",

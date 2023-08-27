@@ -1,3 +1,16 @@
+"""
+PSBSPROJECT MODULE
+
+This module provides a class to represent a PuzzleScript project in PSBS.
+
+Example:
+    project = PSBSProject()
+    project.build(verify=True)
+    project.export()
+    project.run(editor=False)
+
+"""
+
 from os import path
 from shutil import rmtree
 from pathlib import PurePath
@@ -23,11 +36,51 @@ from .utils import (
 
 
 class PSBSProject:
+    """
+    A class representing a PuzzleScript project in PSBS.
+
+    This class provides methods for building, exporting, running, and
+    creating PuzzleScript projects. It integrates with various other modules
+    to handle tasks such as generating templates, reading configuration,
+    managing gists, and more.
+
+    Args:
+        config_filename (str, optional): The name of the configuration file.
+            Defaults to 'config.yaml'.
+
+    Attributes:
+        config (dict): The project configuration.
+        filename (str): The compiled HTML filename, if applicable.
+
+    Methods:
+        build(verify=False): Build the PuzzleScript game files in the 'bin'
+            directory.
+        export(): Export the PuzzleScript game to HTML or update a gist.
+        run(editor=False): Run the PuzzleScript game in a web browser.
+        print_ps_console(source): Print the PuzzleScript console output using
+            a headless browser.
+        create(project_name, gist_id=None, file=None, new_gist=False): Create
+            a PSBS project directory and populate it with necessary files.
+    """
+
     def __init__(self, config_filename="config.yaml"):
         self.config = get_config(config_file=config_filename)
         self.filename = None
 
     def build(self, verify=False):
+        """
+        Build the PuzzleScript game files in the 'bin' directory.
+
+        This method creates or updates the 'readme.txt' and 'script.txt'
+        files in the 'bin' directory. The 'readme.txt' file contains a
+        message about playing the game using the PuzzleScript editor. The
+        'script.txt' file is generated from the template specified in the
+        configuration.
+
+        Args:
+            verify (bool, optional): If True, verify the built game using the
+                print_ps_console method. Defaults to False.
+        """
         # Check for target directory
         if not path.exists("bin"):
             print("bin directory does not exist, creating one")
@@ -56,23 +109,41 @@ class PSBSProject:
             self.print_ps_console(source)
 
     def export(self):
+        """
+        Export the PuzzleScript game to HTML or update a gist.
+
+        If the project doesn't have a gist, compiles game to an HTML file.
+        If the project has a gist it updates the 'readme.txt' and 'script.txt'
+        files on the gist.
+        """
         if not self.config["gist_id"]:
+            # If project doesn't have a gist, create an HTML file
             print("Writing game to html file")
             self.filename = build_html(
                 self.config["engine"],
                 read_file(path.join("bin", "script.txt")),
             )
         else:
+            # If project has a gist, update the gist files
             print("Updating gist")
             gist = Gister(gist_id=self.config["gist_id"])
             gist.write(path.join("bin", "readme.txt"))
             gist.write(path.join("bin", "script.txt"))
 
     def run(self, editor=False):
+        """
+        Run the PuzzleScript game in a web browser.
+
+        Args:
+            editor (bool, optional): If True, open the PuzzleScript editor.
+                If False, open the play mode. Defaults to False.
+        """
         print("Opening in browser")
         if self.filename:
+            # Run from file if compiled to HTML
             url = PurePath(path.abspath(self.filename)).as_uri()
         else:
+            # Otherwise run from web
             if editor:
                 url = url_join(self.config["engine"], "editor.html?hack=")
             else:
@@ -81,26 +152,38 @@ class PSBSProject:
         run_in_browser(url)
 
     def print_ps_console(self, source):
+        """
+        Print the PuzzleScript console output using a headless browser.
+
+        Args:
+            source (str): The PuzzleScript source code to be evaluated.
+
+        Raises:
+            PSBSError: If an error occurs during the console output retrieval.
+        """
+
         async def run_in_psfork():
             try:
+                # Attempt to launch headless browser
                 browser = await launch()
             except OSError as err:
-                err_message = []
-                err_message.append(
-                    f"Failed to launch headless Chromium instance\n  {err}"
-                )
-                err_message.append(
-                    "On Windows this may be caused by this issue:"
-                )
-                err_message.append(
-                    "https://github.com/pyppeteer/pyppeteer/issues/248"
-                )
+                err_message = [
+                    f"Failed to launch headless Chromium instance\n  {err}",
+                    "On Windows this may be caused by this issue:",
+                    "https://github.com/pyppeteer/pyppeteer/issues/248",
+                ]
                 raise PSBSError("\n".join(err_message)) from err
+
+            # Load editor.html from PuzzleScript engine
             page = await browser.newPage()
             editor_url = url_join(self.config["engine"], "editor.html")
             await page.goto(editor_url)
+
+            # Insert source and compile
             await page.evaluate("editor.setValue(" + dumps(source) + ")")
             await page.evaluate('compile(["restart"])')
+
+            # Retrieve and format compilation messages
             for message in await page.querySelectorAll(
                 "div#consoletextarea div"
             ):
@@ -114,13 +197,27 @@ class PSBSProject:
                 elif message_text != "=================================":
                     print(message_text)
 
+        # Run async function
         get_event_loop().run_until_complete(run_in_psfork())
 
     @staticmethod
     def create(project_name, gist_id=None, file=None, new_gist=False):
+        """
+        Create a PSBS project directory and populate it with necessary files.
+
+        Args:
+            project_name (str): Name of the project directory.
+            gist_id (str, optional): Gist ID if using an existing gist.
+            file (str, optional): Path to the input file.
+            new_gist (bool, optional): Create a new gist for the project.
+
+        Raises:
+            PSBSError: If any errors occur during project creation.
+        """
         source = ""
         engine = "https://www.puzzlescript.net/"
 
+        # Determine the source of the PuzzleScript code
         if file:
             source = read_file(file)
         elif gist_id:
@@ -129,17 +226,21 @@ class PSBSProject:
             source = gist.read("script.txt")
             engine = PSParser.get_engine(gist.read("readme.txt"))
         else:
+            # If no file or gist is provided, use an example source
             source = read_file(
                 path.join(path.realpath(path.dirname(__file__)), "example.txt")
             )
 
+        # Parse the source into sections
         src_tree = PSParser(source).source_tree
 
+        # Create a new gist if requested
         if new_gist:
             print("Creating new gist")
             gist = Gister()
             gist_id = gist.create(name=project_name)
 
+        # Get config and set values for the project
         config_dict = get_config()
         config_dict["gist_id"] = gist_id or ""
         config_dict["engine"] = engine
