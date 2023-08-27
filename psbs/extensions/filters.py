@@ -1,5 +1,7 @@
 import re
 
+from textwrap import wrap
+
 from psbs.extension import Extension
 from psbs.psparser import PSParser
 
@@ -13,13 +15,10 @@ class Filters(Extension):
         self.register_filter("combine_levels", self.combine_levels)
 
     def wrap_to_width(self, input_text, width=5):
-        # can this be replaced with textwrap?
-        output = ""
-        for line in str(input_text).splitlines():
-            output += "\n".join(
-                [line[i : i + width] for i in range(0, len(line), width)]
-            )
-        return output
+        wrapped_lines = []
+        for line in input_text.splitlines():
+            wrapped_lines.extend(wrap(line, width))
+        return "\n".join(wrapped_lines)
 
     def add_prefix(self, input_text, prefix):
         input_text = PSParser.redact_comments(input_text, redact_char="")
