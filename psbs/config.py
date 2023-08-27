@@ -34,15 +34,17 @@ def get_config(config_file=None):
         "user_extensions": [],
     }
 
-    # Load the config file into a dictionary
-    config_dict = read_yaml(config_file)
-    user_extensions = config_dict.get("user_extensions",[])
-    # Load default values from extension configs
-    defaults.update(Extension.get_extension_configs(user_extensions))
-
+    defaults.update(Extension.get_extension_configs())
     # Return defaults if not loading a config file
     if not config_file:
         return defaults
+
+    # Load the config file into a dictionary
+    config_dict = read_yaml(config_file)
+    user_extensions = config_dict.get("user_extensions",[])
+
+    # Load default values from extension configs
+    defaults.update(Extension.get_extension_configs(user_extensions))
 
     # Recursively update defaults with config_dict
     def update_dict_values(target_dict, update_dict):
