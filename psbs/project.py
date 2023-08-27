@@ -7,6 +7,7 @@ from json import dumps
 from pyppeteer import launch
 
 from .config import get_config
+from .errors import PSBSError
 from .htmlbuilder import build_html
 from .gister import Gister
 from .psparser import PSParser
@@ -84,10 +85,17 @@ class PSBSProject:
             try:
                 browser = await launch()
             except OSError as err:
-                print(f"Failed to launch headless Chromium instance\n  {err}")
-                print("On Windows this may be caused by this issue:")
-                print("https://github.com/pyppeteer/pyppeteer/issues/248")
-                raise SystemExit(1) from err
+                err_message = []
+                err_message.append(
+                    f"Failed to launch headless Chromium instance\n  {err}"
+                )
+                err_message.append(
+                    "On Windows this may be caused by this issue:"
+                )
+                err_message.append(
+                    "https://github.com/pyppeteer/pyppeteer/issues/248"
+                )
+                raise PSBSError("\n".join(err_message)) from err
             page = await browser.newPage()
             editor_url = url_join(self.config["engine"], "editor.html")
             await page.goto(editor_url)
@@ -100,8 +108,7 @@ class PSBSProject:
                     "(element) => element.textContent", message
                 )
                 if message_text.startswith("too many errors"):
-                    print(message_text)
-                    raise SystemExit(1)
+                    raise PSBSError(message_text)
                 if message_text.startswith("Rule Assembly"):
                     print(message_text.split("===========")[-1])
                 elif message_text != "=================================":
@@ -163,7 +170,7 @@ class PSBSProject:
                         path.join(project_name, "src", src_filename),
                         f"\n{src_content}\n",
                     )
-        except SystemExit as err:
+        except PSBSError as err:
             print("Cleaning up!")
             rmtree(project_name)
-            raise SystemExit(1) from err
+            raise err

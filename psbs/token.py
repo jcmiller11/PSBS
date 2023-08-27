@@ -10,6 +10,7 @@ import subprocess
 
 from platformdirs import user_data_dir
 from .utils import read_file, write_file
+from .errors import PSBSError
 
 
 def get_token(verbose=False):
@@ -47,11 +48,11 @@ def get_token(verbose=False):
         ).strip()
         return token
     except FileNotFoundError as err:
-        print("ERROR: gh-cli does not appear to be installed")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            "ERROR: gh-cli does not appear to be installed"
+        ) from err
     except subprocess.CalledProcessError as err:
-        print("ERROR: gh-cli refuses to provide token")
-        raise SystemExit(1) from err
+        raise PSBSError("ERROR: gh-cli refuses to provide token") from err
 
 
 def set_token(token):

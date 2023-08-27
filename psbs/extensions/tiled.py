@@ -4,6 +4,7 @@ from xml.etree import ElementTree
 from xml.dom import minidom
 from PIL import Image, ImageColor
 from numpy import array, uint8
+from psbs.errors import PSBSError
 from psbs.extension import Extension
 from psbs.psparser import PSParser
 from psbs.utils import make_dir, write_file
@@ -516,8 +517,9 @@ class Tiled(Extension):
             try:
                 image.save(path.join(images_dir, f"{tile_id}.png"))
             except IOError as err:
-                print(f"Error: Unable to write image {tile_id}.png\n  {err}")
-                raise SystemExit(1) from err
+                raise PSBSError(
+                    f"Error: Unable to write image {tile_id}.png\n  {err}"
+                ) from err
             tileset.append(
                 {
                     "glyph": glyph,

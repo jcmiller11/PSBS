@@ -17,9 +17,11 @@ Functions:
 """
 
 from argparse import ArgumentParser
+from sys import stderr
 
 from .project import PSBSProject
 from .token import get_token, set_token
+from .errors import PSBSError
 
 
 def _main():
@@ -156,7 +158,11 @@ class _CLIParser:
             None
         """
         args = self.parser.parse_args()
-        args.func(args)
+        try:
+            args.func(args)
+        except PSBSError as err:
+            print(err, file=stderr)
+            raise SystemExit(1) from err
 
     def build_project(self, args):
         """

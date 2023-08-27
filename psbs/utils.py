@@ -10,6 +10,8 @@ from os import mkdir
 
 import yaml
 
+from .errors import PSBSError
+
 
 def read_file(filename):
     """
@@ -28,11 +30,11 @@ def read_file(filename):
         with open(filename, "r", encoding="UTF-8") as file:
             return file.read()
     except IOError as err:
-        print(f"Error: Unable to read input file\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(f"Error: Unable to read input file\n  {err}") from err
     except UnicodeDecodeError as err:
-        print("Error: Unable to read input file, is this a text file?")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            "Error: Unable to read input file, is this a text file?"
+        ) from err
 
 
 def write_file(filename, data):
@@ -50,8 +52,9 @@ def write_file(filename, data):
         with open(filename, "w", encoding="UTF-8") as file:
             file.write(data)
     except IOError as err:
-        print(f"Error: Unable to write file {filename}\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            "Error: Unable to read input file, is this a text file?"
+        ) from err
 
 
 def read_yaml(filename):
@@ -73,11 +76,11 @@ def read_yaml(filename):
         if isinstance(output, str):
             raise yaml.YAMLError("YAML syntax malformed")
     except IOError as err:
-        print(f"Error: Config file not found\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(f"Error: Config file not found\n  {err}") from err
     except yaml.YAMLError as err:
-        print(f"Error: Problem parsing config file\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            f"Error: Problem parsing config file\n  {err}"
+        ) from err
     return output
 
 
@@ -96,8 +99,9 @@ def write_yaml(filename, data):
         with open(filename, "w", encoding="UTF-8") as file:
             yaml.safe_dump(data, file, sort_keys=False)
     except IOError as err:
-        print(f"Error: Unable to write file {filename}\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            f"Error: Unable to write file {filename}\n  {err}"
+        ) from err
 
 
 def make_dir(directory):
@@ -113,8 +117,9 @@ def make_dir(directory):
     try:
         mkdir(directory)
     except (OSError, PermissionError) as err:
-        print(f"Error: Unable to create directory {directory}\n  {err}")
-        raise SystemExit(1) from err
+        raise PSBSError(
+            f"Error: Unable to create directory {directory}\n  {err}"
+        ) from err
 
 
 def run_in_browser(url):
@@ -130,8 +135,7 @@ def run_in_browser(url):
     try:
         webbrowser.open(url)
     except webbrowser.Error as err:
-        print("Error: Unable to launch browser")
-        raise SystemExit(1) from err
+        raise PSBSError("Error: Unable to launch browser") from err
 
 
 def url_join(*url_strings):

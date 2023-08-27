@@ -1,6 +1,7 @@
 from os import path
 import json
 import requests
+from .errors import PSBSError
 from .utils import read_file
 from .token import get_token
 
@@ -67,9 +68,9 @@ class Gister:
             if response.status_code >= 400:
                 raise self.GistError(response)
         except ConnectionError as err:
-            print("Error: Unable to connect to GitHub")
-            raise SystemExit(1) from err
+            raise PSBSError("Error: Unable to connect to GitHub") from err
         except self.GistError as err:
-            print(f"Error: Unable to access gist\n  Response: {err}")
-            raise SystemExit(1) from err
+            raise PSBSError(
+                f"Error: Unable to access gist\n  Response: {err}"
+            ) from err
         return response

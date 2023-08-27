@@ -17,6 +17,7 @@ import traceback
 
 import jinja2
 from .extension import Extension
+from .errors import PSBSError
 
 
 class Template:
@@ -95,17 +96,17 @@ class Template:
             template = self.jinja_env.get_template(self.file)
             output = template.render()
         except jinja2.exceptions.TemplateNotFound as err:
-            print(f"Error: Unable to find template '{err}'")
-            raise SystemExit(1) from err
+            raise PSBSError(f"Error: Unable to find template '{err}'") from err
         except jinja2.exceptions.TemplateError as err:
-            print(f"Error: Unable to render template\n  {err}")
+            err_message = []
+            err_message.append(f"Error: Unable to render template\n  {err}")
             traceback_list = traceback.format_exc().split("\n")
             for index, line in enumerate(traceback_list):
                 if line.startswith('  File "src'):
-                    print(line)
-                    print(traceback_list[index + 1])
-                    print(traceback_list[index + 2])
-            raise SystemExit(1) from err
+                    err_message.append(line)
+                    err_message.append(traceback_list[index + 1])
+                    err_message.append(traceback_list[index + 2])
+            raise PSBSError("\n".join(err_message)) from err
 
         # Apply post-processing and return the output.
         output = self.postprocess(output)
