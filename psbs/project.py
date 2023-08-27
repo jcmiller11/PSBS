@@ -7,7 +7,6 @@ from json import dumps
 from pyppeteer import launch
 
 from .config import get_config
-from .extension import Extension
 from .htmlbuilder import build_html
 from .gister import Gister
 from .psparser import PSParser
@@ -103,7 +102,7 @@ class PSBSProject:
                 if message_text.startswith("too many errors"):
                     print(message_text)
                     raise SystemExit(1)
-                elif message_text.startswith("Rule Assembly"):
+                if message_text.startswith("Rule Assembly"):
                     print(message_text.split("===========")[-1])
                 elif message_text != "=================================":
                     print(message_text)
