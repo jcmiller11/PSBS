@@ -22,12 +22,13 @@ class Filters(Extension):
 
     def add_prefix(self, input_text, prefix):
         input_text = PSParser.redact_comments(input_text, redact_char="")
-        output = ""
+        output = []
         for line in input_text.splitlines():
-            line = line.split("message")[0].strip()
-            if line != "":
-                output += f"{prefix} {line}\n"
-        return output
+            if line.strip() == "":
+                output.append("")
+            else:
+                output.append(f"{prefix} {line}\n")
+        return "\n".join(output)
 
     def levels_to_list(self, levels_string):
         levels_string = PSParser.redact_comments(levels_string, redact_char="")
