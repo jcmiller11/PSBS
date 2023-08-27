@@ -6,7 +6,7 @@ from json import dumps
 
 from pyppeteer import launch
 
-from .config import Config
+from .config import get_config
 from .extension import Extension
 from .htmlbuilder import build_html
 from .gister import Gister
@@ -24,7 +24,7 @@ from .utils import (
 
 class PSBSProject:
     def __init__(self, config_filename="config.yaml"):
-        self.config = Config(config_filename)
+        self.config = get_config(config_file=config_filename)
         self.filename = None
 
     def build(self, verify=False):
@@ -134,13 +134,9 @@ class PSBSProject:
             gist = Gister()
             gist_id = gist.create(name=project_name)
 
-        config_dict = {
-            "gist_id": gist_id,
-            "engine": engine,
-            "template": "main.pss",
-            "user_extensions": [],
-        }
-        config_dict.update(Extension.get_extension_configs())
+        config_dict = get_config()
+        config_dict["gist_id"] = gist_id or ""
+        config_dict["engine"] = engine
 
         print("Building directory structure")
         make_dir(project_name)

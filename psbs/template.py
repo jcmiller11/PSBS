@@ -67,7 +67,7 @@ class Template:
         self.postprocessing_steps = []
 
         # Load user extensions and prepare them for the template environment.
-        user_extensions = config.get("user_extensions", [])
+        user_extensions = config["user_extensions"]
         extensions = Extension.get_extensions(user_extensions)
         for extension in extensions:
             config.setdefault(extension.__name__, {})
