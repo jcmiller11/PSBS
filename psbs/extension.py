@@ -101,7 +101,7 @@ class Extension:
 
         Args:
             user_extensions (list, optional): List of paths to user-defined
-            extension files. Defaults None.
+            extension files. Defaults to None.
 
         Returns:
             list: A list of Extension subclass instances.
@@ -132,13 +132,13 @@ class Extension:
         return cls.__subclasses__()
 
     @classmethod
-    def get_extension_configs(cls, user_extensions=""):
+    def get_extension_configs(cls, user_extensions=None):
         """
         Get configuration settings for available extensions.
 
         Args:
             user_extensions (list, optional): List of paths to user-defined
-            extension files. Defaults to an empty list.
+            extension files. Defaults to None.
 
         Returns:
             dict: Configuration settings for available extensions.
