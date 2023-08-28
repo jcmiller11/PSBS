@@ -58,13 +58,30 @@ def get_config(config_file=None):
                     update_dict_values(value, update_dict[key])
                 else:
                     try:
-                        if type(target_dict[key]) == list and type(update_dict[key]) == str:
+                        # If expecting a list and we get a string
+                        # wrap it in a list
+                        if isinstance(target_dict[key], list) and isinstance(
+                            update_dict[key], str
+                        ):
                             update_dict[key] = [update_dict[key]]
-                        if type(target_dict[key]) == str and update_dict[key] == None:
+
+                        # If expecting a string and we get none
+                        # replace with empty string
+                        if (
+                            isinstance(target_dict[key], str)
+                            and update_dict[key] is None
+                        ):
                             update_dict[key] = ""
-                        if type(target_dict[key]) != type(update_dict[key]):
+
+                        # Raise TypeError if we get an unexpected type
+                        if not isinstance(
+                            target_dict[key], type(update_dict[key])
+                        ):
                             raise TypeError
+
+                        # Assign updated value
                         target_dict[key] = update_dict[key]
+
                     except (ValueError, TypeError):
                         # If type conversion fails leave default value
                         print(

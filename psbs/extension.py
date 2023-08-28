@@ -95,13 +95,13 @@ class Extension:
         return {}
 
     @classmethod
-    def get_extensions(cls, user_extensions=""):
+    def get_extensions(cls, user_extensions=None):
         """
         Load and return available extensions.
 
         Args:
             user_extensions (list, optional): List of paths to user-defined
-            extension files. Defaults to an empty list.
+            extension files. Defaults None.
 
         Returns:
             list: A list of Extension subclass instances.
@@ -114,6 +114,11 @@ class Extension:
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
 
         # Import user-defined extensions
+        if user_extensions is None:
+            user_extensions = []
+        if isinstance(user_extensions, str):
+            user_extensions = [user_extensions]
+
         for extension in user_extensions:
             module_name = f"psbs.extensions.{basename(extension)[:-3].lower()}"
             spec = util.spec_from_file_location(
