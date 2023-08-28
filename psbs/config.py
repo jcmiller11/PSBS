@@ -41,7 +41,7 @@ def get_config(config_file=None):
 
     # Load the config file into a dictionary
     config_dict = read_yaml(config_file)
-    user_extensions = config_dict.get("user_extensions",[])
+    user_extensions = config_dict.get("user_extensions", [])
 
     # Load default values from extension configs
     defaults.update(Extension.get_extension_configs(user_extensions))
