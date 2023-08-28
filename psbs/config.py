@@ -58,15 +58,13 @@ def get_config(config_file=None):
                     update_dict_values(value, update_dict[key])
                 else:
                     try:
-                        # Update the value with the and attempt to cast
-                        # to the corresponding type from update_dict
-                        target_dict[key] = type(target_dict[key])(
-                            update_dict[key]
-                        )
-                        # Maintain compatibility with config files generated
-                        # by old buggy version
-                        if target_dict[key] == "None":
-                            target_dict[key] = ""
+                        if type(target_dict[key]) == list and type(update_dict[key]) == str:
+                            update_dict[key] = [update_dict[key]]
+                        if type(target_dict[key]) == str and update_dict[key] == None:
+                            update_dict[key] = ""
+                        if type(target_dict[key]) != type(update_dict[key]):
+                            raise TypeError
+                        target_dict[key] = update_dict[key]
                     except (ValueError, TypeError):
                         # If type conversion fails leave default value
                         print(
