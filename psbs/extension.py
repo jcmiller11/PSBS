@@ -114,10 +114,10 @@ class Extension:
                 import_module(f"psbs.extensions.{basename(extension)[:-3]}")
 
         # Import user-defined extensions
-        if user_extensions is None:
-            user_extensions = []
         if isinstance(user_extensions, str):
             user_extensions = [user_extensions]
+        if user_extensions is None or not isinstance(user_extensions, list):
+            user_extensions = []
 
         for extension in user_extensions:
             module_name = f"psbs.extensions.{basename(extension)[:-3].lower()}"
