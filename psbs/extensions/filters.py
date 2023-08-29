@@ -1,13 +1,37 @@
-import re
+"""
+FILTERS EXTENSION MODULE
 
+This module provides an extension class that provides various filters for use
+within PSBS Templates.
+"""
+
+import re
 from textwrap import wrap
 from itertools import chain
 
 from psbs.extension import Extension
 from psbs.psparser import PSParser
 
-
 class Filters(Extension):
+    """
+    A class representing a filters extension for PSBS.
+
+    This extension provides various filters that can be applied to text or
+    level data.
+
+    Args:
+        config (dict): A configuration dictionary for the extension.
+
+    Attributes:
+        config (dict): The configuration dictionary for the extension.
+
+    Methods:
+        wrap_to_width(input_text, width=5): Wrap text to a specified width.
+        add_prefix(input_text, prefix): Add a prefix to each non-empty line.
+        levels_to_list(levels_string): Convert levels in string format to a list.
+        combine_levels(levels_list, columns=0): Combine levels into rows.
+    """
+
     def __init__(self, config):
         super().__init__(config)
         self.register_filter("wrap", self.wrap_to_width)
@@ -16,12 +40,33 @@ class Filters(Extension):
         self.register_filter("combine_levels", self.combine_levels)
 
     def wrap_to_width(self, input_text, width=5):
+        """
+        Wrap text to a specified width.
+
+        Args:
+            input_text (str): The input text to be wrapped.
+            width (int, optional): The maximum width for each line.
+                Defaults to 5.
+
+        Returns:
+            str: The wrapped text.
+        """
         wrapped_lines = []
         for line in input_text.splitlines():
             wrapped_lines.extend(wrap(line, width))
         return "\n".join(wrapped_lines)
 
     def add_prefix(self, input_text, prefix):
+        """
+        Add a prefix to each non-empty line.
+
+        Args:
+            input_text (str): The input text to which the prefix will be added.
+            prefix (str): The prefix to be added.
+
+        Returns:
+            str: The text with the specified prefix added to non-empty lines.
+        """
         input_text = PSParser.redact_comments(input_text, redact_char="")
         output = []
         for line in input_text.splitlines():
@@ -33,6 +78,15 @@ class Filters(Extension):
         return "\n".join(output)
 
     def levels_to_list(self, levels_string):
+        """
+        Convert levels in string format to a list of levels.
+
+        Args:
+            levels_string (str): The levels in string format.
+
+        Returns:
+            list: A list of levels.
+        """
         levels_string = PSParser.redact_comments(levels_string, redact_char="")
         output = []
         for line in levels_string.splitlines():
@@ -41,6 +95,17 @@ class Filters(Extension):
         return re.split(r"(?<=\S)\n+\n+(?=\S)", "\n".join(output))
 
     def combine_levels(self, levels_list, columns=0):
+        """
+        Combine levels into rows.
+
+        Args:
+            levels_list (str or list): The levels to be combined.
+            columns (int, optional): Number of columns for combining levels.
+                Defaults to 0.
+
+        Returns:
+            str: The combined levels.
+        """
         if isinstance(levels_list, str):
             # Convert to list if passed a string
             levels_list = self.levels_to_list(levels_list)
