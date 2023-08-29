@@ -12,6 +12,7 @@ from itertools import chain
 from psbs.extension import Extension
 from psbs.psparser import PSParser
 
+
 class Filters(Extension):
     """
     A class representing a filters extension for PSBS.
