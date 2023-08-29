@@ -29,7 +29,7 @@ class Filters(Extension):
     Methods:
         wrap_to_width(input_text, width=5): Wrap text to a specified width.
         add_prefix(input_text, prefix): Add a prefix to each non-empty line.
-        levels_to_list(levels_string): Convert levels in string format to a list.
+        levels_to_list(levels_string): Convert string of levels to a list.
         combine_levels(levels_list, columns=0): Combine levels into rows.
     """
 
