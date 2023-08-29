@@ -15,36 +15,33 @@ class Images(Extension):
         return {"alpha": False, "max_colors": 10}
 
     def __rgba_to_hex(self, rgba_tuple):
-        output = ""
         if rgba_tuple[3] == 0:
             return "transparent"
         if not self.config["alpha"]:
             rgba_tuple = rgba_tuple[:-1]
-        for value in rgba_tuple:
-            output += format(value, "x").zfill(2)
-        return f"#{output}"
+        return "#" + "".join([format(value, "02x") for value in rgba_tuple])
 
     def __pixel_list_to_sprite(self, pixel_values, width):
-        colors = {}
-        colors["transparent"] = None
+        colors = {"transparent": None}
+        colors.update(
+            {self.__rgba_to_hex(pixel): None for pixel in pixel_values}
+        )
+        colors = list(colors)
+
+        sprite = []
         for pixel in pixel_values:
-            colors[self.__rgba_to_hex(pixel)] = None
-
-        colors_list = list(colors.keys())
-
-        sprite = ""
-
-        for pixel in pixel_values:
-            color = colors_list.index(self.__rgba_to_hex(pixel)) - 1
-            if color > 9:
-                color = chr(ord("a") + color - 10)
+            color = colors.index(self.__rgba_to_hex(pixel)) - 1
             if color == -1:
-                color = "."
-            sprite += str(color)
+                sprite.append(".")
+            else:
+                sprite.append(
+                    str(color) if color < 10 else chr(ord("a") + color - 10)
+                )
 
-        sprite = wrap(sprite, width)
-        sprite = "\n".join(sprite)
-        return {"sprite": sprite, "colors": colors}
+        return {
+            "sprite": "\n".join(wrap("".join(sprite), width)),
+            "colors": colors,
+        }
 
     def image_to_object(
         self,
@@ -54,9 +51,11 @@ class Images(Extension):
         width=None,
         height=None,
     ):
+        # Warn if max_colors too high
         if self.config["max_colors"] > 36:
             print("Warning: max_colors config values over 36 not supported")
             self.config["max_colors"] = 36
+
         if file in self.loaded_images:
             image = self.loaded_images[file]
         else:
@@ -67,33 +66,35 @@ class Images(Extension):
                     f"Unable to read image file\n  {err}"
                 )
             self.loaded_images[file] = image
+
         # Crop image if needed
-        if width:
-            right = left + width
-        else:
-            right = image.size[0]
-        if height:
-            bottom = top + height
-        else:
-            bottom = image.size[1]
-        image = image.crop((left, top, right, bottom))
-        image = image.convert("RGBA")
+        right = left + width if width else image.size[0]
+        bottom = top + height if height else image.size[1]
+        image = image.crop((left, top, right, bottom)).convert("RGBA")
+
+        # Generate sprite
         result = self.__pixel_list_to_sprite(
             image.getdata(), width=image.size[0]
         )
-        sprite = result["sprite"]
-        colors = result["colors"]
-        if len(colors) > 10:
-            if "." in sprite:
-                image = image.quantize(colors=self.config["max_colors"] + 1)
-            else:
-                image = image.quantize(colors=self.config["max_colors"])
+        sprite, colors = result["sprite"], result["colors"]
+
+        # Reduce number of colors if more max
+        max_colors = self.config["max_colors"]
+        if "." in sprite:
+            max_colors += 1
+        if len(colors) > max_colors:
+            # Warn if quantizing
+            print(f"Warning: image {file} has too many colors")
+            print("  Attempting to quantize")
+            image = image.quantize(colors=max_colors)
             image = image.convert("RGBA")
             result = self.__pixel_list_to_sprite(
                 image.getdata(), width=image.size[0]
             )
-            sprite = result["sprite"]
-            colors = result["colors"]
+            sprite, colors = result["sprite"], result["colors"]
+
+        # Remove transparent unless it's the only color
         if len(colors) > 1:
-            colors.pop("transparent", None)
+            colors.pop(0)
+
         return f'{" ".join(colors)}\n{sprite}'

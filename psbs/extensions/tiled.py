@@ -37,9 +37,15 @@ class Tiled(Extension):
         for line in pixels_string.split("\n"):
             line_list = []
             for char in line:
-                if char == ".":
+                # Handle alpha values for colors > 10
+                if char.isalpha():
+                    char = ord(char.lower()) - ord("a") + 10
+                # Handle transparency
+                elif char == ".":
                     char = -1
-                line_list.append(colors[int(char) + 1])
+                else:
+                    char = int(char)
+                line_list.append(colors[char + 1])
             image_list.append(line_list)
         return Image.fromarray(array(image_list, dtype=uint8), mode="RGBA")
 
