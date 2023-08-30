@@ -94,7 +94,7 @@ class Images(Extension):
             sprite, colors = result["sprite"], result["colors"]
 
         # Remove transparent unless it's the only color
-        if len(colors) > 1:
-            colors.pop(0)
+        if len(colors) > 1 and "transparent" in colors:
+            colors.remove("transparent")
 
         return f'{" ".join(colors)}\n{sprite}'
