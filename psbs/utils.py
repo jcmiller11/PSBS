@@ -1,7 +1,7 @@
 """
-UTILITIES MODULE
+UTILITIES
 
-This module provides various utility functions for file handling, YAML
+This file provides various utility functions for file handling, YAML
 parsing, directory creation, web browsing, and URL manipulation.
 """
 

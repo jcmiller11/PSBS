@@ -1,7 +1,7 @@
 """
-FILTERS EXTENSION MODULE
+FILTERS EXTENSION
 
-This module provides an extension class that provides various filters for use
+This file provides an extension class that provides various filters for use
 within PSBS Templates.
 """
 

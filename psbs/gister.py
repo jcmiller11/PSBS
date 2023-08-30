@@ -1,7 +1,7 @@
 """
-GISTER MODULE
+GISTER
 
-This module provides a class for interacting with GitHub Gists.
+This file provides a class for interacting with GitHub Gists.
 
 """
 

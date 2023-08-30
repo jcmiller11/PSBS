@@ -1,7 +1,7 @@
 """
-EXTENSION MODULE
+EXTENSION
 
-This module provides functionality for loading and managing PSBS extensions.
+This file provides functionality for loading and managing PSBS extensions.
 
 """
 

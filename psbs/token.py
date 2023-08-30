@@ -1,7 +1,7 @@
 """
-TOKEN MANAGEMENT MODULE
+TOKEN MANAGEMENT
 
-This module provides functions for retrieving and setting authentication
+This file provides functions for retrieving and setting authentication
 tokens.
 """
 

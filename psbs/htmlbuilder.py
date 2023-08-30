@@ -1,7 +1,7 @@
 """
-HTML BUILDER MODULE
+HTML BUILDER
 
-This module provides a function to build an HTML game from PuzzleScript
+This file provides a function to build an HTML game from PuzzleScript
 source code. The function fetches the standalone inlined HTML template from
 the provided PuzzleScript engine and replaces placeholders in the template
 with the actual game data and options.

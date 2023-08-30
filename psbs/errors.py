@@ -1,7 +1,7 @@
 """
-ERRORS MODULE
+ERRORS
 
-This module defines custom error classes for PSBS.
+This file defines custom error classes for PSBS.
 
 Example:
     try:

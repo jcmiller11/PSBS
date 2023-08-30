@@ -1,7 +1,7 @@
 """
-PSBSPROJECT MODULE
+PSBSPROJECT
 
-This module provides a class to represent a PuzzleScript project in PSBS.
+This file provides a class to represent a PuzzleScript project in PSBS.
 
 Example:
     project = PSBSProject()

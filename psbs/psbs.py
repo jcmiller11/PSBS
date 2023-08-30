@@ -1,7 +1,7 @@
 """
-PSBS CLI Module
+PSBS CLI
 
-This base module provides a command-line interface (CLI) for the PuzzleScript
+This base file provides a command-line interface (CLI) for the PuzzleScript
 Build System (PSBS). It allows users to perform various actions related to
 building, exporting, and running PuzzleScript projects, as well as managing
 authentication tokens.

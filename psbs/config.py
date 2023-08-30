@@ -1,7 +1,7 @@
 """
-CONFIG MODULE
+CONFIG
 
-This module provides functions for loading configuration settings.
+This file provides functions for loading configuration settings.
 
 """
 

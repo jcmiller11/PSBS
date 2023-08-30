@@ -1,7 +1,7 @@
 """
-BUILD EXTENSION MODULE
+BUILD EXTENSION
 
-This module provides an extension class related to build types such as
+This file provides an extension class related to build types such as
 debugging and release builds.
 """
 
