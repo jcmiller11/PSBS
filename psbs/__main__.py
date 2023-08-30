@@ -1,7 +1,7 @@
 """
 PuzzleScript Build System (__main__)
 
-This module serves as the entry point for the PuzzleScript Build System (PSBS).
+This file serves as the entry point for the PuzzleScript Build System (PSBS).
 When executed as the main script, it invokes the _main() function from the
 psbs module to start the build process for PuzzleScript games.
 
