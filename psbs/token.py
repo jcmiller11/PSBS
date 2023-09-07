@@ -42,7 +42,7 @@ def get_token(verbose=False):
     # Attempt to retrieve a token using gh-cli
     try:
         if verbose:
-            print("Reading token from gh-cli")
+            print("No saved token, attempting to read token from gh-cli")
         token = subprocess.check_output(
             ["gh", "auth", "token"], text=True
         ).strip()
