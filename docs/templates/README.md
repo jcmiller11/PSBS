@@ -94,13 +94,13 @@ A standard if statement that tests if a statement is True or False and only runs
 
 ```psbs
 Player(( playernum ))
-{% if playernum == 1 %}
+(% if playernum == 1 %)
 red
-{% elif playernum == 2 %}
+(% elif playernum == 2 %)
 blue
-{% else %}
+(% else %)
 green
-{% endif %}
+(% endif %)
 ```
 
 ## Macros
