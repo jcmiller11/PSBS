@@ -125,3 +125,13 @@ Inserts another source file into your template.  Included source files inherit t
 (% include "objects.pss" %)
 (# playername variable is accessible within objects.pss #)
 ```
+
+## Whitespace
+
+PSBS templates are configured to remove extraneous whitespace around tags when possible, this makes inserting loops and if statements in the middle of lines easier.  If you wish to maintain the extra whitespace before or after a tag a plus sign can be added to the start and/or end of the tag.
+
+```psbs
+(%+ statement %)
+(% statement +%)
+(%+ statement +%)
+```
